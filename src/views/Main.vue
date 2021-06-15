@@ -6,7 +6,7 @@
     <div class="flex flex-row bg-green-400 w-full p-4 space-x-10">
       <card title="foo" content="contetn" color="#ff0000" />
       <card-button />
-      <list />
+      <list :listElements="['Test1', 'Test2']" />
     </div>
   </div>
 </template>
