@@ -4,7 +4,7 @@
       <table class="min-w-max w-full table-auto">
         <tbody class="text-gray-600 text-sm font-light">
           <tr
-            v-for="(entry, index) in elements"
+            v-for="(entry, index) in refModelValue"
             :key="index"
             class="border-b border-gray-200 hover:bg-gray-100"
           >
@@ -74,10 +74,8 @@
                   </svg>
                 </div>
                 <input
-                  @keydown.enter="
-                    addNew($event);
-                    this.value = '';
-                  "
+                  @keydown.enter="addNew"
+                  v-model="newEntryInput"
                   type="text"
                   name="new-entry"
                   id="new-entry"
@@ -105,29 +103,34 @@
 </template>
 
 <script lang="ts">
-import { Vue, Options } from "vue-class-component";
+import Vue, { computed, PropType, ref, toRef } from "vue";
 
-@Options({
+export default {
+  name: "List",
   props: {
-    listEalements: Array,
+    modelValue: { type: Array, required: true },
   },
-})
-export default class List extends Vue {
-  public elements: Array<string> = ["Test"];
+  setup(props: any, { emit }: any): Record<string, unknown> {
+    const newEntryInput = ref("");
+    const refModelValue = toRef(props, "modelValue");
 
-  public addNew(event: any): void {
-    console.log(event.target.value);
-    if (!event.target.value) {
-      return;
-    }
+    const addNew = (): void => {
+      if (!newEntryInput.value) {
+        return;
+      }
 
-    this.elements.push(event.target.value);
+      refModelValue.value.push(newEntryInput.value);
 
-    event.target.value = "";
-  }
+      newEntryInput.value = "";
+    };
 
-  public remove(index: number): void {
-    this.elements.splice(index, 1);
-  }
-}
+    const remove = (index: number): void => {
+      const copyList = Array.from(props.modelValue);
+      refModelValue.value.splice(index, 1);
+      //emit("update:modelValue");
+    };
+
+    return { newEntryInput, addNew, remove, refModelValue };
+  },
+};
 </script>

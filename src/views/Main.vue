@@ -2,28 +2,38 @@
   <div class="bg-gray-200">
     <div class="bg-green-500 w-full p-4">
       <card />
+
+      <list v-model="ideaList" />
     </div>
-    <div class="flex flex-row bg-green-400 w-full p-4 space-x-10">
-      <card title="foo" content="contetn" color="#ff0000" />
+    <div
+      v-for="(entry, index) in ideaList"
+      :key="index"
+      class="flex flex-row bg-green-400 w-full p-4 space-x-10"
+    >
+      <card :title="entry" content="contetn" color="#ff0000" />
       <card-button />
-      <list :listElements="['Test1', 'Test2']" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-class-component";
-import Card from "@/components/Card.vue";
-import CardButton from "@/components/CardButton.vue";
-import List from "@/components/List.vue";
+import Card from "../components/Card.vue";
+import CardButton from "../components/CardButton.vue";
+import List from "../components/List.vue";
+import { ref } from "vue";
 
-@Options({
+export default {
+  name: "Main",
   components: {
     Card,
     CardButton,
     List,
   },
-})
-export default class Main extends Vue {}
+  setup(): Record<string, unknown> {
+    const ideaList = ref(["Test1", "Test2"]);
+
+    return { ideaList };
+  },
+};
 </script>
 <style scoped></style>
