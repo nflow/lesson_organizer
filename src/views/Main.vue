@@ -5,12 +5,10 @@
 
       <list v-model="ideaList" />
     </div>
-    <div
-      v-for="(entry, index) in ideaList"
-      :key="index"
-      class="flex flex-row bg-green-400 w-full p-4 space-x-10"
-    >
-      <card :title="entry" content="contetn" color="#ff0000" />
+    <div class="flex flex-row bg-green-400 w-full p-4 space-x-10">
+      <card title="Editable Card" content="Test">
+        <list v-model="subIdeaList" />
+      </card>
       <card-button />
     </div>
   </div>
@@ -20,7 +18,8 @@
 import Card from "../components/Card.vue";
 import CardButton from "../components/CardButton.vue";
 import List from "../components/List.vue";
-import { ref } from "vue";
+import { Ref, ref } from "vue";
+import { ListEntry } from "@/types/List";
 
 export default {
   name: "Main",
@@ -30,9 +29,20 @@ export default {
     List,
   },
   setup(): Record<string, unknown> {
-    const ideaList = ref(["Test1", "Test2"]);
+    const ideaList = ref({
+      list: [
+        { id: "id1", value: "Test1" },
+        { id: "id2", value: "Test2" },
+      ],
+    });
+    const subIdeaList = ref({
+      list: [
+        { id: "id3", value: "Test3" },
+        { id: "id4", value: "Test4" },
+      ],
+    });
 
-    return { ideaList };
+    return { ideaList, subIdeaList };
   },
 };
 </script>

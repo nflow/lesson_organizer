@@ -2,8 +2,7 @@
   <div
     class="
       max-w-md
-      py-4
-      px-8
+      p-0
       bg-white
       shadow-lg
       rounded-lg
@@ -11,21 +10,24 @@
       duration-200
       hover:shadow-2xl
     "
-    v-bind:style="{ backgroundColor: color }"
+    :style="{ backgroundColor: color }"
   >
     <div>
       <input
-        type="text"
-        class="text-gray-800 text-3xl font-semibold w-full"
         v-model="title"
-        v-bind:style="{ backgroundColor: color }"
+        type="text"
+        class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full"
+        :style="{ backgroundColor: color }"
       />
       <textarea
         v-if="content"
-        class="mt-2 text-gray-600 w-full"
         v-model="content"
-        v-bind:style="{ backgroundColor: color }"
+        class="p-4 mt-2 text-gray-600 w-full"
+        :style="{ backgroundColor: color }"
       />
+    </div>
+    <div class="p-0 m-0 w-full">
+      <slot></slot>
     </div>
   </div>
 </template>
@@ -38,3 +40,4 @@ import { Vue, Options } from "vue-class-component";
 })
 export default class HelloWorld extends Vue {}
 </script>
+<style scoped></style>
