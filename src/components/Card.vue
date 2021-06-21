@@ -19,12 +19,13 @@
         class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full"
         :style="{ backgroundColor: color }"
       />
-      <textarea
+      <div
         v-if="content"
-        v-model="content"
         class="p-4 mt-2 text-gray-600 w-full"
         :style="{ backgroundColor: color }"
-      />
+      >
+        {{ content }}
+      </div>
     </div>
     <div class="p-0 m-0 w-full">
       <slot></slot>
