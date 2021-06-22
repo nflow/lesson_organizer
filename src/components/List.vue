@@ -9,7 +9,7 @@
       >
         <tbody class="text-gray-600 text-sm font-light">
           <tr
-            v-for="(entry, index) in refModelValue.list"
+            v-for="(entry, index) in refModelValue"
             :key="index"
             class="border-b border-gray-200 hover:bg-gray-100"
             draggable="true"
@@ -109,43 +109,38 @@
 </template>
 
 <script lang="ts">
-import Vue, {
-  AppContext,
-  computed,
-  PropType,
-  Ref,
-  ref,
-  SetupContext,
-  toRef,
-} from "vue";
+import { defineComponent, PropType, Ref, ref, toRef } from "vue";
 import { MutationTypes, useStore } from "@/store";
-import { List, ListEntry } from "@/types/List";
+import { IdeaDto } from "@/types/IdeaDto";
 import { v4 as uuidv4 } from "uuid";
 
-export default {
+export default defineComponent({
   name: "List",
   props: {
-    modelValue: { required: true },
+    modelValue: {
+      type: Object as PropType<Array<IdeaDto>>,
+      required: true,
+    },
   },
-  setup(props: any, { emit }: SetupContext): Record<string, unknown> {
+  setup(props): Record<string, unknown> {
     const store = useStore();
 
     const newEntryInput = ref("");
-    const refModelValue: Ref<List> = toRef(props, "modelValue");
+    const refModelValue: Ref<Array<IdeaDto>> = toRef(props, "modelValue");
 
     const addNew = (): void => {
       if (!newEntryInput.value) {
         return;
       }
 
-      const newEntry: ListEntry = { id: uuidv4(), value: newEntryInput.value };
-      refModelValue.value.list.push(newEntry);
+      const newEntry: IdeaDto = { id: uuidv4(), value: newEntryInput.value };
+      refModelValue.value.push(newEntry);
 
       newEntryInput.value = "";
     };
 
-    const remove = (id: string): ListEntry | undefined => {
-      const list = refModelValue.value.list;
+    const remove = (id: string): IdeaDto | undefined => {
+      const list = refModelValue.value;
 
       const index: number | undefined = list.findIndex(
         (element) => element.id == id
@@ -154,7 +149,7 @@ export default {
       if (index < 0) {
         return undefined;
       }
-      const foo = refModelValue.value.list.splice(index, 1);
+      const foo = refModelValue.value.splice(index, 1);
       console.log(foo);
       return foo[0];
     };
@@ -170,12 +165,12 @@ export default {
       }
     };
 
-    const onDragDrop = (event: DragEvent): void => {
+    const onDragDrop = (): void => {
       const dragedEntry = store.state.dragCallback;
       if (dragedEntry) {
-        const entry: ListEntry = dragedEntry.callback(dragedEntry.id);
+        const entry: IdeaDto = dragedEntry.callback(dragedEntry.id);
         console.log(entry);
-        refModelValue.value.list.push(entry);
+        refModelValue.value.push(entry);
       }
     };
 
@@ -188,5 +183,5 @@ export default {
       onDragDrop,
     };
   },
-};
+});
 </script>

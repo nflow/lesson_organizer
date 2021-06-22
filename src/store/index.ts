@@ -1,4 +1,4 @@
-import { ListEntry } from "@/types/List";
+import { IdeaDto } from "@/types/IdeaDto";
 import { validate } from "uuid";
 import { InjectionKey } from "vue";
 import {
@@ -14,7 +14,7 @@ import {
 
 export interface DragCallback {
   id: string;
-  callback: (id: string) => ListEntry;
+  callback: (id: string) => IdeaDto;
 }
 
 interface State {
