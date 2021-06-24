@@ -7,43 +7,20 @@
     </div>
     <div class="max-w-full overflow-x-auto flex-auto">
       <div class="flex flex-row flex-auto">
-        <div
+        <Phase
           v-for="phase in phases"
           :key="phase.id"
-          class="min-w-min flex-auto flex flex-col hover:bg-gray-300"
-        >
-          <div
-            class="
-              flex-initial
-              font-extrabold
-              hover:bg-green-500
-              bg-green-400
-              p-4
-              text-center
-            "
-          >
-            {{ phase.title }}
-          </div>
-          <div
-            class="flex-1 flex flex-col p-4 space-y-10 items-start self-center"
-          >
-            <method
-              v-for="method in phase.methods"
-              :key="method.id"
-              :title="method.title"
-              :description="method.description"
-              :ideas="method.ideas"
-            />
-          </div>
-        </div>
+          v-model:methods="phase.methods"
+          :title="phase.title"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import Method from "../components/Method.vue";
 import List from "../components/List.vue";
+import Phase from "../components/Phase.vue";
 import { IdeaDto } from "@/types/IdeaDto";
 import { PhaseDto } from "@/types/PhaseDto";
 import { defineComponent, ref, Ref, toRefs } from "@vue/runtime-core";
@@ -51,10 +28,10 @@ import { defineComponent, ref, Ref, toRefs } from "@vue/runtime-core";
 export default defineComponent({
   name: "Main",
   components: {
-    Method,
+    Phase,
     List,
   },
-  setup(): Record<string, unknown> {
+  setup() {
     const ideas: Ref<Array<IdeaDto>> = ref([
       { id: "idea_id_1", value: "Test1" },
       { id: "idea_id_2", value: "Test2" },

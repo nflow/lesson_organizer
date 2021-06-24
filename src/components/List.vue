@@ -3,7 +3,7 @@
     <div class="bg-white my-6">
       <table
         class="min-w-max w-full table-auto"
-        @drop="onDragDrop($event)"
+        @drop="onDragDrop"
         @dragover.prevent
         @dragenter.prevent
       >
@@ -122,7 +122,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props): Record<string, unknown> {
+  setup(props) {
     const store = useStore();
 
     const newEntryInput = ref("");
@@ -149,9 +149,8 @@ export default defineComponent({
       if (index < 0) {
         return undefined;
       }
-      const foo = refModelValue.value.splice(index, 1);
-      console.log(foo);
-      return foo[0];
+
+      return refModelValue.value.splice(index, 1)[0];
     };
 
     const onDragStart = (event: DragEvent, id: string): void => {
@@ -169,7 +168,6 @@ export default defineComponent({
       const dragedEntry = store.state.dragCallback;
       if (dragedEntry) {
         const entry: IdeaDto = dragedEntry.callback(dragedEntry.id);
-        console.log(entry);
         refModelValue.value.push(entry);
       }
     };

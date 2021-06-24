@@ -10,7 +10,8 @@
       duration-200
       hover:shadow-2xl
     "
-    :style="{ backgroundColor: color }"
+    draggable="true"
+    @dragstart="onDragStart($event, entry.id)"
   >
     <div>
       <div class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full">
@@ -30,6 +31,8 @@
 import { IdeaDto } from "@/types/IdeaDto";
 import List from "../components/List.vue";
 import { defineComponent, PropType, ref } from "@vue/runtime-core";
+import { MutationTypes } from "@/store";
+import { MethodDto } from "@/types/MethodDto";
 
 export default defineComponent({
   name: "Method",
@@ -51,7 +54,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props): Record<string, unknown> {
+  setup(props) {
     const refIdeas = ref(props.ideas);
 
     return { refIdeas };

@@ -1,4 +1,5 @@
 import { IdeaDto } from "@/types/IdeaDto";
+import { MethodDto } from "@/types/MethodDto";
 import { validate } from "uuid";
 import { InjectionKey } from "vue";
 import {
@@ -14,7 +15,7 @@ import {
 
 export interface DragCallback {
   id: string;
-  callback: (id: string) => IdeaDto;
+  callback: <T>(id: string) => T;
 }
 
 interface State {
