@@ -155,7 +155,7 @@ export default defineComponent({
 
     const onDragStart = (event: DragEvent, id: string): void => {
       if (event.dataTransfer) {
-        store.commit(MutationTypes.SET_DRAG_CALLBACK, {
+        store.commit(MutationTypes.SET_DRAG_CALLBACK_IDEA, {
           id: id,
           callback: remove,
         });
@@ -164,11 +164,13 @@ export default defineComponent({
       }
     };
 
-    const onDragDrop = (): void => {
-      const dragedEntry = store.state.dragCallback;
+    const onDragDrop = (event: DragEvent): void => {
+      const dragedEntry = store.state.dragCallbackIdea;
       if (dragedEntry) {
         const entry: IdeaDto = dragedEntry.callback(dragedEntry.id);
+        store.commit(MutationTypes.SET_DRAG_CALLBACK_METHOD, undefined);
         refModelValue.value.push(entry);
+        event.preventDefault();
       }
     };
 

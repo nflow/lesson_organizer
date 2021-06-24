@@ -1,5 +1,11 @@
 <template>
-  <div class="min-w-min flex-auto flex flex-col hover:bg-gray-300">
+  <div
+    style="min-width: 20rem"
+    class="flex-auto flex flex-col hover:bg-gray-300"
+    @drop="onDragDrop"
+    @dragover.prevent
+    @dragenter.prevent
+  >
     <div
       class="
         flex-initial
@@ -9,9 +15,6 @@
         p-4
         text-center
       "
-      @drop="onDragDrop"
-      @dragover.prevent
-      @dragenter.prevent
     >
       {{ title }}
     </div>
@@ -22,6 +25,8 @@
         :title="method.title"
         :description="method.description"
         :ideas="method.ideas"
+        draggable="true"
+        @dragstart="onDragStart($event, method.id)"
       />
     </div>
   </div>
@@ -70,7 +75,7 @@ export default defineComponent({
 
     const onDragStart = (event: DragEvent, id: string): void => {
       if (event.dataTransfer) {
-        store.commit(MutationTypes.SET_DRAG_CALLBACK, {
+        store.commit(MutationTypes.SET_DRAG_CALLBACK_METHOD, {
           id: id,
           callback: remove,
         });
@@ -79,11 +84,13 @@ export default defineComponent({
       }
     };
 
-    const onDragDrop = (): void => {
-      const dragedEntry = store.state.dragCallback;
+    const onDragDrop = (event: DragEvent): void => {
+      const dragedEntry = store.state.dragCallbackMethod;
       if (dragedEntry) {
         const entry: MethodDto = dragedEntry.callback(dragedEntry.id);
+        store.commit(MutationTypes.SET_DRAG_CALLBACK_METHOD, undefined);
         refMethods.value.push(entry);
+        event.preventDefault();
       }
     };
 

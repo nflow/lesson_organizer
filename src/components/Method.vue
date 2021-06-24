@@ -10,14 +10,27 @@
       duration-200
       hover:shadow-2xl
     "
-    draggable="true"
-    @dragstart="onDragStart($event, entry.id)"
   >
     <div>
       <div class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full">
         {{ title }}
       </div>
-      <div v-if="description" class="p-4 mt-2 text-gray-600 w-full">
+      <div
+        v-if="description"
+        class="relative h-24 p-4 mt-2 text-gray-600 w-full overflow-hidden"
+      >
+        <div
+          class="
+            absolute
+            top-0
+            left-0
+            w-full
+            h-full
+            bg-gradient-to-b
+            from-transparent
+            to-white
+          "
+        />
         {{ description }}
       </div>
     </div>

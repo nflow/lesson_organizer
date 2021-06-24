@@ -90,32 +90,32 @@ export default defineComponent({
         methods: [],
       },
       {
-        id: "phase_id_4",
+        id: "phase_id_5",
         title: "Übung",
         methods: [],
       },
       {
-        id: "phase_id_4",
+        id: "phase_id_6",
         title: "Übung",
         methods: [],
       },
       {
-        id: "phase_id_4",
+        id: "phase_id_7",
         title: "Übung",
         methods: [],
       },
       {
-        id: "phase_id_4",
+        id: "phase_id_8",
         title: "Übung",
         methods: [],
       },
       {
-        id: "phase_id_4",
+        id: "phase_id_9",
         title: "Übung",
         methods: [],
       },
       {
-        id: "phase_id_4",
+        id: "phase_id_10",
         title: "Übung",
         methods: [],
       },
