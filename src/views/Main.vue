@@ -1,38 +1,40 @@
 <template>
-  <div class="bg-gray-200">
-    <div class="flex flex-row bg-green-500 w-full p-4">
+  <div class="flex flex-col bg-gray-200 m-0 h-full">
+    <div class="w-full flex flex-row flex-initial bg-green-500 p-4">
       <div class="flex-1">
         <list v-model="ideas" />
       </div>
     </div>
-    <div class="flex flex-row w-full min-h-screen">
-      <div
-        v-for="phase in phases"
-        :key="phase.id"
-        class="flex-1 flex flex-col hover:bg-gray-300"
-      >
+    <div class="max-w-full overflow-x-auto flex-auto">
+      <div class="flex flex-row flex-auto">
         <div
-          class="
-            flex-initial
-            font-extrabold
-            hover:bg-green-500
-            bg-green-400
-            p-4
-            text-center
-          "
+          v-for="phase in phases"
+          :key="phase.id"
+          class="min-w-min flex-auto flex flex-col hover:bg-gray-300"
         >
-          {{ phase.title }}
-        </div>
-        <div
-          class="flex-1 flex flex-col p-4 space-y-10 items-start self-center"
-        >
-          <method
-            v-for="method in phase.methods"
-            :key="method.id"
-            :title="method.title"
-            :description="method.description"
-            :ideas="method.ideas"
-          />
+          <div
+            class="
+              flex-initial
+              font-extrabold
+              hover:bg-green-500
+              bg-green-400
+              p-4
+              text-center
+            "
+          >
+            {{ phase.title }}
+          </div>
+          <div
+            class="flex-1 flex flex-col p-4 space-y-10 items-start self-center"
+          >
+            <method
+              v-for="method in phase.methods"
+              :key="method.id"
+              :title="method.title"
+              :description="method.description"
+              :ideas="method.ideas"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -71,13 +73,74 @@ export default defineComponent({
             ideas: [],
           },
           {
-            id: "method_id_1",
+            id: "method_id_2",
             title: "Gruppenarbeit",
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
             ideas: [],
           },
         ],
+      },
+      {
+        id: "phase_id_2",
+        title: "Erarbeitung",
+        methods: [
+          {
+            id: "method_id_3",
+            title: "Internetrecherche",
+            description:
+              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+            ideas: [],
+          },
+        ],
+      },
+      {
+        id: "phase_id_3",
+        title: "Sicherung",
+        methods: [
+          {
+            id: "method_id_4",
+            title: "Schläge auf den Hinterkopf",
+            description:
+              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+            ideas: [],
+          },
+        ],
+      },
+      {
+        id: "phase_id_4",
+        title: "Überleitung",
+        methods: [],
+      },
+      {
+        id: "phase_id_4",
+        title: "Übung",
+        methods: [],
+      },
+      {
+        id: "phase_id_4",
+        title: "Übung",
+        methods: [],
+      },
+      {
+        id: "phase_id_4",
+        title: "Übung",
+        methods: [],
+      },
+      {
+        id: "phase_id_4",
+        title: "Übung",
+        methods: [],
+      },
+      {
+        id: "phase_id_4",
+        title: "Übung",
+        methods: [],
+      },
+      {
+        id: "phase_id_4",
+        title: "Übung",
+        methods: [],
       },
     ]);
 
