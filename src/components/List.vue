@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="bg-white my-6">
+    <div class="bg-white">
       <table
         class="min-w-max w-full table-auto"
         @drop="onDragDrop"

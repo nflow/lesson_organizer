@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="p-0 m-0 w-full">
-      <list v-model="refIdeas" />
+      <list class="p-4" v-model="refIdeas" />
     </div>
   </div>
 </template>

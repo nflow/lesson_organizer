@@ -1,19 +1,35 @@
 <template>
   <div class="flex flex-col bg-gray-200 m-0 h-full">
-    <div class="w-full flex flex-row flex-initial bg-green-500 p-4">
+    <div class="flex flex-col flex-initial bg-green-500 p-4 space-y-4">
+      <div
+        class="
+          w-full
+          flex-1
+          text-center
+          bg-green-700
+          p-3
+          text-white
+          self-center
+          rounded
+        "
+      >
+        <h1 class="text-xl font-bold">Lesson Organizer - Demo</h1>
+        <span
+          >Data is not persited! Start by draging methods and ideas and have
+          fun!</span
+        >
+      </div>
       <div class="flex-1">
-        <list v-model="ideas" />
+        <list class="self-start" v-model="ideas" />
       </div>
     </div>
-    <div class="max-w-full overflow-x-auto flex-auto">
-      <div class="flex flex-row flex-auto">
-        <Phase
-          v-for="phase in phases"
-          :key="phase.id"
-          v-model:methods="phase.methods"
-          :title="phase.title"
-        />
-      </div>
+    <div class="flex flex-row max-w-full overflow-x-auto flex-auto">
+      <Phase
+        v-for="phase in phases"
+        :key="phase.id"
+        v-model:methods="phase.methods"
+        :title="phase.title"
+      />
     </div>
   </div>
 </template>
@@ -33,8 +49,9 @@ export default defineComponent({
   },
   setup() {
     const ideas: Ref<Array<IdeaDto>> = ref([
-      { id: "idea_id_1", value: "Test1" },
-      { id: "idea_id_2", value: "Test2" },
+      { id: "idea_id_1", value: "Karte von Südost-Asien" },
+      { id: "idea_id_2", value: "Nachrichtenbeitrag" },
+      { id: "idea_id_6", value: "Zeitungsartikel Tsunami" },
     ]);
 
     const phases: Ref<Array<PhaseDto>> = ref([
@@ -44,17 +61,19 @@ export default defineComponent({
         methods: [
           {
             id: "method_id_1",
-            title: "Gruppenarbeit",
+            title: "Mind-Map",
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
             ideas: [],
           },
           {
             id: "method_id_2",
-            title: "Gruppenarbeit",
+            title: "Blitzlicht",
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [],
+            ideas: [
+              { id: "idea_id_5", value: "Schaubild Tsunami-Frühwarnsystem" },
+            ],
           },
         ],
       },
@@ -67,7 +86,10 @@ export default defineComponent({
             title: "Internetrecherche",
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [],
+            ideas: [
+              { id: "idea_id_3", value: "Fotos der Zerstörung" },
+              { id: "idea_id_4", value: "Augenzeugenbericht" },
+            ],
           },
         ],
       },
@@ -77,7 +99,7 @@ export default defineComponent({
         methods: [
           {
             id: "method_id_4",
-            title: "Schläge auf den Hinterkopf",
+            title: "Soziometrische Abfrage",
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
             ideas: [],
@@ -92,30 +114,41 @@ export default defineComponent({
       {
         id: "phase_id_5",
         title: "Übung",
-        methods: [],
+        methods: [
+          {
+            id: "method_id_5",
+            title: "Soziometrische Abfrage",
+            description:
+              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+            ideas: [],
+          },
+        ],
       },
       {
         id: "phase_id_6",
-        title: "Übung",
+        title: "Erarbeitung",
         methods: [],
       },
       {
         id: "phase_id_7",
-        title: "Übung",
+        title: "Sicherung",
         methods: [],
       },
       {
         id: "phase_id_8",
-        title: "Übung",
-        methods: [],
+        title: "Überleitung",
+        methods: [
+          {
+            id: "method_id_6",
+            title: "Fishbowl-Diskussion",
+            description:
+              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+            ideas: [],
+          },
+        ],
       },
       {
         id: "phase_id_9",
-        title: "Übung",
-        methods: [],
-      },
-      {
-        id: "phase_id_10",
         title: "Übung",
         methods: [],
       },
