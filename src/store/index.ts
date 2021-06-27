@@ -1,6 +1,4 @@
 import { IdeaDto } from "@/types/IdeaDto";
-import { MethodDto } from "@/types/MethodDto";
-import { validate } from "uuid";
 import { InjectionKey } from "vue";
 import {
   createStore,
@@ -9,48 +7,23 @@ import {
   Store,
   ActionTree,
   ActionContext,
-  mapGetters,
-  GetterTree,
 } from "vuex";
 
-export interface DragCallback<T> {
-  id: string;
-  callback: (id: string) => T;
-}
-
 interface State {
-  dragCallbackIdea?: DragCallback<IdeaDto>;
-  dragCallbackMethod?: DragCallback<MethodDto>;
+  ideas: IdeaDto[];
 }
 
 export enum MutationTypes {
-  SET_DRAG_CALLBACK_IDEA = "SET_DRAG_CALLBACK_IDEA",
-  SET_DRAG_CALLBACK_METHOD = "SET_DRAG_CALLBACK_METHOD",
+  SET_IDEAS = "SET_IDEAS",
 }
 
 export type Mutations<S = State> = {
-  [MutationTypes.SET_DRAG_CALLBACK_IDEA](
-    state: S,
-    payload: DragCallback<IdeaDto>
-  ): void;
-  [MutationTypes.SET_DRAG_CALLBACK_METHOD](
-    state: S,
-    payload: DragCallback<MethodDto>
-  ): void;
+  [MutationTypes.SET_IDEAS](state: S, payload: IdeaDto[]): void;
 };
 
 export const mutations: MutationTree<State> & Mutations = {
-  [MutationTypes.SET_DRAG_CALLBACK_IDEA](
-    state,
-    payload: DragCallback<IdeaDto>
-  ) {
-    state.dragCallbackIdea = payload;
-  },
-  [MutationTypes.SET_DRAG_CALLBACK_METHOD](
-    state,
-    payload: DragCallback<MethodDto>
-  ) {
-    state.dragCallbackMethod = payload;
+  [MutationTypes.SET_IDEAS](state, payload: IdeaDto[]) {
+    state.ideas = payload;
   },
 };
 
@@ -82,8 +55,7 @@ export const key: InjectionKey<Store<State>> = Symbol();
 
 export default createStore<State>({
   state: {
-    dragCallbackIdea: undefined,
-    dragCallbackMethod: undefined,
+    ideas: [],
   },
   mutations: mutations,
   actions: actions,

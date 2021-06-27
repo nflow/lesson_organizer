@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@fortawesome/vue-fontawesome": "^3.0.0-4",
+    "@types/sortablejs": "^1.10.6",
     "core-js": "^3.6.5",
     "sortablejs": "^1.10.2",
     "uuid": "^3.4.0",

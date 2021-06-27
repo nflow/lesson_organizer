@@ -1,10 +1,35 @@
 <template>
-  <div class="max-w-md p-0 bg-white shadow-lg rounded-lg transition duration-200 hover:shadow-2xl">
+  <div
+    class="
+      max-w-md
+      p-0
+      bg-white
+      shadow-lg
+      rounded-lg
+      transition
+      duration-200
+      hover:shadow-2xl
+    "
+  >
     <div>
-      <div class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full">{{ title }}</div>
-      <div v-if="description" class="relative h-24 p-4 mt-2 text-gray-600 w-full overflow-hidden">
+      <div class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full">
+        {{ title }}
+      </div>
+      <div
+        v-if="description"
+        class="relative h-24 p-4 mt-2 text-gray-600 w-full overflow-hidden"
+      >
         <div
-          class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-white"
+          class="
+            absolute
+            top-0
+            left-0
+            w-full
+            h-full
+            bg-gradient-to-b
+            from-transparent
+            to-white
+          "
         />
         {{ description }}
       </div>
@@ -18,9 +43,12 @@
 <script lang="ts">
 import { IdeaDto } from "@/types/IdeaDto";
 import List from "../components/List.vue";
-import { defineComponent, PropType, ref } from "@vue/runtime-core";
-import { MutationTypes } from "@/store";
-import { MethodDto } from "@/types/MethodDto";
+import {
+  computed,
+  ComputedRef,
+  defineComponent,
+  PropType,
+} from "@vue/runtime-core";
 
 export default defineComponent({
   name: "Method",
@@ -38,12 +66,19 @@ export default defineComponent({
       default: undefined,
     },
     ideas: {
-      type: Object as PropType<IdeaDto>,
+      type: Object as PropType<Array<IdeaDto>>,
       required: true,
     },
   },
-  setup(props) {
-    const refIdeas = ref(props.ideas);
+  setup(props, { emit }) {
+    const refIdeas: ComputedRef<Array<IdeaDto>> = computed({
+      get: () => {
+        return props.ideas;
+      },
+      set: (value) => {
+        emit("update:ideas", value);
+      },
+    });
 
     return { refIdeas };
   },

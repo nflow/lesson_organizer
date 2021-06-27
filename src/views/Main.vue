@@ -24,7 +24,14 @@
       </div>
     </div>
     <Draggable
-      class="flex flex-row max-w-full overflow-x-auto flex-auto"
+      class="
+        flex flex-row
+        max-w-full
+        overflow-x-auto
+        flex-auto
+        h-0
+        overflow-y-auto
+      "
       v-model="phases"
       item-key="phase-id"
       animation="150"
@@ -43,7 +50,7 @@ import Phase from "../components/Phase.vue";
 import Draggable from "vuedraggable";
 import { IdeaDto } from "@/types/IdeaDto";
 import { PhaseDto } from "@/types/PhaseDto";
-import { defineComponent, ref, Ref, toRefs } from "@vue/runtime-core";
+import { defineComponent, ref, Ref } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "Main",

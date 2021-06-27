@@ -15,7 +15,10 @@
               <div class="relative">
                 <span>{{ element.value }}</span>
                 <div class="absolute inset-y-0 right-0 flex items-center">
-                  <span class="cursor-pointer hover:text-red-500" @click="remove(element.id)">
+                  <span
+                    class="cursor-pointer hover:text-red-500"
+                    @click="remove(element.id)"
+                  >
                     <svg
                       class="w-6 h-6"
                       fill="none"
@@ -37,10 +40,29 @@
           </tr>
         </template>
         <template #footer>
-          <tr class="border-b py-3 px-6 text-left border-gray-200 hover:bg-gray-100">
+          <tr
+            class="
+              border-b
+              py-3
+              px-6
+              text-left
+              border-gray-200
+              hover:bg-gray-100
+            "
+          >
             <td>
               <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+                <div
+                  class="
+                    absolute
+                    inset-y-0
+                    left-0
+                    pl-2
+                    flex
+                    items-center
+                    pointer-events-none
+                  "
+                >
                   <svg
                     class="w-6 h-6 text-gray-300"
                     fill="none"
@@ -61,7 +83,17 @@
                   v-model="newEntryInput"
                   type="text"
                   name="new-entry"
-                  class="inset-0 py-3 px-6 block w-full pl-9 pr-12 border-gray-200 hover:bg-gray-100"
+                  class="
+                    inset-0
+                    py-3
+                    px-6
+                    block
+                    w-full
+                    pl-9
+                    pr-12
+                    border-gray-200
+                    hover:bg-gray-100
+                  "
                   placeholder="Eine tolle Idee ..."
                   @keydown.enter="addNew"
                 />
@@ -75,8 +107,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, Ref, ref, toRef } from "vue";
-import { MutationTypes, useStore } from "@/store";
+import { computed, ComputedRef, defineComponent, PropType, ref } from "vue";
 import { IdeaDto } from "@/types/IdeaDto";
 import { v4 as uuidv4 } from "uuid";
 import Draggable from "vuedraggable";
@@ -92,11 +123,16 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
-    const store = useStore();
-
+  setup(props, { emit }) {
     const newEntryInput = ref("");
-    const refIdeas: Ref<Array<IdeaDto>> = toRef(props, "modelValue");
+    const refIdeas: ComputedRef<Array<IdeaDto>> = computed({
+      get: () => {
+        return props.modelValue;
+      },
+      set: (value) => {
+        emit("update:modelValue", value);
+      },
+    });
 
     const addNew = (): void => {
       if (!newEntryInput.value) {
@@ -110,10 +146,8 @@ export default defineComponent({
     };
 
     const remove = (id: string): IdeaDto | undefined => {
-      const list = refIdeas.value;
-
-      const index: number | undefined = list.findIndex(
-        (element) => element.id == id
+      const index: number = refIdeas.value.findIndex(
+        (element: IdeaDto) => element.id == id
       );
 
       if (index < 0) {
