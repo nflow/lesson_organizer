@@ -1,28 +1,21 @@
 <template>
   <div class="w-full">
     <div class="bg-white">
-      <table
-        class="min-w-max w-full table-auto"
-        @drop="onDragDrop"
-        @dragover.prevent
-        @dragenter.prevent
+      <Draggable
+        v-model="refIdeas"
+        tag="table"
+        animation="150"
+        group="ideas"
+        item-key="id"
+        class="min-w-max w-full table-auto text-gray-600 text-sm font-light"
       >
-        <tbody class="text-gray-600 text-sm font-light">
-          <tr
-            v-for="(entry, index) in refModelValue"
-            :key="index"
-            class="border-b border-gray-200 hover:bg-gray-100"
-            draggable="true"
-            @dragstart="onDragStart($event, entry.id)"
-          >
+        <template #item="{ element }">
+          <tr class="border-b border-gray-200 hover:bg-gray-100">
             <td class="py-3 px-6 text-left">
               <div class="relative">
-                <span>{{ entry.value }}</span>
+                <span>{{ element.value }}</span>
                 <div class="absolute inset-y-0 right-0 flex items-center">
-                  <span
-                    class="cursor-pointer hover:text-red-500"
-                    @click="remove(entry.id)"
-                  >
+                  <span class="cursor-pointer hover:text-red-500" @click="remove(element.id)">
                     <svg
                       class="w-6 h-6"
                       fill="none"
@@ -35,36 +28,19 @@
                         stroke-linejoin="round"
                         stroke-width="2"
                         d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      ></path>
+                      />
                     </svg>
                   </span>
                 </div>
               </div>
             </td>
           </tr>
-          <tr
-            class="
-              border-b
-              py-3
-              px-6
-              text-left
-              border-gray-200
-              hover:bg-gray-100
-            "
-          >
+        </template>
+        <template #footer>
+          <tr class="border-b py-3 px-6 text-left border-gray-200 hover:bg-gray-100">
             <td>
               <div class="relative">
-                <div
-                  class="
-                    absolute
-                    inset-y-0
-                    left-0
-                    pl-2
-                    flex
-                    items-center
-                    pointer-events-none
-                  "
-                >
+                <div class="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
                   <svg
                     class="w-6 h-6 text-gray-300"
                     fill="none"
@@ -77,7 +53,7 @@
                       stroke-linejoin="round"
                       stroke-width="2"
                       d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
+                    />
                   </svg>
                 </div>
                 <input
@@ -85,25 +61,15 @@
                   v-model="newEntryInput"
                   type="text"
                   name="new-entry"
-                  class="
-                    inset-0
-                    py-3
-                    px-6
-                    block
-                    w-full
-                    pl-9
-                    pr-12
-                    border-gray-200
-                    hover:bg-gray-100
-                  "
+                  class="inset-0 py-3 px-6 block w-full pl-9 pr-12 border-gray-200 hover:bg-gray-100"
                   placeholder="Eine tolle Idee ..."
                   @keydown.enter="addNew"
                 />
               </div>
             </td>
           </tr>
-        </tbody>
-      </table>
+        </template>
+      </Draggable>
     </div>
   </div>
 </template>
@@ -113,9 +79,13 @@ import { defineComponent, PropType, Ref, ref, toRef } from "vue";
 import { MutationTypes, useStore } from "@/store";
 import { IdeaDto } from "@/types/IdeaDto";
 import { v4 as uuidv4 } from "uuid";
+import Draggable from "vuedraggable";
 
 export default defineComponent({
   name: "List",
+  components: {
+    Draggable,
+  },
   props: {
     modelValue: {
       type: Object as PropType<Array<IdeaDto>>,
@@ -126,7 +96,7 @@ export default defineComponent({
     const store = useStore();
 
     const newEntryInput = ref("");
-    const refModelValue: Ref<Array<IdeaDto>> = toRef(props, "modelValue");
+    const refIdeas: Ref<Array<IdeaDto>> = toRef(props, "modelValue");
 
     const addNew = (): void => {
       if (!newEntryInput.value) {
@@ -134,13 +104,13 @@ export default defineComponent({
       }
 
       const newEntry: IdeaDto = { id: uuidv4(), value: newEntryInput.value };
-      refModelValue.value.push(newEntry);
+      refIdeas.value.push(newEntry);
 
       newEntryInput.value = "";
     };
 
     const remove = (id: string): IdeaDto | undefined => {
-      const list = refModelValue.value;
+      const list = refIdeas.value;
 
       const index: number | undefined = list.findIndex(
         (element) => element.id == id
@@ -150,37 +120,14 @@ export default defineComponent({
         return undefined;
       }
 
-      return refModelValue.value.splice(index, 1)[0];
-    };
-
-    const onDragStart = (event: DragEvent, id: string): void => {
-      if (event.dataTransfer) {
-        store.commit(MutationTypes.SET_DRAG_CALLBACK_IDEA, {
-          id: id,
-          callback: remove,
-        });
-        event.dataTransfer.dropEffect = "move";
-        event.dataTransfer.effectAllowed = "move";
-      }
-    };
-
-    const onDragDrop = (event: DragEvent): void => {
-      const dragedEntry = store.state.dragCallbackIdea;
-      if (dragedEntry) {
-        const entry: IdeaDto = dragedEntry.callback(dragedEntry.id);
-        store.commit(MutationTypes.SET_DRAG_CALLBACK_METHOD, undefined);
-        refModelValue.value.push(entry);
-        event.preventDefault();
-      }
+      return refIdeas.value.splice(index, 1)[0];
     };
 
     return {
       newEntryInput,
       addNew,
       remove,
-      refModelValue,
-      onDragStart,
-      onDragDrop,
+      refIdeas,
     };
   },
 });

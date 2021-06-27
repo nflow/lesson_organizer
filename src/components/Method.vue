@@ -1,35 +1,10 @@
 <template>
-  <div
-    class="
-      max-w-md
-      p-0
-      bg-white
-      shadow-lg
-      rounded-lg
-      transition
-      duration-200
-      hover:shadow-2xl
-    "
-  >
+  <div class="max-w-md p-0 bg-white shadow-lg rounded-lg transition duration-200 hover:shadow-2xl">
     <div>
-      <div class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full">
-        {{ title }}
-      </div>
-      <div
-        v-if="description"
-        class="relative h-24 p-4 mt-2 text-gray-600 w-full overflow-hidden"
-      >
+      <div class="rounded-t-md p-4 text-gray-800 text-3xl font-semibold w-full">{{ title }}</div>
+      <div v-if="description" class="relative h-24 p-4 mt-2 text-gray-600 w-full overflow-hidden">
         <div
-          class="
-            absolute
-            top-0
-            left-0
-            w-full
-            h-full
-            bg-gradient-to-b
-            from-transparent
-            to-white
-          "
+          class="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-transparent to-white"
         />
         {{ description }}
       </div>

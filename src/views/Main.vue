@@ -23,20 +23,24 @@
         <list class="self-start" v-model="ideas" />
       </div>
     </div>
-    <div class="flex flex-row max-w-full overflow-x-auto flex-auto">
-      <Phase
-        v-for="phase in phases"
-        :key="phase.id"
-        v-model:methods="phase.methods"
-        :title="phase.title"
-      />
-    </div>
+    <Draggable
+      class="flex flex-row max-w-full overflow-x-auto flex-auto"
+      v-model="phases"
+      item-key="phase-id"
+      animation="150"
+      group="phases"
+    >
+      <template #item="{ element }">
+        <Phase v-model:methods="element.methods" :title="element.title" />
+      </template>
+    </Draggable>
   </div>
 </template>
 
 <script lang="ts">
 import List from "../components/List.vue";
 import Phase from "../components/Phase.vue";
+import Draggable from "vuedraggable";
 import { IdeaDto } from "@/types/IdeaDto";
 import { PhaseDto } from "@/types/PhaseDto";
 import { defineComponent, ref, Ref, toRefs } from "@vue/runtime-core";
@@ -44,6 +48,7 @@ import { defineComponent, ref, Ref, toRefs } from "@vue/runtime-core";
 export default defineComponent({
   name: "Main",
   components: {
+    Draggable,
     Phase,
     List,
   },

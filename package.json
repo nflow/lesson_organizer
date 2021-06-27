@@ -10,11 +10,12 @@
   "dependencies": {
     "@fortawesome/vue-fontawesome": "^3.0.0-4",
     "core-js": "^3.6.5",
+    "sortablejs": "^1.10.2",
     "uuid": "^3.4.0",
     "vue": "^3.0.0",
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0",
-    "vuedraggable": "^4.0.1",
+    "vuedraggable": "^4.0.3",
     "vuex": "^4.0.0-0"
   },
   "devDependencies": {
