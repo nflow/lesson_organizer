@@ -2,6 +2,14 @@
   <div class="flex flex-col bg-gray-200 m-0 h-full">
     <div class="flex flex-col flex-initial bg-green-500 p-4 space-y-4">
       <div class="flex flex-row gap-1 flex-auto">
+        <Goal
+          v-for="goal in goals"
+          :key="goal.id"
+          :order_id="goal.order_id"
+          :text="goal.text"
+          :bgColor="goal.color"
+        />
+        <CardButton @click="console.log('foo')" class="flex-initial" />
         <div
           class="
             flex-auto
@@ -18,33 +26,6 @@
             >Data is not persited! Start by draging methods and ideas and have
             fun!</span
           >
-        </div>
-        <div
-          class="
-            flex-initial flex flex-row
-            text-center
-            bg-red-500
-            p-4
-            text-white
-            rounded
-          "
-        >
-          <div class="flex-initial text-4xl align-middle pr-4">1</div>
-          <div class="flex items-center">My great goal!</div>
-        </div>
-
-        <div
-          class="
-            flex-initial flex flex-row
-            text-center
-            bg-yellow-500
-            p-4
-            text-white
-            rounded
-          "
-        >
-          <div class="flex-initial text-4xl align-middle pr-4">2</div>
-          <div class="flex items-center">My great goal!</div>
         </div>
       </div>
       <div class="flex-1">
@@ -75,10 +56,13 @@
 <script lang="ts">
 import List from "../components/List.vue";
 import Phase from "../components/Phase.vue";
+import CardButton from "../components/CardButton.vue";
+import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { IdeaDto } from "@/types/IdeaDto";
 import { PhaseDto } from "@/types/PhaseDto";
 import { defineComponent, ref, Ref } from "@vue/runtime-core";
+import { GoalDto } from "@/types/GoalDto";
 
 export default defineComponent({
   name: "Main",
@@ -86,8 +70,25 @@ export default defineComponent({
     Draggable,
     Phase,
     List,
+    CardButton,
+    Goal,
   },
   setup() {
+    const goals: Ref<Array<GoalDto>> = ref([
+      {
+        id: "goal_id_1",
+        order_id: 1,
+        text: "A nice goal!",
+        color: "#fcba03",
+      },
+      {
+        id: "goal_id_2",
+        order_id: 2,
+        text: "A loooooooooong goal!",
+        color: "#bafc03",
+      },
+    ]);
+
     const ideas: Ref<Array<IdeaDto>> = ref([
       { id: "idea_id_1", value: "Karte von Südost-Asien" },
       { id: "idea_id_2", value: "Nachrichtenbeitrag" },
@@ -194,7 +195,7 @@ export default defineComponent({
       },
     ]);
 
-    return { ideas, phases };
+    return { ideas, phases, goals };
   },
 });
 </script>

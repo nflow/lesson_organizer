@@ -1,31 +1,31 @@
 <template>
   <button
+    @click="$emit('click', $event)"
     class="
-      w-4/12
       flex flex-col
       justify-center
       items-center
       text-3xl
       font-bold
+      opacity-40
       border-2
-      rounded-2xl
-      border-dashed
+      text-white
+      rounded
       cursor-pointer
       transition
       duration-200
-      hover:shadow-2xl
+      hover:opacity-100
+      p-2
     "
   >
     <div>+</div>
-    <div>Add New Card</div>
   </button>
 </template>
 
 <script lang="ts">
-import { Vue, Options } from "vue-class-component";
+import { defineComponent } from "@vue/runtime-core";
 
-@Options({
-  props: ["title", "content", "color"],
-})
-export default class HelloWorld extends Vue {}
+export default defineComponent({
+  name: "CardButton",
+});
 </script>
