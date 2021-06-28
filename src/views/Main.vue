@@ -1,23 +1,51 @@
 <template>
   <div class="flex flex-col bg-gray-200 m-0 h-full">
     <div class="flex flex-col flex-initial bg-green-500 p-4 space-y-4">
-      <div
-        class="
-          w-full
-          flex-1
-          text-center
-          bg-green-700
-          p-3
-          text-white
-          self-center
-          rounded
-        "
-      >
-        <h1 class="text-xl font-bold">Lesson Organizer - Demo</h1>
-        <span
-          >Data is not persited! Start by draging methods and ideas and have
-          fun!</span
+      <div class="flex flex-row gap-1 flex-auto">
+        <div
+          class="
+            flex-auto
+            text-center
+            bg-green-700
+            p-3
+            text-white
+            self-center
+            rounded
+          "
         >
+          <h1 class="text-xl font-bold">Lesson Organizer - Demo</h1>
+          <span
+            >Data is not persited! Start by draging methods and ideas and have
+            fun!</span
+          >
+        </div>
+        <div
+          class="
+            flex-initial flex flex-row
+            text-center
+            bg-red-500
+            p-4
+            text-white
+            rounded
+          "
+        >
+          <div class="flex-initial text-4xl align-middle pr-4">1</div>
+          <div class="flex items-center">My great goal!</div>
+        </div>
+
+        <div
+          class="
+            flex-initial flex flex-row
+            text-center
+            bg-yellow-500
+            p-4
+            text-white
+            rounded
+          "
+        >
+          <div class="flex-initial text-4xl align-middle pr-4">2</div>
+          <div class="flex items-center">My great goal!</div>
+        </div>
       </div>
       <div class="flex-1">
         <list class="self-start" v-model="ideas" />
