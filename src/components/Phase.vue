@@ -7,7 +7,7 @@
     animation="150"
     item-key="id"
     style="min-width: 20rem"
-    class="flex-auto flex flex-col hover:bg-gray-300"
+    class="flex flex-col hover:bg-gray-300"
   >
     <template #header>
       <div

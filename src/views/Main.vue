@@ -25,7 +25,7 @@
     </div>
     <Draggable
       class="
-        flex flex-row
+        grid grid-flow-col
         max-w-full
         overflow-x-auto
         flex-auto
