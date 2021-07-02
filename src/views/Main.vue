@@ -2,13 +2,21 @@
   <div class="flex flex-col bg-gray-200 m-0 h-full">
     <div class="flex flex-col flex-initial bg-green-500 p-4 space-y-4">
       <div class="flex flex-row gap-1 flex-auto">
-        <Goal
-          v-for="goal in goals"
-          :key="goal.id"
-          :order_id="goal.order_id"
-          :text="goal.text"
-          :bgColor="goal.color"
-        />
+        <Draggable
+          class="flex flex-initial space-x-1"
+          v-model="goals"
+          item-key="goal-id"
+          animation="150"
+          group="goals"
+        >
+          <template #item="{ element }">
+            <Goal
+              :order_id="element.order_id"
+              :text="element.text"
+              :bgColor="element.color"
+            />
+          </template>
+        </Draggable>
         <CardButton @click="console.log('foo')" class="flex-initial" />
         <div
           class="
@@ -16,6 +24,7 @@
             text-center
             bg-green-700
             p-3
+            h-full
             text-white
             self-center
             rounded

@@ -1,15 +1,38 @@
 <template>
   <div
     :style="{ backgroundColor: bgColor }"
-    class="flex-initial flex flex-row text-center p-4 text-white rounded"
+    class="relative block align-middle text-center text-white rounded"
   >
-    <div class="flex-initial text-4xl align-middle pr-4">{{ order_id }}</div>
-    <div class="flex items-center">{{ text }}</div>
+    <div :style="{ color: bgColor }" class="fixed h-full pl-2 pt-2 opacity-80">
+      <div class="bg-white flex w-6 h-6 rounded-full items-center">
+        <span class="w-full">
+          {{ order_id }}
+        </span>
+      </div>
+    </div>
+    <textarea
+      class="
+        text-shadow
+        resize-y
+        max-w-xs
+        break-words
+        bg-transparent
+        align-middle
+        p-2
+        pl-10
+        text-md
+        block
+        rounded-lg
+        w-full
+        h-full
+      "
+      v-model="refText"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/runtime-core";
+import { defineComponent, ref, toRef } from "@vue/runtime-core";
 
 export default defineComponent({
   name: "Goal",
@@ -26,6 +49,11 @@ export default defineComponent({
       type: String,
       require: true,
     },
+  },
+  setup(props) {
+    const refText = toRef(props, "text");
+
+    return { refText };
   },
 });
 </script>
