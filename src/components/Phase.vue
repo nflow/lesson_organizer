@@ -14,9 +14,12 @@
         class="
           flex-initial
           font-extrabold
-          hover:bg-green-500
-          bg-green-400
-          p-4
+          hover:bg-orange
+          text-white text-s
+          bg-yellow-orange
+          rounded
+          p-2
+          m-2
           text-center
         "
       >

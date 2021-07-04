@@ -1,55 +1,56 @@
 <template>
   <div class="flex flex-col bg-gray-200 m-0 h-full">
-    <div class="flex flex-col flex-initial bg-green-500 p-4 space-y-4">
-      <div class="flex flex-row gap-1 flex-auto">
-        <Draggable
-          class="flex flex-initial space-x-1"
-          v-model="goals"
-          item-key="goal-id"
-          animation="150"
-          group="goals"
-        >
-          <template #item="{ element }">
-            <Goal
-              :order_id="element.order_id"
-              :text="element.text"
-              :bgColor="element.color"
-            />
-          </template>
-        </Draggable>
-        <CardButton @click="console.log('foo')" class="flex-initial" />
+    <div
+      class="
+        flex flex-col flex-initial
+        bg-gradient-to-br
+        from-blue
+        to-turquoise
+        p-4
+        space-y-4
+      "
+    >
+      <div class="flex flex-row gap-1 flex-auto space-x-2">
         <div
           class="
-            flex-auto
-            text-center
-            bg-green-700
+            flex flex-initial flex-col
+            items-center
             p-3
             h-full
-            text-white
-            self-center
             rounded
+            text-white
+            shadow-xl
+            bg-gradient-to-br
+            from-red-300
+            to-orange
           "
         >
-          <h1 class="text-xl font-bold">Lesson Organizer - Demo</h1>
-          <span
-            >Data is not persited! Start by draging methods and ideas and have
-            fun!</span
+          <span class="flex-auto text-xl text-center font-logo"
+            >Lesson Organizer</span
           >
         </div>
-      </div>
-      <div class="flex-1">
-        <list class="self-start" v-model="ideas" />
+        <div class="flex-auto flex space-x-1">
+          <Draggable
+            class="flex flex-initial space-x-1"
+            v-model="goals"
+            item-key="goal-id"
+            animation="150"
+            group="goals"
+          >
+            <template #item="{ element }">
+              <Goal
+                :order_id="element.order_id"
+                :text="element.text"
+                :bgColor="element.color"
+              />
+            </template>
+          </Draggable>
+          <CardButton @click="console.log('foo')" class="flex-initial" />
+        </div>
       </div>
     </div>
     <Draggable
-      class="
-        grid grid-flow-col
-        max-w-full
-        overflow-x-auto
-        flex-auto
-        h-0
-        overflow-y-auto
-      "
+      class="grid grid-flow-col overflow-x-auto flex-auto overflow-y-auto"
       v-model="phases"
       item-key="phase-id"
       animation="150"
@@ -59,6 +60,9 @@
         <Phase v-model:methods="element.methods" :title="element.title" />
       </template>
     </Draggable>
+    <div class="flex-initial">
+      <list class="self-start" v-model="ideas" />
+    </div>
   </div>
 </template>
 

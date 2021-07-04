@@ -1,4 +1,5 @@
 const colors = require("tailwindcss/colors");
+const defaultTheme = require("tailwindcss/defaultTheme");
 
 module.exports = {
   purge: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
@@ -10,15 +11,20 @@ module.exports = {
       white: colors.white,
       gray: colors.trueGray,
       current: "currentColor",
-      red: "#F94144",
+      "red-300": "#F94144",
+      "red-400": "#F82529",
       orange: "#F3722C",
-      yellow_orange: "#F8961E",
+      "yellow-orange": "#F8961E",
       yellow: "#F9C74F",
       green: "#90BE6D",
       turquoise: "#43AA8B",
       blue: "#577590",
     },
-    extend: {},
+    extend: {
+      fontFamily: {
+        logo: ["Permanent Marker", ...defaultTheme.fontFamily.sans],
+      },
+    },
   },
   variants: {
     extend: {},
