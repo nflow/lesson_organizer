@@ -1,4 +1,4 @@
-import { IdeaDto } from "@/types/IdeaDto";
+import { ContentDto } from "@/types/ContentDto";
 import { InjectionKey } from "vue";
 import {
   createStore,
@@ -10,7 +10,7 @@ import {
 } from "vuex";
 
 interface State {
-  ideas: IdeaDto[];
+  ideas: ContentDto[];
 }
 
 export enum MutationTypes {
@@ -18,11 +18,11 @@ export enum MutationTypes {
 }
 
 export type Mutations<S = State> = {
-  [MutationTypes.SET_IDEAS](state: S, payload: IdeaDto[]): void;
+  [MutationTypes.SET_IDEAS](state: S, payload: ContentDto[]): void;
 };
 
 export const mutations: MutationTree<State> & Mutations = {
-  [MutationTypes.SET_IDEAS](state, payload: IdeaDto[]) {
+  [MutationTypes.SET_IDEAS](state, payload: ContentDto[]) {
     state.ideas = payload;
   },
 };

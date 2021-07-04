@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { IdeaDto } from "@/types/IdeaDto";
+import { ContentDto } from "@/types/ContentDto";
 import List from "../components/List.vue";
 import {
   computed,
@@ -66,12 +66,12 @@ export default defineComponent({
       default: undefined,
     },
     ideas: {
-      type: Object as PropType<Array<IdeaDto>>,
+      type: Object as PropType<Array<ContentDto>>,
       required: true,
     },
   },
   setup(props, { emit }) {
-    const refIdeas: ComputedRef<Array<IdeaDto>> = computed({
+    const refIdeas: ComputedRef<Array<ContentDto>> = computed({
       get: () => {
         return props.ideas;
       },

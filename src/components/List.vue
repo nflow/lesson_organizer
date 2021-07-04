@@ -108,7 +108,7 @@
 
 <script lang="ts">
 import { computed, ComputedRef, defineComponent, PropType, ref } from "vue";
-import { IdeaDto } from "@/types/IdeaDto";
+import { ContentDto } from "@/types/ContentDto";
 import { v4 as uuidv4 } from "uuid";
 import Draggable from "vuedraggable";
 
@@ -119,13 +119,13 @@ export default defineComponent({
   },
   props: {
     modelValue: {
-      type: Object as PropType<Array<IdeaDto>>,
+      type: Object as PropType<Array<ContentDto>>,
       required: true,
     },
   },
   setup(props, { emit }) {
     const newEntryInput = ref("");
-    const refIdeas: ComputedRef<Array<IdeaDto>> = computed({
+    const refIdeas: ComputedRef<Array<ContentDto>> = computed({
       get: () => {
         return props.modelValue;
       },
@@ -139,15 +139,15 @@ export default defineComponent({
         return;
       }
 
-      const newEntry: IdeaDto = { id: uuidv4(), value: newEntryInput.value };
+      const newEntry: ContentDto = { id: uuidv4(), value: newEntryInput.value };
       refIdeas.value.push(newEntry);
 
       newEntryInput.value = "";
     };
 
-    const remove = (id: string): IdeaDto | undefined => {
+    const remove = (id: string): ContentDto | undefined => {
       const index: number = refIdeas.value.findIndex(
-        (element: IdeaDto) => element.id == id
+        (element: ContentDto) => element.id == id
       );
 
       if (index < 0) {

@@ -68,7 +68,7 @@ import Phase from "../components/Phase.vue";
 import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
-import { IdeaDto } from "@/types/IdeaDto";
+import { ContentDto } from "@/types/ContentDto";
 import { PhaseDto } from "@/types/PhaseDto";
 import { defineComponent, ref, Ref } from "@vue/runtime-core";
 import { GoalDto } from "@/types/GoalDto";
@@ -98,7 +98,7 @@ export default defineComponent({
       },
     ]);
 
-    const ideas: Ref<Array<IdeaDto>> = ref([
+    const ideas: Ref<Array<ContentDto>> = ref([
       { id: "idea_id_1", value: "Karte von Südost-Asien" },
       { id: "idea_id_2", value: "Nachrichtenbeitrag" },
       { id: "idea_id_6", value: "Zeitungsartikel Tsunami" },
