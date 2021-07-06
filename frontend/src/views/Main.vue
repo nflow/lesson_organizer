@@ -36,6 +36,8 @@
             item-key="goal-id"
             animation="150"
             group="goals"
+            delay="60"
+            delayOnTouchOnly="true"
           >
             <template #item="{ element }">
               <Goal
@@ -55,6 +57,8 @@
       item-key="phase-id"
       animation="150"
       group="phases"
+      delay="60"
+      delayOnTouchOnly="true"
     >
       <template #item="{ element }">
         <Phase v-model:methods="element.methods" :title="element.title" />

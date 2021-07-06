@@ -8,6 +8,8 @@
     item-key="id"
     style="min-width: 20rem"
     class="flex flex-col hover:bg-gray-300"
+    delay="60"
+    delayOnTouchOnly="true"
   >
     <template #header>
       <div
