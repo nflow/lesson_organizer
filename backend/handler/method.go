@@ -7,10 +7,14 @@ import (
 	"github.com/nflow/lesson_organizer/model"
 )
 
-func MethodHandler(w http.ResponseWriter, r *http.Request) {
+func RetrieveAllMethods(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(model.MethodsMock)
+}
+
+func CreateMethod(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RetrieveAllMethods(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(model.MethodsMock)
+func DeleteMethod(w http.ResponseWriter, r *http.Request) {
+	return
 }

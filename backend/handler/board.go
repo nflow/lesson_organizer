@@ -8,12 +8,16 @@ import (
 	"github.com/nflow/lesson_organizer/model"
 )
 
-func BoardHandler(w http.ResponseWriter, r *http.Request) {
+func RetrieveAllBoards(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(model.BoardsMock)
+}
+
+func CreateBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RetrieveAllBoards(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(model.BoardsMock)
+func DeleteBoard(w http.ResponseWriter, r *http.Request) {
+	return
 }
 
 func RetrieveBoard(w http.ResponseWriter, r *http.Request) {

@@ -4,6 +4,14 @@ import (
 	"net/http"
 )
 
-func PhaseHandler(w http.ResponseWriter, r *http.Request) {
+func RetrieveAllPhases(w http.ResponseWriter, r *http.Request) {
+	return
+}
+
+func CreatePhase(w http.ResponseWriter, r *http.Request) {
+	return
+}
+
+func DeletePhase(w http.ResponseWriter, r *http.Request) {
 	return
 }

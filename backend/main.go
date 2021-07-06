@@ -20,22 +20,30 @@ func main() {
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
 
+	router.HandleFunc("/v1/phases", handler.RetrieveAllPhases).Methods("GET")
+	router.HandleFunc("/v1/phases", handler.CreatePhase).Methods("POST")
+	router.HandleFunc("/v1/phases/{id}", handler.DeletePhase).Methods("DELETE")
+
 	router.HandleFunc("/v1/methods", handler.RetrieveAllMethods).Methods("GET")
+	router.HandleFunc("/v1/methods", handler.CreateMethod).Methods("POST")
+	router.HandleFunc("/v1/methods/{id}", handler.DeleteMethod).Methods("DELETE")
+
 	router.HandleFunc("/v1/boards", handler.RetrieveAllBoards).Methods("GET")
+	router.HandleFunc("/v1/boards", handler.CreateBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}", handler.DeleteBoard).Methods("DELETE")
 
-	router.HandleFunc("/v1/board/{id}", handler.BoardHandler)
-	router.HandleFunc("/v1/board/{id}/goals", handler.RetrieveBoardGoals).Methods("GET")
-	router.HandleFunc("/v1/board/{id}/phases", handler.RetrieveBoardPhases).Methods("GET")
-	router.HandleFunc("/v1/board/{id}/contents", handler.RetrieveBoardContents).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/goals", handler.RetrieveBoardGoals).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", handler.RetrieveBoardGoals).Methods("GET")
 
-	router.HandleFunc("/v1/goal/{id}", handler.GoalHandler)
+	router.HandleFunc("/v1/boards/{boardId}/phases", handler.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", handler.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}", handler.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents", handler.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.RetrieveBoardPhases).Methods("GET")
 
-	router.HandleFunc("/v1/phase/{id}", handler.PhaseHandler)
-	router.HandleFunc("/v1/phase/{id}/methods", handler.RetrieveMethodsFromPhase)
-
-	router.HandleFunc("/v1/method/{id}/contents", handler.RetrieveAllContentsFromPhase)
-
-	router.HandleFunc("/v1/content/{id}", handler.ContentHandler)
+	router.HandleFunc("/v1/boards/{boardId}/contents", handler.RetrieveBoardContents).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", handler.RetrieveBoardContents).Methods("GET")
 
 	srv := &http.Server{
 		Handler:      router,
