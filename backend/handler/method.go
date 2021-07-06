@@ -7,7 +7,7 @@ import (
 	"github.com/nflow/lesson_organizer/model"
 )
 
-func RetrieveAllMethods(w http.ResponseWriter, r *http.Request) {
+func RetrieveMethods(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(model.MethodsMock)
 }
 

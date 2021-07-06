@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-func RetrieveAllPhases(w http.ResponseWriter, r *http.Request) {
+func RetrievePhases(w http.ResponseWriter, r *http.Request) {
 	return
 }
 

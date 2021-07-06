@@ -20,30 +20,42 @@ func main() {
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
 
-	router.HandleFunc("/v1/phases", handler.RetrieveAllPhases).Methods("GET")
+	router.HandleFunc("/v1/phases", handler.RetrievePhases).Methods("GET")
 	router.HandleFunc("/v1/phases", handler.CreatePhase).Methods("POST")
 	router.HandleFunc("/v1/phases/{id}", handler.DeletePhase).Methods("DELETE")
 
-	router.HandleFunc("/v1/methods", handler.RetrieveAllMethods).Methods("GET")
+	router.HandleFunc("/v1/methods", handler.RetrieveMethods).Methods("GET")
 	router.HandleFunc("/v1/methods", handler.CreateMethod).Methods("POST")
 	router.HandleFunc("/v1/methods/{id}", handler.DeleteMethod).Methods("DELETE")
 
-	router.HandleFunc("/v1/boards", handler.RetrieveAllBoards).Methods("GET")
+	router.HandleFunc("/v1/boards", handler.RetrieveBoards).Methods("GET")
 	router.HandleFunc("/v1/boards", handler.CreateBoard).Methods("POST")
 	router.HandleFunc("/v1/boards/{boardId}", handler.DeleteBoard).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards/{boardId}/goals", handler.RetrieveBoardGoals).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", handler.RetrieveBoardGoals).Methods("GET")
-
-	router.HandleFunc("/v1/boards/{boardId}/phases", handler.RetrieveBoardPhases).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", handler.RetrieveBoardPhases).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.RetrieveBoardPhases).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}", handler.RetrieveBoardPhases).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents", handler.RetrieveBoardPhases).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/goals", handler.CreateGoalInBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", handler.UpdateGoalInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", handler.RemoveGoalFromBoard).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards/{boardId}/contents", handler.RetrieveBoardContents).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", handler.RetrieveBoardContents).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/contents", handler.CreateContentFromBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", handler.UpdateContentFromBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", handler.DeleteContentFromBoard).Methods("DELETE")
+
+	router.HandleFunc("/v1/boards/{boardId}/phases", handler.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases", handler.AddPhaseToBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", handler.UpdatePhaseInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", handler.RemovePhaseFromBoard).Methods("DELETE")
+
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.RetrievePhaseMethods).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.AddMethodToPhase).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}", handler.UpdateMethodInPhase).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}", handler.DeleteMethodFromPhase).Methods("DELETE")
+
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents", handler.RetrieveMethodConents).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents", handler.AddContentToMethod).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.UpdateContentInMethod).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.RemoveContentFromMethod).Methods("DELETE")
 
 	srv := &http.Server{
 		Handler:      router,
