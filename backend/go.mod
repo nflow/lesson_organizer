@@ -1,4 +1,4 @@
-module nwork.at/lesson_organizer
+module github.com/nflow/lesson_organizer
 
 go 1.16
 
