@@ -12,29 +12,33 @@ const (
 )
 
 type Board struct {
-	Id   uuid.UUID `json:id validate:"required,uuid"`
-	Name string
+	Id       uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
+	Name     string    `json:name`
+	Goals    []Goal    `json:goals`
+	Contents []Content `json:contents`
 }
 
 type Goal struct {
-	Id   uuid.UUID `json:id validate:"required,uuid"`
+	Id   uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
 	Text string    `json:text`
 }
 
 type Phase struct {
-	Id    uuid.UUID `json:id validate:"required,uuid"`
-	Title string    `json:title`
+	Id      uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
+	Title   string    `json:title`
+	Methods []Method  `json:methods`
 }
 
 type Method struct {
-	Id          uuid.UUID     `json:id validate:"required,uuid"`
+	Id          uuid.UUID     `json:id validate:"required,uuid" grom:"primaryKey"`
 	Title       string        `json:title`
 	Description string        `json:description`
 	Labels      []MethodLabel `json:labels`
+	Contents    []Content     `json:contents`
 }
 
 type Content struct {
-	Id    uuid.UUID `json:id validate:"required,uuid"`
+	Id    uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
 	Title string    `json:title`
 	Text  string    `json:text`
 }
