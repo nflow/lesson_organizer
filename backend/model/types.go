@@ -12,25 +12,27 @@ const (
 )
 
 type Board struct {
-	Id       uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
+	ID       uuid.UUID `json:ID validate:"required,uuid" grom:"primaryKey"`
 	Name     string    `json:name`
 	Goals    []Goal    `json:goals`
 	Contents []Content `json:contents`
+	Phases   []Phase   `json:phases gorm:"many2many:board_phases;"`
 }
 
 type Goal struct {
-	Id   uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
-	Text string    `json:text`
+	ID    uuid.UUID `json:ID validate:"required,uuid" grom:"primaryKey"`
+	Text  string    `json:text`
+	Order uint      `json:order`
 }
 
 type Phase struct {
-	Id      uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
+	ID      uuid.UUID `json:ID validate:"required,uuid" grom:"primaryKey"`
 	Title   string    `json:title`
-	Methods []Method  `json:methods`
+	Methods []Method  `json:methods gorm:"many2many:phase_methods;"`
 }
 
 type Method struct {
-	Id          uuid.UUID     `json:id validate:"required,uuid" grom:"primaryKey"`
+	ID          uuid.UUID     `json:ID validate:"required,uuid" grom:"primaryKey"`
 	Title       string        `json:title`
 	Description string        `json:description`
 	Labels      []MethodLabel `json:labels`
@@ -38,7 +40,8 @@ type Method struct {
 }
 
 type Content struct {
-	Id    uuid.UUID `json:id validate:"required,uuid" grom:"primaryKey"`
+	ID    uuid.UUID `json:ID validate:"required,uuid" grom:"primaryKey"`
 	Title string    `json:title`
 	Text  string    `json:text`
+	Order uint      `json:order`
 }
