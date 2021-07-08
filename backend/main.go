@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/nflow/lesson_organizer/db"
 	"github.com/nflow/lesson_organizer/handler"
 )
 
@@ -17,6 +18,11 @@ func commonMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
+	_, err := db.ConnectDB()
+	if err != nil {
+		panic(err)
+	}
+
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
 

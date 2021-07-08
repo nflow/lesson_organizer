@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/nflow/lesson_organizer/model"
+	"github.com/nflow/lesson_organizer/db"
 )
 
 func RetrieveBoards(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(model.BoardsMock)
+	json.NewEncoder(w).Encode(db.BoardsMock)
 }
 
 func CreateBoard(w http.ResponseWriter, r *http.Request) {
