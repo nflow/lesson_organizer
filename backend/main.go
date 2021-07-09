@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/nflow/lesson_organizer/db"
 	"github.com/nflow/lesson_organizer/handler"
@@ -18,10 +19,19 @@ func commonMiddleware(next http.Handler) http.Handler {
 }
 
 func main() {
-	_, err := db.ConnectDB()
+	dbConnection, err := db.ConnectDB()
 	if err != nil {
 		panic(err)
 	}
+
+	v := db.Method{
+		uuid.New(),
+		"Internetrecherche",
+		"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam",
+		"",
+	}
+
+	dbConnection.Create(v)
 
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
