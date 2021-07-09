@@ -45,23 +45,59 @@
           to-turquoise
         "
       >
-        Methoden Verwaltung
+        Manage Methods
       </h1>
       <div class="mt-2 mb-2 p-2 bg-gray-300 rounded">
-        <el-form>
-          <el-button>Test</el-button>
-          <el-input type="textarea" />
+        <el-form ref="newMethodForm" :model="newMethod" label-width="100px">
+          <el-form-item label="Title">
+            <el-input v-model="newMethod.title" />
+          </el-form-item>
+          <el-form-item label="Description">
+            <el-input type="textarea" v-model="newMethod.description" />
+          </el-form-item>
+          <el-form-item label="Labels">
+            <el-checkbox-group v-model="newMethod.labels">
+              <el-checkbox-button label="METHOD_LABEL_SINGLE" name="type"
+                >Single Person Working</el-checkbox-button
+              >
+              <el-checkbox-button label="METHOD_LABEL_PAIR" name="type"
+                >Partner Work</el-checkbox-button
+              >
+              <el-checkbox-button label="METHOD_LABEL_GROUP" name="type"
+                >Group Work</el-checkbox-button
+              >
+              <el-checkbox-button label="METHOD_LABEL_PLENUM" name="type"
+                >Plenum</el-checkbox-button
+              >
+            </el-checkbox-group>
+          </el-form-item>
+          <el-form-item size="large">
+            <el-button type="primary" @click="onCreateMethod">Create</el-button>
+          </el-form-item>
         </el-form>
       </div>
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { MethodDto } from "@/types/MethodDto";
 import { defineComponent } from "@vue/runtime-core";
+import { ref, Ref, toRef } from "@vue/reactivity";
 
 export default defineComponent({
+  name: "Manager",
   setup() {
-    return {};
+    const newMethod = ref({
+      title: "",
+      description: "",
+      labels: [],
+    });
+
+    const onCreateMethod = (): void => {
+      console.log(newMethod);
+    };
+
+    return { newMethod, onCreateMethod };
   },
 });
 </script>

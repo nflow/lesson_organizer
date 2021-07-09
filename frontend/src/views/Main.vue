@@ -124,6 +124,7 @@ export default defineComponent({
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
             ideas: [],
+            labels: [],
           },
           {
             id: "method_id_2",
@@ -133,6 +134,7 @@ export default defineComponent({
             ideas: [
               { id: "idea_id_5", value: "Schaubild Tsunami-Frühwarnsystem" },
             ],
+            labels: [],
           },
         ],
       },
@@ -149,6 +151,7 @@ export default defineComponent({
               { id: "idea_id_3", value: "Fotos der Zerstörung" },
               { id: "idea_id_4", value: "Augenzeugenbericht" },
             ],
+            labels: [],
           },
         ],
       },
@@ -162,6 +165,7 @@ export default defineComponent({
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
             ideas: [],
+            labels: [],
           },
         ],
       },
@@ -180,6 +184,7 @@ export default defineComponent({
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
             ideas: [],
+            labels: [],
           },
         ],
       },
@@ -203,6 +208,7 @@ export default defineComponent({
             description:
               "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
             ideas: [],
+            labels: [],
           },
         ],
       },
