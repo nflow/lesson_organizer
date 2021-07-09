@@ -8,6 +8,7 @@
         to-turquoise
         p-4
         space-y-4
+        shadow-md
       "
     >
       <div class="flex flex-row gap-1 flex-auto space-x-2">
