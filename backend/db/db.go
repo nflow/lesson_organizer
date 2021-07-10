@@ -1,25 +1,27 @@
 package db
 
 import (
+	"github.com/nflow/lesson_organizer/model"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func ConnectDB() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open("local.db"), &gorm.Config{})
+
 	if err != nil {
 		return nil, err
 	}
 
-	if err := db.SetupJoinTable(&Board{}, "Contents", &BoardContents{}); err != nil {
+	if err := db.SetupJoinTable(&model.Board{}, "Contents", &BoardContents{}); err != nil {
 		return nil, err
 	}
 
-	if err := db.SetupJoinTable(&Board{}, "Phases", &BoardPhases{}); err != nil {
+	if err := db.SetupJoinTable(&model.Board{}, "Phases", &BoardPhases{}); err != nil {
 		return nil, err
 	}
 
-	if err := db.SetupJoinTable(&Phase{}, "Methods", &PhaseMethods{}); err != nil {
+	if err := db.SetupJoinTable(&model.Phase{}, "Methods", &PhaseMethods{}); err != nil {
 		return nil, err
 	}
 
@@ -27,7 +29,7 @@ func ConnectDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := db.AutoMigrate(&Board{}, &Content{}, &Phase{}, &Method{}); err != nil {
+	if err := db.AutoMigrate(&model.Board{}, &model.Content{}, &model.Phase{}, &model.Method{}); err != nil {
 		return nil, err
 	}
 
