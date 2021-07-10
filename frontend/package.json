@@ -12,6 +12,8 @@
     "@types/sortablejs": "^1.10.6",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.55",
+    "sass": "^1.35.2",
+    "sass-loader": "^10.1.1",
     "sortablejs": "^1.10.2",
     "uuid": "^3.4.0",
     "vue": "^3.0.0",
