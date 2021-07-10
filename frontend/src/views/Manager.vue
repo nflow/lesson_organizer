@@ -76,28 +76,73 @@
           </el-form-item>
         </el-form>
       </div>
+      <div>
+        <el-table :data="methdos">
+          <el-table-column prop="title" label="Name"> </el-table-column>
+          <el-table-column prop="description" label="Description" />
+          <el-table-column prop="labels" label="Labels" />
+          <el-table-column align="right">
+            <template #header>
+              <el-input
+                v-model="search"
+                size="mini"
+                placeholder="Type to search"
+              />
+            </template>
+            <template #default="scope">
+              <el-button
+                size="mini"
+                @click="onEditMethod(scope.$index, scope.row)"
+                >Edit</el-button
+              >
+              <el-button
+                size="mini"
+                type="danger"
+                @click="onRemoveMethod(scope.$index, scope.row)"
+                >Delete</el-button
+              >
+            </template>
+          </el-table-column>
+        </el-table>
+      </div>
     </div>
   </div>
 </template>
 <script lang="ts">
-import { MethodDto } from "@/types/MethodDto";
-import { defineComponent } from "@vue/runtime-core";
-import { ref, Ref, toRef } from "@vue/reactivity";
+import { computed, defineComponent, onMounted } from "@vue/runtime-core";
+import { ref } from "@vue/reactivity";
+import { useStore } from "@/store";
+import { ApiActionTypes } from "@/store/modules/api/action-types";
 
 export default defineComponent({
   name: "Manager",
   setup() {
+    const store = useStore();
     const newMethod = ref({
       title: "",
       description: "",
       labels: [],
     });
 
+    onMounted(() => {
+      store.dispatch(ApiActionTypes.FETCH_METHODS);
+    });
+
+    const methods = computed(() => store.state.ApiModule.methods);
+
     const onCreateMethod = (): void => {
       console.log(newMethod);
     };
 
-    return { newMethod, onCreateMethod };
+    const onRemoveMethod = (index: number, row: number): void => {
+      console.log(newMethod);
+    };
+
+    const onEditMethod = (index: number, row: number): void => {
+      console.log(newMethod);
+    };
+
+    return { newMethod, methods, onCreateMethod, onRemoveMethod, onEditMethod };
   },
 });
 </script>

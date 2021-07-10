@@ -10,6 +10,7 @@
   "dependencies": {
     "@fortawesome/vue-fontawesome": "^3.0.0-4",
     "@types/sortablejs": "^1.10.6",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "element-plus": "^1.0.2-beta.55",
     "sass": "^1.35.2",
