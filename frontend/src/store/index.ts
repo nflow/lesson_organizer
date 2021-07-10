@@ -1,30 +1,18 @@
-import { InjectionKey } from "vue";
-import {
-  createStore,
-  useStore as vuexUseStore,
-  Store as VuexStore,
-  ModuleTree,
-} from "vuex";
-import { IRootState } from "./interfaces";
-import apiModule from "./modules/api";
-import { ApiStoreModuleTypes } from "./modules/api/types";
+import { createStore } from "vuex";
+import api, { ApiStateTypes, ApiStore } from "./modules/api";
 
-const modules: ModuleTree<IRootState> = {
-  apiModule,
+export type RootState = {
+  api: ApiStateTypes;
 };
 
-export default createStore<IRootState>({
-  modules: modules,
+export type Store = ApiStore<Pick<RootState, "api">>;
+
+export const store = createStore({
+  modules: {
+    api,
+  },
 });
 
-type StoreModules = {
-  apiModule: ApiStoreModuleTypes;
-};
-
-export type Store = ApiStoreModuleTypes<Pick<StoreModules, "apiModule">>;
-
-export const key: InjectionKey<VuexStore<IRootState>> = Symbol();
-
-export function useStore(): VuexStore<IRootState> {
-  return vuexUseStore(key);
+export function useStore(): Store {
+  return store as Store;
 }

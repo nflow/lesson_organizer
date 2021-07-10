@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
-import store, { key } from "./store";
+import { store } from "./store";
 import "./index.css";
 import "./element-variables.scss";
 import {
@@ -179,7 +179,7 @@ const plugins = [
   ElNotification,
 ];
 
-const app = createApp(App).use(store, key).use(router);
+const app = createApp(App).use(store).use(router);
 
 components.forEach((component) => {
   app.component(component.name, component);

@@ -128,7 +128,7 @@ export default defineComponent({
       store.dispatch(ApiActionTypes.FETCH_METHODS);
     });
 
-    const methods = computed(() => store.state.ApiModule.methods);
+    const methods = computed(() => store.state.api.methods);
 
     const onCreateMethod = (): void => {
       console.log(newMethod);

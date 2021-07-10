@@ -1,5 +1,7 @@
-import { ApiStateTypes } from "@/store/interfaces";
+import { ApiStateTypes } from ".";
 
-export const state: ApiStateTypes = {
+const state: ApiStateTypes = {
   methods: [],
 };
+
+export default state;
