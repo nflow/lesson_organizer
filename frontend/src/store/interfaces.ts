@@ -3,7 +3,9 @@ import { ActionContext } from "vuex";
 import { ApiActionTypes } from "./modules/api/action-types";
 import { ApiMutationTypes } from "./modules/api/mutation-types";
 
-export interface IRootState {}
+export interface IRootState {
+  ApiModule: ApiStateTypes;
+}
 
 export interface ApiStateTypes {
   methods: MethodDto[];
