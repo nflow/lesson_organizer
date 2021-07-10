@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -12,8 +13,8 @@ type Handler struct {
 }
 
 func HandleBodyDecode(w http.ResponseWriter, r *http.Request, v interface{}) bool {
-	if err := json.NewDecoder(r.Body).Decode(&v); err != nil {
-		RespondWithError(w, http.StatusBadRequest, err.Error())
+	if err := json.NewDecoder(r.Body).Decode(v); err != nil {
+		RespondWithError(w, http.StatusBadRequest, err)
 		return false
 	}
 	defer r.Body.Close()
@@ -21,8 +22,9 @@ func HandleBodyDecode(w http.ResponseWriter, r *http.Request, v interface{}) boo
 	return true
 }
 
-func RespondWithError(w http.ResponseWriter, code int, message string) {
-	RespondWithCode(w, code, map[string]string{"error": message})
+func RespondWithError(w http.ResponseWriter, code int, err error) {
+	log.Println(err)
+	RespondWithCode(w, code, map[string]string{"error": err.Error()})
 }
 
 func RespondWithSuccess(w http.ResponseWriter, v interface{}) {

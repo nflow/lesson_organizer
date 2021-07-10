@@ -16,7 +16,7 @@ func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
 
 		return
 	} else if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err.Error())
+		RespondWithError(w, http.StatusInternalServerError, err)
 
 		return
 	}

@@ -12,7 +12,7 @@ const (
 )
 
 type Method struct {
-	ID          uuid.UUID     `json:"id" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
+	ID          uuid.UUID     `json:"id" gorm:"type:uuid;primary_key;"`
 	Title       string        `json:"title"`
 	Description string        `json:"description"`
 	Labels      []MethodLabel `json:"labels" gorm:"type:text[]"`
