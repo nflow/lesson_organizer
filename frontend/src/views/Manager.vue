@@ -77,7 +77,7 @@
         </el-form>
       </div>
       <div>
-        <el-table :data="methdos">
+        <el-table :data="methods">
           <el-table-column prop="title" label="Name"> </el-table-column>
           <el-table-column prop="description" label="Description" />
           <el-table-column prop="labels" label="Labels" />
