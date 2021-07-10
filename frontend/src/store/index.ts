@@ -8,60 +8,18 @@ import {
   ActionTree,
   ActionContext,
 } from "vuex";
+import { IRootState } from "./interfaces";
+import ApiModule from "./modules/api";
+import { mutations } from "./modules/api/mutations";
 
-interface State {
-  ideas: ContentDto[];
-}
+export const key: InjectionKey<Store<IRootState>> = Symbol();
 
-export enum MutationTypes {
-  SET_IDEAS = "SET_IDEAS",
-}
-
-export type Mutations<S = State> = {
-  [MutationTypes.SET_IDEAS](state: S, payload: ContentDto[]): void;
-};
-
-export const mutations: MutationTree<State> & Mutations = {
-  [MutationTypes.SET_IDEAS](state, payload: ContentDto[]) {
-    state.ideas = payload;
+export default createStore<IRootState>({
+  modules: {
+    api: ApiModule,
   },
-};
-
-export enum ActionTypes {
-  FETCH_CARDS = "FETCH_CARDS",
-}
-
-type AugmentedActionContext = {
-  commit<K extends keyof Mutations>(
-    key: K,
-    payload: Parameters<Mutations[K]>[1]
-  ): ReturnType<Mutations[K]>;
-} & Omit<ActionContext<State, State>, "commit">;
-
-export interface Actions {
-  [ActionTypes.FETCH_CARDS](
-    { commit }: AugmentedActionContext,
-    payload: string
-  ): Promise<void>;
-}
-
-export const actions: ActionTree<State, State> & Actions = {
-  async [ActionTypes.FETCH_CARDS]({ commit }, payload) {
-    return Promise.resolve();
-  },
-};
-
-export const key: InjectionKey<Store<State>> = Symbol();
-
-export default createStore<State>({
-  state: {
-    ideas: [],
-  },
-  mutations: mutations,
-  actions: actions,
-  modules: {},
 });
 
-export function useStore(): Store<State> {
+export function useStore(): Store<IRootState> {
   return baseUseStore(key);
 }
