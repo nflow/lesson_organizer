@@ -1,20 +1,39 @@
 package handler
 
 import (
-	"encoding/json"
+	"errors"
 	"net/http"
 
-	"github.com/nflow/lesson_organizer/db"
+	"github.com/nflow/lesson_organizer/model"
+	"gorm.io/gorm"
 )
 
-func RetrieveMethods(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(db.MethodsMock)
+func (h *Handler) RetrieveMethods(w http.ResponseWriter, r *http.Request) {
+	var method model.Method
+
+	if err := h.DB.Take(&method).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondWithEmptyArray(w)
+
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	RespondWithSuccess(w, method)
 }
 
-func CreateMethod(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) CreateMethod(w http.ResponseWriter, r *http.Request) {
+	var method model.Method
+
+	if !HandleBodyDecode(w, r, &method) {
+		return
+	}
+
+	RespondWithCode(w, http.StatusCreated, method)
 }
 
-func DeleteMethod(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteMethod(w http.ResponseWriter, r *http.Request) {
 	return
 }

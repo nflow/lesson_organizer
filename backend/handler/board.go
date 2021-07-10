@@ -1,14 +1,27 @@
 package handler
 
 import (
-	"encoding/json"
+	"errors"
 	"net/http"
 
-	"github.com/nflow/lesson_organizer/db"
+	"github.com/nflow/lesson_organizer/model"
+	"gorm.io/gorm"
 )
 
-func RetrieveBoards(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(db.BoardsMock)
+func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
+	var board model.Board
+
+	if err := h.DB.Take(&board).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondWithEmptyArray(w)
+
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err.Error())
+
+		return
+	}
+
+	RespondWithSuccess(w, board)
 }
 
 func CreateBoard(w http.ResponseWriter, r *http.Request) {

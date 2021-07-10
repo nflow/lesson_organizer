@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/nflow/lesson_organizer/db"
 	"github.com/nflow/lesson_organizer/handler"
@@ -24,14 +23,9 @@ func main() {
 		panic(err)
 	}
 
-	v := db.Method{
-		uuid.New(),
-		"Internetrecherche",
-		"Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam",
-		"",
+	h := &handler.Handler{
+		DB: dbConnection,
 	}
-
-	dbConnection.Create(v)
 
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
@@ -40,11 +34,11 @@ func main() {
 	router.HandleFunc("/v1/phases", handler.CreatePhase).Methods("POST")
 	router.HandleFunc("/v1/phases/{id}", handler.DeletePhase).Methods("DELETE")
 
-	router.HandleFunc("/v1/methods", handler.RetrieveMethods).Methods("GET")
-	router.HandleFunc("/v1/methods", handler.CreateMethod).Methods("POST")
-	router.HandleFunc("/v1/methods/{id}", handler.DeleteMethod).Methods("DELETE")
+	router.HandleFunc("/v1/methods", h.RetrieveMethods).Methods("GET")
+	router.HandleFunc("/v1/methods", h.CreateMethod).Methods("POST")
+	router.HandleFunc("/v1/methods/{id}", h.DeleteMethod).Methods("DELETE")
 
-	router.HandleFunc("/v1/boards", handler.RetrieveBoards).Methods("GET")
+	router.HandleFunc("/v1/boards", h.RetrieveBoards).Methods("GET")
 	router.HandleFunc("/v1/boards", handler.CreateBoard).Methods("POST")
 	router.HandleFunc("/v1/boards/{boardId}", handler.DeleteBoard).Methods("DELETE")
 
