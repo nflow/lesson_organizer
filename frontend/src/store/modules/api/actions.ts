@@ -1,5 +1,5 @@
 import axios from "axios";
-import { MethodDto } from "@/types/MethodDto";
+import { CreateMethodDto } from "@/types/CreateMethodDto";
 import { ActionContext, ActionTree } from "vuex";
 import { ApiActionTypes } from "./action-types";
 import { ApiMutationTypes } from "./mutation-types";
@@ -22,7 +22,7 @@ export interface ApiActionsTypes {
   ): void;
   [ApiActionTypes.CREATE_METHOD](
     { commit }: AugmentedActionContext,
-    payload: MethodDto
+    payload: CreateMethodDto
   ): void;
   [ApiActionTypes.DELETE_METHOD](
     { commit }: AugmentedActionContext,
@@ -36,13 +36,21 @@ export const actions: ActionTree<ApiStateTypes, RootState> & ApiActionsTypes = {
       commit(ApiMutationTypes.SET_METHODS, response.data);
     });
   },
-  [ApiActionTypes.CREATE_METHOD]({ commit }, payload: MethodDto) {
-    axios.get(config.CONFIG_API_URL + "/v1/methods").then((response) => {
-      commit(ApiMutationTypes.SET_METHODS, response.data);
-    });
+  [ApiActionTypes.CREATE_METHOD](
+    { commit, dispatch },
+    payload: CreateMethodDto
+  ) {
+    axios
+      .post(config.CONFIG_API_URL + "/v1/methods", payload)
+      .then((response) => {
+        dispatch(ApiActionTypes.FETCH_METHODS);
+      });
   },
-  [ApiActionTypes.DELETE_METHOD]({ commit }, payload: string) {
-    console.log("payload", payload);
-    console.log("commit", commit);
+  [ApiActionTypes.DELETE_METHOD]({ commit, dispatch }, id: string) {
+    axios
+      .delete(config.CONFIG_API_URL + "/v1/methods/" + id)
+      .then((response) => {
+        dispatch(ApiActionTypes.FETCH_METHODS);
+      });
   },
 };

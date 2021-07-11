@@ -77,7 +77,15 @@
         </el-form>
       </div>
       <div>
-        <el-table :data="methods">
+        <el-table
+          :data="
+            methods.filter(
+              (data) =>
+                !search ||
+                data.title.toLowerCase().includes(search.toLowerCase())
+            )
+          "
+        >
           <el-table-column prop="title" label="Name"> </el-table-column>
           <el-table-column prop="description" label="Description" />
           <el-table-column prop="labels" label="Labels" />
@@ -98,7 +106,7 @@
               <el-button
                 size="mini"
                 type="danger"
-                @click="onRemoveMethod(scope.$index, scope.row)"
+                @click="onRemoveMethod(scope.row)"
                 >Delete</el-button
               >
             </template>
@@ -113,16 +121,19 @@ import { computed, defineComponent, onMounted } from "@vue/runtime-core";
 import { ref } from "@vue/reactivity";
 import { useStore } from "@/store";
 import { ApiActionTypes } from "@/store/modules/api/action-types";
+import { CreateMethodDto } from "@/types/CreateMethodDto";
+import { MethodDto } from "@/types/MethodDto";
 
 export default defineComponent({
   name: "Manager",
   setup() {
     const store = useStore();
+    const search = ref("");
     const newMethod = ref({
       title: "",
       description: "",
       labels: [],
-    });
+    } as CreateMethodDto);
 
     onMounted(() => {
       store.dispatch(ApiActionTypes.FETCH_METHODS);
@@ -131,18 +142,26 @@ export default defineComponent({
     const methods = computed(() => store.state.api.methods);
 
     const onCreateMethod = (): void => {
-      console.log(newMethod);
+      store.dispatch(ApiActionTypes.CREATE_METHOD, newMethod.value);
     };
 
-    const onRemoveMethod = (index: number, row: number): void => {
-      console.log(newMethod);
+    const onRemoveMethod = (v: MethodDto): void => {
+      store.dispatch(ApiActionTypes.DELETE_METHOD, v.id);
     };
 
     const onEditMethod = (index: number, row: number): void => {
-      console.log(newMethod);
+      console.log(index);
+      console.log(row);
     };
 
-    return { newMethod, methods, onCreateMethod, onRemoveMethod, onEditMethod };
+    return {
+      newMethod,
+      methods,
+      search,
+      onCreateMethod,
+      onRemoveMethod,
+      onEditMethod,
+    };
   },
 });
 </script>
