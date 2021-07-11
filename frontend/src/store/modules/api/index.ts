@@ -7,9 +7,9 @@ import {
 import { getters } from "./getters";
 import { actions, ApiActionsTypes } from "./actions";
 import { ApiMutationsTypes, mutations } from "./mutations";
-import { MethodDto } from "@/types/MethodDto";
 import { RootState } from "@/store";
 import state from "./state";
+import { MethodDto } from "@/types/method";
 
 export interface ApiStateTypes {
   methods: MethodDto[];

@@ -47,36 +47,31 @@
       >
         Manage Methods
       </h1>
-      <div class="mt-2 mb-2 p-2 bg-gray-300 rounded">
-        <el-form ref="newMethodForm" :model="newMethod" label-width="100px">
-          <el-form-item label="Title">
-            <el-input v-model="newMethod.title" />
-          </el-form-item>
-          <el-form-item label="Description">
-            <el-input type="textarea" v-model="newMethod.description" />
-          </el-form-item>
-          <el-form-item label="Labels">
-            <el-checkbox-group v-model="newMethod.labels">
-              <el-checkbox-button label="METHOD_LABEL_SINGLE" name="type"
-                >Single Person Working</el-checkbox-button
+
+      <div class="pt-2 pl-2 pr-2 bg-gray-300 rounded">
+        <el-button
+          type="primary"
+          icon="el-icon-plus"
+          @click="createMethodDialogVisible = true"
+          >Create Method</el-button
+        >
+        <el-dialog title="Create Method" v-model="createMethodDialogVisible">
+          <method-form v-model="newMethod" />
+          <template #footer>
+            <span class="dialog-footer">
+              <el-button @click="createMethodDialogVisible = false"
+                >Cancel</el-button
               >
-              <el-checkbox-button label="METHOD_LABEL_PAIR" name="type"
-                >Partner Work</el-checkbox-button
+              <el-button
+                type="primary"
+                @click="createMethodDialogVisible = false"
+                >Create</el-button
               >
-              <el-checkbox-button label="METHOD_LABEL_GROUP" name="type"
-                >Group Work</el-checkbox-button
-              >
-              <el-checkbox-button label="METHOD_LABEL_PLENUM" name="type"
-                >Plenum</el-checkbox-button
-              >
-            </el-checkbox-group>
-          </el-form-item>
-          <el-form-item size="large">
-            <el-button type="primary" @click="onCreateMethod">Create</el-button>
-          </el-form-item>
-        </el-form>
+            </span>
+          </template>
+        </el-dialog>
       </div>
-      <div>
+      <div class="mb-2 p-2 bg-gray-300 rounded">
         <el-table
           :data="
             methods.filter(
@@ -121,19 +116,33 @@ import { computed, defineComponent, onMounted } from "@vue/runtime-core";
 import { ref } from "@vue/reactivity";
 import { useStore } from "@/store";
 import { ApiActionTypes } from "@/store/modules/api/action-types";
-import { CreateMethodDto } from "@/types/CreateMethodDto";
-import { MethodDto } from "@/types/MethodDto";
+import MethodForm from "@/components/MethodForm.vue";
+import { CreateMethodDto, MethodDto } from "@/types/method";
 
 export default defineComponent({
   name: "Manager",
+  components: {
+    MethodForm,
+  },
   setup() {
     const store = useStore();
+
+    const createMethodDialogVisible = ref(false);
+
     const search = ref("");
+
     const newMethod = ref({
       title: "",
       description: "",
       labels: [],
     } as CreateMethodDto);
+
+    const editMethod = ref({
+      id: "",
+      title: "",
+      description: "",
+      labels: [],
+    } as MethodDto);
 
     onMounted(() => {
       store.dispatch(ApiActionTypes.FETCH_METHODS);
@@ -155,6 +164,7 @@ export default defineComponent({
     };
 
     return {
+      createMethodDialogVisible,
       newMethod,
       methods,
       search,

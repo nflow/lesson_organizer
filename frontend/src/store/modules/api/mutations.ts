@@ -1,4 +1,4 @@
-import { MethodDto } from "@/types/MethodDto";
+import { MethodDto } from "@/types/method";
 import { MutationTree } from "vuex";
 import { ApiStateTypes } from ".";
 import { ApiMutationTypes } from "./mutation-types";

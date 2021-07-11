@@ -77,10 +77,10 @@ import Phase from "../components/Phase.vue";
 import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
-import { ContentDto } from "@/types/ContentDto";
-import { PhaseDto } from "@/types/PhaseDto";
+import { ContentDto } from "@/types/content";
+import { PhaseDto } from "@/types/phase";
 import { defineComponent, ref, Ref } from "@vue/runtime-core";
-import { GoalDto } from "@/types/GoalDto";
+import { GoalDto } from "@/types/goal";
 
 export default defineComponent({
   name: "Main",

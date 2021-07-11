@@ -1,5 +1,4 @@
 import axios from "axios";
-import { CreateMethodDto } from "@/types/CreateMethodDto";
 import { ActionContext, ActionTree } from "vuex";
 import { ApiActionTypes } from "./action-types";
 import { ApiMutationTypes } from "./mutation-types";
@@ -7,6 +6,7 @@ import config from "@/config";
 import { ApiMutationsTypes } from "./mutations";
 import { RootState } from "@/store";
 import { ApiStateTypes } from ".";
+import { CreateMethodDto } from "@/types/method";
 
 export type AugmentedActionContext = {
   commit<K extends keyof ApiMutationsTypes>(

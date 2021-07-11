@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { ContentDto } from "@/types/ContentDto";
+import { ContentDto } from "@/types/content";
 import List from "../components/List.vue";
 import {
   computed,

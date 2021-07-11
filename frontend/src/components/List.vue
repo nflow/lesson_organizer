@@ -108,7 +108,7 @@
 
 <script lang="ts">
 import { computed, ComputedRef, defineComponent, PropType, ref } from "vue";
-import { ContentDto } from "@/types/ContentDto";
+import { ContentDto } from "@/types/content";
 import { v4 as uuidv4 } from "uuid";
 import Draggable from "vuedraggable";
 

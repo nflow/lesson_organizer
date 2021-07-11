@@ -42,9 +42,9 @@
 
 <script lang="ts">
 import { computed, ComputedRef, defineComponent, PropType, ref } from "vue";
-import { MethodDto } from "@/types/MethodDto";
 import Method from "../components/Method.vue";
 import Draggable from "vuedraggable";
+import { BoardMethodDto } from "@/types/method";
 
 export default defineComponent({
   name: "Phase",
@@ -58,13 +58,13 @@ export default defineComponent({
       required: true,
     },
     methods: {
-      type: Object as PropType<Array<MethodDto>>,
+      type: Object as PropType<Array<BoardMethodDto>>,
       required: true,
     },
   },
   setup(props, { emit }) {
     const newEntryInput = ref("");
-    const refMethods: ComputedRef<Array<MethodDto>> = computed({
+    const refMethods: ComputedRef<Array<BoardMethodDto>> = computed({
       get: () => {
         return props.methods;
       },
