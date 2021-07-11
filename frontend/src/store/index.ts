@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
-import api, { ApiStateTypes, ApiStore } from "./modules/api";
+import api, { ApiStore } from "./modules/api";
+import { ApiStateTypes } from "./modules/api/state";
 
 export type RootState = {
   api: ApiStateTypes;

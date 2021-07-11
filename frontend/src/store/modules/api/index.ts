@@ -4,19 +4,11 @@ import {
   Module,
   Store as VuexStore,
 } from "vuex";
-import { getters } from "./getters";
+import { ApiGettersTypes, getters } from "./getters";
 import { actions, ApiActionsTypes } from "./actions";
 import { ApiMutationsTypes, mutations } from "./mutations";
 import { RootState } from "@/store";
-import state from "./state";
-import { MethodDto } from "@/types/method";
-
-export interface ApiStateTypes {
-  methods: MethodDto[];
-}
-
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface ApiGettersTypes {}
+import state, { ApiStateTypes } from "./state";
 
 export type ApiStore<S = ApiStateTypes> = Omit<
   VuexStore<S>,
