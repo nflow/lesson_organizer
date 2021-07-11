@@ -145,18 +145,18 @@ export default defineComponent({
       createMethodModel.value = emptyCreateMethodModel();
       createMethodDialogVisible.value = true;
     };
+    store.watch(
+      (state) => {
+        return store.state.api.createMethod;
+      },
+      (newValue, _) => {
+        if (newValue?.state == RequestState.SUCCESS) {
+          createMethodDialogVisible.value = false;
+        }
+      }
+    );
     const onCreateMethod = (): void => {
       store.dispatch(ApiActionTypes.CREATE_METHOD, createMethodModel.value);
-      store.watch(
-        (state) => {
-          return store.state.api.createMethod;
-        },
-        (newValue, _) => {
-          if (newValue?.state == RequestState.SUCCESS) {
-            createMethodDialogVisible.value = false;
-          }
-        }
-      );
     };
 
     const emptyModifyMethodModel = ref({
