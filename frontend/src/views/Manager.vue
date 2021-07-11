@@ -52,11 +52,11 @@
         <el-button
           type="primary"
           icon="el-icon-plus"
-          @click="createMethodDialogVisible = true"
+          @click="onOpenCreateMethodDialog"
           >Create Method</el-button
         >
         <el-dialog title="Create Method" v-model="createMethodDialogVisible">
-          <method-form v-model="newMethod" />
+          <method-form v-model="createMethodModel" />
           <template #footer>
             <span class="dialog-footer">
               <el-button @click="createMethodDialogVisible = false"
@@ -127,32 +127,37 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const createMethodDialogVisible = ref(false);
+    onMounted(() => {
+      store.dispatch(ApiActionTypes.FETCH_METHODS);
+    });
 
     const search = ref("");
 
-    const newMethod = ref({
-      title: "",
-      description: "",
-      labels: [],
-    } as CreateMethodDto);
+    const emptyCreateMethodModel = (): CreateMethodDto => {
+      return {
+        title: "",
+        description: "",
+        labels: [],
+      };
+    };
+    const createMethodModel = ref(emptyCreateMethodModel());
+    const createMethodDialogVisible = ref(false);
+    const onOpenCreateMethodDialog = (): void => {
+      createMethodModel.value = emptyCreateMethodModel();
+      createMethodDialogVisible.value = true;
+    };
+    const onCreateMethod = (): void => {
+      store.dispatch(ApiActionTypes.CREATE_METHOD, createMethodModel.value);
+    };
 
-    const editMethod = ref({
+    const emptyModifyMethodModel = ref({
       id: "",
       title: "",
       description: "",
       labels: [],
     } as MethodDto);
 
-    onMounted(() => {
-      store.dispatch(ApiActionTypes.FETCH_METHODS);
-    });
-
-    const methods = computed(() => store.state.api.methods);
-
-    const onCreateMethod = (): void => {
-      store.dispatch(ApiActionTypes.CREATE_METHOD, newMethod.value);
-    };
+    const methods = computed(() => store.getters.allMethods);
 
     const onRemoveMethod = (v: MethodDto): void => {
       store.dispatch(ApiActionTypes.DELETE_METHOD, v.id);
@@ -165,12 +170,13 @@ export default defineComponent({
 
     return {
       createMethodDialogVisible,
-      newMethod,
+      createMethodModel,
       methods,
       search,
       onCreateMethod,
       onRemoveMethod,
       onEditMethod,
+      onOpenCreateMethodDialog,
     };
   },
 });

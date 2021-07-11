@@ -1,13 +1,13 @@
 <template>
-  <el-form ref="newMethodForm" :model="newMethod" label-width="100px">
+  <el-form ref="newMethodForm" :model="model" label-width="100px">
     <el-form-item label="Title">
-      <el-input v-model="newMethod.title" />
+      <el-input v-model="model.title" />
     </el-form-item>
     <el-form-item label="Description">
-      <el-input type="textarea" v-model="newMethod.description" />
+      <el-input type="textarea" v-model="model.description" />
     </el-form-item>
     <el-form-item label="Labels">
-      <el-checkbox-group v-model="newMethod.labels">
+      <el-checkbox-group v-model="model.labels">
         <el-checkbox-button label="METHOD_LABEL_SINGLE" name="type"
           >Single Person Working</el-checkbox-button
         >
@@ -22,21 +22,18 @@
         >
       </el-checkbox-group>
     </el-form-item>
-    <el-form-item size="large">
-      <el-button type="primary" @click="onCreateMethod">Create</el-button>
-    </el-form-item>
   </el-form>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, PropType } from "@vue/runtime-core";
-import { BaseMethodDto } from "@/types/BaseMethodDto";
+import { CreateMethodDto, MethodDto } from "@/types/method";
 
 export default defineComponent({
   name: "MethodForm",
   props: {
     modelValue: {
-      type: Object as PropType<BaseMethodDto>,
+      type: Object as PropType<CreateMethodDto | MethodDto>,
       required: true,
     },
   },
