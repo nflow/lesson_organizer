@@ -1,6 +1,9 @@
 package model
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"github.com/lib/pq"
+)
 
 type MethodLabel string
 
@@ -12,8 +15,8 @@ const (
 )
 
 type Method struct {
-	ID          uuid.UUID     `json:"id" gorm:"type:uuid;primary_key;"`
-	Title       string        `json:"title"`
-	Description string        `json:"description"`
-	Labels      []MethodLabel `json:"labels" gorm:"type:text[]"`
+	ID          uuid.UUID      `json:"id" gorm:"type:uuid;primary_key;"`
+	Title       string         `json:"title"`
+	Description string         `json:"description"`
+	Labels      pq.StringArray `json:"labels" gorm:"type:text[]"`
 }

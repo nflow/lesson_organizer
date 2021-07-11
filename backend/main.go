@@ -3,8 +3,10 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/nflow/lesson_organizer/db"
 	"github.com/nflow/lesson_organizer/handler"
@@ -13,7 +15,6 @@ import (
 func commonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 		next.ServeHTTP(w, r)
 	})
 }
@@ -30,6 +31,8 @@ func main() {
 
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
+	router.Use(handlers.CORS())
+	//router.Use(mux.CORSMethodMiddleware(router))
 
 	router.HandleFunc("/v1/phases", handler.RetrievePhases).Methods("GET")
 	router.HandleFunc("/v1/phases", handler.CreatePhase).Methods("POST")
@@ -68,9 +71,15 @@ func main() {
 	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.UpdateContentInMethod).Methods("PUT")
 	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.RemoveContentFromMethod).Methods("DELETE")
 
+	loggedRouter := handlers.LoggingHandler(os.Stdout, router)
+
+	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"})
+	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
+
 	srv := &http.Server{
-		Handler:      router,
-		Addr:         "127.0.0.1:8000",
+		Handler:      handlers.CORS(allowedHeaders, allowedMethods, allowedOrigins)(loggedRouter),
+		Addr:         ":8000",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}

@@ -19,6 +19,8 @@ func HandleBodyDecode(w http.ResponseWriter, r *http.Request, v interface{}) boo
 	}
 	defer r.Body.Close()
 
+	log.Println(v)
+
 	return true
 }
 
