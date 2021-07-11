@@ -62,9 +62,7 @@
               <el-button @click="createMethodDialogVisible = false"
                 >Cancel</el-button
               >
-              <el-button
-                type="primary"
-                @click="createMethodDialogVisible = false"
+              <el-button type="primary" @click="onCreateMethod"
                 >Create</el-button
               >
             </span>
@@ -118,6 +116,7 @@ import { useStore } from "@/store";
 import { ApiActionTypes } from "@/store/modules/api/action-types";
 import MethodForm from "@/components/MethodForm.vue";
 import { CreateMethodDto, MethodDto } from "@/types/method";
+import { RequestState } from "@/types/api-state";
 
 export default defineComponent({
   name: "Manager",
@@ -148,6 +147,16 @@ export default defineComponent({
     };
     const onCreateMethod = (): void => {
       store.dispatch(ApiActionTypes.CREATE_METHOD, createMethodModel.value);
+      store.watch(
+        (state) => {
+          return store.state.api.createMethod;
+        },
+        (newValue, _) => {
+          if (newValue?.state == RequestState.SUCCESS) {
+            createMethodDialogVisible.value = false;
+          }
+        }
+      );
     };
 
     const emptyModifyMethodModel = ref({
