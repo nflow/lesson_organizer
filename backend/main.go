@@ -32,7 +32,6 @@ func main() {
 	router := mux.NewRouter()
 	router.Use(commonMiddleware)
 	router.Use(handlers.CORS())
-	//router.Use(mux.CORSMethodMiddleware(router))
 
 	router.HandleFunc("/v1/phases", handler.RetrievePhases).Methods("GET")
 	router.HandleFunc("/v1/phases", handler.CreatePhase).Methods("POST")
@@ -40,6 +39,7 @@ func main() {
 
 	router.HandleFunc("/v1/methods", h.RetrieveMethods).Methods("GET")
 	router.HandleFunc("/v1/methods", h.CreateMethod).Methods("POST")
+	router.HandleFunc("/v1/methods/{id}", h.ModifyMethod).Methods("PUT")
 	router.HandleFunc("/v1/methods/{id}", h.DeleteMethod).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards", h.RetrieveBoards).Methods("GET")

@@ -1,4 +1,22 @@
 <template>
+  <el-dialog title="Create Method" v-model="createMethodDialogVisible">
+    <method-form v-model="createMethodModel" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="createMethodDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="onCreateMethod">Create</el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog title="Modify Method" v-model="modifyMethodDialogVisible">
+    <method-form v-model="modifyMethodModel" />
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="modifyMethodDialogVisible = false">Cancel</el-button>
+        <el-button type="primary" @click="onModifyMethod">Update</el-button>
+      </span>
+    </template>
+  </el-dialog>
   <div class="flex flex-col bg-gray-200 m-0 h-full">
     <div
       class="
@@ -55,19 +73,6 @@
           @click="onOpenCreateMethodDialog"
           >Create Method</el-button
         >
-        <el-dialog title="Create Method" v-model="createMethodDialogVisible">
-          <method-form v-model="createMethodModel" />
-          <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="createMethodDialogVisible = false"
-                >Cancel</el-button
-              >
-              <el-button type="primary" @click="onCreateMethod"
-                >Create</el-button
-              >
-            </span>
-          </template>
-        </el-dialog>
       </div>
       <div class="mb-2 p-2 bg-gray-300 rounded">
         <el-table
@@ -91,9 +96,7 @@
               />
             </template>
             <template #default="scope">
-              <el-button
-                size="mini"
-                @click="onEditMethod(scope.$index, scope.row)"
+              <el-button size="mini" @click="openModifyMethodDialog(scope.row)"
                 >Edit</el-button
               >
               <el-button
@@ -145,26 +148,33 @@ export default defineComponent({
       createMethodModel.value = emptyCreateMethodModel();
       createMethodDialogVisible.value = true;
     };
-    store.watch(
-      (state) => {
-        return store.state.api.createMethod;
-      },
-      (newValue, _) => {
-        if (newValue?.state == RequestState.SUCCESS) {
-          createMethodDialogVisible.value = false;
-        }
+    const onCreateMethod = async (): Promise<void> => {
+      await store.dispatch(
+        ApiActionTypes.CREATE_METHOD,
+        createMethodModel.value
+      );
+
+      if (store.state.api.modifyMethod?.state == RequestState.SUCCESS) {
+        modifyMethodDialogVisible.value = false;
       }
-    );
-    const onCreateMethod = (): void => {
-      store.dispatch(ApiActionTypes.CREATE_METHOD, createMethodModel.value);
     };
 
-    const emptyModifyMethodModel = ref({
-      id: "",
-      title: "",
-      description: "",
-      labels: [],
-    } as MethodDto);
+    const modifyMethodModel = ref({} as MethodDto);
+    const modifyMethodDialogVisible = ref(false);
+    const openModifyMethodDialog = (method: MethodDto): void => {
+      Object.assign(modifyMethodModel.value, method);
+      modifyMethodDialogVisible.value = true;
+    };
+    const onModifyMethod = async (): Promise<void> => {
+      await store.dispatch(
+        ApiActionTypes.MODIFY_METHOD,
+        modifyMethodModel.value
+      );
+
+      if (store.state.api.modifyMethod?.state == RequestState.SUCCESS) {
+        modifyMethodDialogVisible.value = false;
+      }
+    };
 
     const methods = computed(() => store.getters.allMethods);
 
@@ -172,20 +182,21 @@ export default defineComponent({
       store.dispatch(ApiActionTypes.DELETE_METHOD, v.id);
     };
 
-    const onEditMethod = (index: number, row: number): void => {
-      console.log(index);
-      console.log(row);
-    };
-
     return {
-      createMethodDialogVisible,
-      createMethodModel,
       methods,
       search,
-      onCreateMethod,
-      onRemoveMethod,
-      onEditMethod,
+
+      createMethodModel,
+      createMethodDialogVisible,
       onOpenCreateMethodDialog,
+      onCreateMethod,
+
+      modifyMethodModel,
+      modifyMethodDialogVisible,
+      openModifyMethodDialog,
+      onModifyMethod,
+
+      onRemoveMethod,
     };
   },
 });

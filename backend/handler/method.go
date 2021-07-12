@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"log"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -43,19 +42,27 @@ func (h *Handler) CreateMethod(w http.ResponseWriter, r *http.Request) {
 	RespondWithCode(w, http.StatusCreated, method)
 }
 
-func (h *Handler) DeleteMethod(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
+func (h *Handler) ModifyMethod(w http.ResponseWriter, r *http.Request) {
+	method := &model.Method{}
 
-	log.Println(vars)
+	if !HandleBodyDecode(w, r, method) {
+		return
+	}
 
-	method := model.Method{}
-	if err := h.DB.First(&method, "id = ?", vars["id"]).Error; err != nil {
+	if err := h.DB.Save(&method).Error; err != nil {
 		RespondWithError(w, http.StatusNotFound, err)
 		return
 	}
 
-	if err := h.DB.Delete(&method).Error; err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err)
+	RespondWithSuccess(w, method)
+}
+
+func (h *Handler) DeleteMethod(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	method := model.Method{}
+
+	if err := h.DB.First(&method, "id = ?", vars["id"]).Delete(&method).Error; err != nil {
+		RespondWithError(w, http.StatusNotFound, err)
 		return
 	}
 
