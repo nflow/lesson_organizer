@@ -11,6 +11,7 @@ export interface MethodDto {
   id: string;
   title: string;
   description: string;
+  category: string;
   labels: Array<Label>;
 }
 
@@ -21,5 +22,6 @@ export interface BoardMethodDto extends MethodDto {
 export interface CreateMethodDto {
   title: string;
   description: string;
+  category: string;
   labels: Array<Label>;
 }
