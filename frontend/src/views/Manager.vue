@@ -1,22 +1,32 @@
 <template>
-  <el-dialog title="Create Method" v-model="createMethodDialogVisible">
-    <method-form v-model="createMethodModel" />
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="createMethodDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="onCreateMethod">Create</el-button>
-      </span>
-    </template>
-  </el-dialog>
-  <el-dialog title="Modify Method" v-model="modifyMethodDialogVisible">
-    <method-form v-model="modifyMethodModel" />
-    <template #footer>
-      <span class="dialog-footer">
-        <el-button @click="modifyMethodDialogVisible = false">Cancel</el-button>
-        <el-button type="primary" @click="onModifyMethod">Update</el-button>
-      </span>
-    </template>
-  </el-dialog>
+  <q-dialog v-model="createMethodDialogVisible" persistent>
+    <q-card class="sm:w-full md:w-10/12">
+      <q-card-section>
+        <span class="font-bold text-xl">Create Method</span>
+      </q-card-section>
+      <q-card-section>
+        <method-form v-model="createMethodModel" />
+      </q-card-section>
+      <q-card-section class="space-x-2">
+        <q-btn color="primary" @click="onCreateMethod" label="Create" />
+        <q-btn @click="createMethodDialogVisible = false" label="Cancel" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="modifyMethodDialogVisible" persistent>
+    <q-card class="sm:w-full md:w-10/12">
+      <q-card-section>
+        <span class="font-bold text-xl">Modify Method</span>
+      </q-card-section>
+      <q-card-section>
+        <method-form v-model="createMethodModel" />
+      </q-card-section>
+      <q-card-section class="space-x-2">
+        <q-btn color="primary" @click="onModifyMethod" label="Update" />
+        <q-btn @click="createMethodDialogVisible = false" label="Cancel" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
   <div class="flex flex-col bg-gray-200 m-0 h-full">
     <div
       class="
@@ -67,47 +77,33 @@
       </h1>
 
       <div class="pt-2 pl-2 pr-2 bg-gray-300 rounded">
-        <el-button
-          type="primary"
-          icon="el-icon-plus"
+        <q-btn
+          color="primary"
+          icon="note_add"
           @click="onOpenCreateMethodDialog"
-          >Create Method</el-button
-        >
+          label="Create Method"
+        />
       </div>
       <div class="mb-2 p-2 bg-gray-300 rounded">
-        <el-table
-          :data="
-            methods.filter(
-              (data) =>
-                !search ||
-                data.title.toLowerCase().includes(search.toLowerCase())
-            )
-          "
-        >
-          <el-table-column prop="title" label="Name"> </el-table-column>
-          <el-table-column prop="description" label="Description" />
-          <el-table-column prop="labels" label="Labels" />
-          <el-table-column align="right">
-            <template #header>
-              <el-input
-                v-model="search"
-                size="mini"
-                placeholder="Type to search"
-              />
-            </template>
-            <template #default="scope">
-              <el-button size="mini" @click="openModifyMethodDialog(scope.row)"
-                >Edit</el-button
-              >
-              <el-button
-                size="mini"
-                type="danger"
-                @click="onRemoveMethod(scope.row)"
-                >Delete</el-button
-              >
-            </template>
-          </el-table-column>
-        </el-table>
+        <q-table :rows="methods" :columns="methodColumns" row-key="name">
+          <template v-slot:body-cell-actions="props">
+            <td :props="props">
+              <div>
+                <q-btn
+                  dense
+                  @click="openModifyMethodDialog(scope.row)"
+                  label="Delete"
+                />
+                <q-btn
+                  dense
+                  type="danger"
+                  @click="onRemoveMethod(scope.row)"
+                  label="Delete"
+                />
+              </div>
+            </td>
+          </template>
+        </q-table>
       </div>
     </div>
   </div>
@@ -133,12 +129,11 @@ export default defineComponent({
       store.dispatch(ApiActionTypes.FETCH_METHODS);
     });
 
-    const search = ref("");
-
     const emptyCreateMethodModel = (): CreateMethodDto => {
       return {
         title: "",
         description: "",
+        category: "",
         labels: [],
       };
     };
@@ -177,14 +172,31 @@ export default defineComponent({
     };
 
     const methods = computed(() => store.getters.allMethods);
+    const methodColumns = [
+      { name: "title", label: "Title", field: "title", sortable: true },
+      {
+        name: "description",
+        label: "Description",
+        field: "description",
+        sortable: true,
+      },
+      {
+        name: "category",
+        label: "Category",
+        field: "category",
+        sortable: true,
+      },
+      { name: "lables", label: "Lables", field: "lables", sortable: true },
+      { name: "actions", label: "Actions", sortable: true },
+    ];
 
     const onRemoveMethod = (v: MethodDto): void => {
       store.dispatch(ApiActionTypes.DELETE_METHOD, v.id);
     };
 
     return {
+      methodColumns,
       methods,
-      search,
 
       createMethodModel,
       createMethodDialogVisible,

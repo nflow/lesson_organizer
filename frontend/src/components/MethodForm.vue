@@ -1,28 +1,51 @@
 <template>
-  <el-form ref="newMethodForm" :model="model" label-width="100px">
-    <el-form-item label="Title">
-      <el-input v-model="model.title" />
-    </el-form-item>
-    <el-form-item label="Description">
-      <el-input type="textarea" v-model="model.description" />
-    </el-form-item>
-    <el-form-item label="Labels">
-      <el-checkbox-group v-model="model.labels">
-        <el-checkbox-button label="METHOD_LABEL_SINGLE" name="type"
-          >Single Person Working</el-checkbox-button
-        >
-        <el-checkbox-button label="METHOD_LABEL_PAIR" name="type"
-          >Partner Work</el-checkbox-button
-        >
-        <el-checkbox-button label="METHOD_LABEL_GROUP" name="type"
-          >Group Work</el-checkbox-button
-        >
-        <el-checkbox-button label="METHOD_LABEL_PLENUM" name="type"
-          >Plenum</el-checkbox-button
-        >
-      </el-checkbox-group>
-    </el-form-item>
-  </el-form>
+  <q-form>
+    <span>Title</span>
+    <q-input outlined model="model.title" dense />
+    <span>Description</span>
+    <q-editor outlined v-model="model.description" min-height="5rem" />
+    <span>Category</span>
+    <q-input outlined type="text" v-model="model.category" dense />
+    <span>Labels</span>
+    <q-list>
+      <q-item tag="label" v-ripple>
+        <q-item-section avatar>
+          <q-checkbox v-model="model.labels" val="METHOD_LABEL_SINGLE" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Single Person Working</q-item-label>
+          <q-item-label caption>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+            eiusmod
+          </q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item tag="label" v-ripple>
+        <q-item-section avatar>
+          <q-checkbox v-model="model.labels" val="METHOD_LABEL_PAIR" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Partner Work</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item tag="label" v-ripple>
+        <q-item-section avatar>
+          <q-checkbox v-model="model.labels" val="METHOD_LABEL_GROUP" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Group Work</q-item-label>
+        </q-item-section>
+      </q-item>
+      <q-item tag="label" v-ripple>
+        <q-item-section avatar>
+          <q-checkbox v-model="model.labels" val="METHOD_LABEL_PLENUM" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Plenum</q-item-label>
+        </q-item-section>
+      </q-item>
+    </q-list>
+  </q-form>
 </template>
 
 <script lang="ts">
