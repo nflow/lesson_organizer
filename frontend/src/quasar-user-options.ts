@@ -13,6 +13,7 @@ import {
   QMarkupTable,
   QTd,
   QTh,
+  QChip,
 } from "quasar";
 
 export default {

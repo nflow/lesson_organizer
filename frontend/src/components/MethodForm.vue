@@ -1,9 +1,9 @@
 <template>
   <q-form>
     <span>Title</span>
-    <q-input outlined model="model.title" dense />
+    <q-input outlined v-model="model.title" dense />
     <span>Description</span>
-    <q-editor outlined v-model="model.description" min-height="5rem" />
+    <q-input outlined type="text" autogrow v-model="model.description" />
     <span>Category</span>
     <q-input outlined type="text" v-model="model.category" dense />
     <span>Labels</span>

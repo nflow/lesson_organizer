@@ -19,11 +19,11 @@
         <span class="font-bold text-xl">Modify Method</span>
       </q-card-section>
       <q-card-section>
-        <method-form v-model="createMethodModel" />
+        <method-form v-model="modifyMethodModel" />
       </q-card-section>
       <q-card-section class="space-x-2">
         <q-btn color="primary" @click="onModifyMethod" label="Update" />
-        <q-btn @click="createMethodDialogVisible = false" label="Cancel" />
+        <q-btn @click="modifyMethodDialogVisible = false" label="Cancel" />
       </q-card-section>
     </q-card>
   </q-dialog>
@@ -85,19 +85,33 @@
         />
       </div>
       <div class="mb-2 p-2 bg-gray-300 rounded">
-        <q-table :rows="methods" :columns="methodColumns" row-key="name">
+        <q-table
+          :loading="inProgressFetch()"
+          :rows="methods"
+          :columns="methodColumns"
+          row-key="id"
+        >
+          <template v-slot:body-cell-labels="props">
+            <td :props="props">
+              <q-chip v-for="(v, i) in props.row.labels" :key="i">
+                {{ resolveLabelName(v) }}
+              </q-chip>
+            </td>
+          </template>
           <template v-slot:body-cell-actions="props">
             <td :props="props">
-              <div>
+              <div class="text-right space-x-2">
                 <q-btn
                   dense
-                  @click="openModifyMethodDialog(scope.row)"
-                  label="Delete"
+                  color="primary"
+                  size="sm"
+                  @click="openModifyMethodDialog(props.row)"
+                  label="Modify"
                 />
                 <q-btn
                   dense
-                  type="danger"
-                  @click="onRemoveMethod(scope.row)"
+                  size="sm"
+                  @click="onRemoveMethod(props.row)"
                   label="Delete"
                 />
               </div>
@@ -114,7 +128,7 @@ import { ref } from "@vue/reactivity";
 import { useStore } from "@/store";
 import { ApiActionTypes } from "@/store/modules/api/action-types";
 import MethodForm from "@/components/MethodForm.vue";
-import { CreateMethodDto, MethodDto } from "@/types/method";
+import { CreateMethodDto, MethodDto, resolveLabelName } from "@/types/method";
 import { RequestState } from "@/types/api-state";
 
 export default defineComponent({
@@ -149,8 +163,8 @@ export default defineComponent({
         createMethodModel.value
       );
 
-      if (store.state.api.modifyMethod?.state == RequestState.SUCCESS) {
-        modifyMethodDialogVisible.value = false;
+      if (store.state.api.createMethod?.state == RequestState.SUCCESS) {
+        createMethodDialogVisible.value = false;
       }
     };
 
@@ -158,6 +172,7 @@ export default defineComponent({
     const modifyMethodDialogVisible = ref(false);
     const openModifyMethodDialog = (method: MethodDto): void => {
       Object.assign(modifyMethodModel.value, method);
+      console.log(modifyMethodModel.value);
       modifyMethodDialogVisible.value = true;
     };
     const onModifyMethod = async (): Promise<void> => {
@@ -169,6 +184,14 @@ export default defineComponent({
       if (store.state.api.modifyMethod?.state == RequestState.SUCCESS) {
         modifyMethodDialogVisible.value = false;
       }
+    };
+
+    const inProgressFetch = (): boolean => {
+      if (store.state.api.allMethods?.state == RequestState.PENDING) {
+        return true;
+      }
+
+      return false;
     };
 
     const methods = computed(() => store.getters.allMethods);
@@ -186,7 +209,7 @@ export default defineComponent({
         field: "category",
         sortable: true,
       },
-      { name: "lables", label: "Lables", field: "lables", sortable: true },
+      { name: "labels", label: "Labels", field: "labels", sortable: true },
       { name: "actions", label: "Actions", sortable: true },
     ];
 
@@ -197,6 +220,8 @@ export default defineComponent({
     return {
       methodColumns,
       methods,
+      inProgressFetch,
+      resolveLabelName,
 
       createMethodModel,
       createMethodDialogVisible,
