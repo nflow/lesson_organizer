@@ -5,6 +5,9 @@
       flex flex-col
       justify-center
       items-center
+      bg-gradient-to-br
+      from-gray-400
+      to-gray-600
       text-3xl
       font-bold
       opacity-40
@@ -15,6 +18,7 @@
       transition
       duration-200
       hover:opacity-100
+      colo
       p-2
     "
   >
