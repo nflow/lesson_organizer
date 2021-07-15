@@ -2,24 +2,23 @@
   <button
     @click="$emit('click', $event)"
     class="
-      flex flex-col
-      justify-center
-      items-center
       bg-gradient-to-br
-      from-gray-400
-      to-gray-600
-      text-3xl
-      font-bold
-      opacity-40
       border-2
-      text-white
-      rounded
       cursor-pointer
-      transition
       duration-200
+      flex flex-col
+      font-bold
+      from-gray-400
       hover:opacity-100
-      colo
-      p-2
+      items-center
+      justify-center
+      opacity-40
+      pl-2
+      pr-2
+      rounded
+      text-3xl text-white
+      to-gray-600
+      transition
     "
   >
     <div>+</div>

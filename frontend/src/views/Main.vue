@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col bg-gray-200 m-0 h-full">
+  <div class="flex flex-col bg-gray-200 m-0 h-full no-wrap">
     <div
       class="
         flex flex-col flex-initial

@@ -90,6 +90,8 @@
           :rows="methods"
           :columns="methodColumns"
           row-key="id"
+          :rows-per-page-options="[0]"
+          hide-pagination
         >
           <template v-slot:body-cell-labels="props">
             <td :props="props">

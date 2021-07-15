@@ -34,6 +34,7 @@
           <Method
             :title="element.title"
             :description="element.description"
+            :labels="element.labels"
             v-model:ideas="element.ideas"
           />
         </div>
@@ -42,8 +43,29 @@
     <card-button @click="onAddMethod" class="mr-4 ml-4" />
     <q-dialog full-width full-height v-model="showMethodsDialog"
       ><q-card>
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Add Method</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
         <q-card-section>
-          <q-table @row-click="onMethodSelect" :rows="allMethods" grid>
+          <q-table
+            :rows="allMethods"
+            :rows-per-page-options="[0]"
+            :columns="methodColumns"
+            hide-pagination
+            grid
+          >
+            <template v-slot:item="props">
+              <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+                <Method
+                  @click="onMethodSelect(props.row)"
+                  :title="props.row.title"
+                  :description="props.row.description"
+                  :labels="props.row.labels"
+                />
+              </div>
+            </template>
           </q-table>
         </q-card-section>
       </q-card>
@@ -56,7 +78,7 @@ import { computed, ComputedRef, defineComponent, PropType, ref } from "vue";
 import Method from "../components/Method.vue";
 import CardButton from "../components/CardButton.vue";
 import Draggable from "vuedraggable";
-import { BoardMethodDto, MethodDto } from "@/types/method";
+import { BoardMethodDto, MethodDto, resolveLabelName } from "@/types/method";
 import { useStore } from "vuex";
 import { ApiActionTypes } from "@/store/modules/api/action-types";
 
@@ -95,10 +117,31 @@ export default defineComponent({
       showMethodsDialog.value = true;
     };
     const allMethods = computed(() => store.getters.allMethods);
-    const onMethodSelect = (a: any, row: MethodDto, b: any): void => {
-      refMethods.value.push(row as BoardMethodDto);
+    const onMethodSelect = (row: MethodDto): void => {
+      console.log(row);
+      refMethods.value.push({
+        ...row,
+        ideas: [],
+      });
       showMethodsDialog.value = false;
     };
+
+    const methodColumns = [
+      { name: "title", label: "Title", field: "title", sortable: true },
+      {
+        name: "description",
+        label: "Description",
+        field: "description",
+        sortable: true,
+      },
+      {
+        name: "category",
+        label: "Category",
+        field: "category",
+        sortable: true,
+      },
+      { name: "labels", label: "Labels", field: "labels", sortable: true },
+    ];
 
     return {
       newEntryInput,
@@ -108,6 +151,8 @@ export default defineComponent({
       showMethodsDialog,
       allMethods,
       onMethodSelect,
+      resolveLabelName,
+      methodColumns,
     };
   },
 });

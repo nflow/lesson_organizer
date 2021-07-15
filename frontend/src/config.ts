@@ -1,5 +1,5 @@
 const config = {
-  CONFIG_API_URL: "https://api.lesson-organizer.de",
+  CONFIG_API_URL: "http://127.0.0.1:8000",
 };
 
 export default config;
