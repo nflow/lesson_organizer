@@ -41,7 +41,7 @@ export const actions: ActionTree<ApiStateTypes, RootState> & ApiActionsTypes = {
       state: RequestState.PENDING,
     });
     await axios
-      .post(config.CONFIG_API_URL + "/v1/methods", payload)
+      .post(config.CONFIG_API_URL + "v1/methods", payload)
       .then((response) => {
         commit(ApiMutationTypes.SET_CREATE_METHOD, {
           state: RequestState.SUCCESS,
@@ -65,7 +65,7 @@ export const actions: ActionTree<ApiStateTypes, RootState> & ApiActionsTypes = {
       state: RequestState.PENDING,
     });
     await axios
-      .put(config.CONFIG_API_URL + "/v1/methods/" + payload.id, payload)
+      .put(config.CONFIG_API_URL + "v1/methods/" + payload.id, payload)
       .then((response) => {
         commit(ApiMutationTypes.SET_MODIFY_METHOD, {
           state: RequestState.SUCCESS,
@@ -86,7 +86,7 @@ export const actions: ActionTree<ApiStateTypes, RootState> & ApiActionsTypes = {
       state: RequestState.PENDING,
     });
     await axios
-      .delete(config.CONFIG_API_URL + "/v1/methods/" + uuid)
+      .delete(config.CONFIG_API_URL + "v1/methods/" + uuid)
       .then((response) => {
         commit(ApiMutationTypes.SET_ALL_METHODS, {
           state: RequestState.SUCCESS,
@@ -107,7 +107,7 @@ export const actions: ActionTree<ApiStateTypes, RootState> & ApiActionsTypes = {
       state: RequestState.PENDING,
     });
     await axios
-      .get(config.CONFIG_API_URL + "/v1/methods")
+      .get(config.CONFIG_API_URL + "v1/methods")
       .then((response) => {
         commit(ApiMutationTypes.SET_ALL_METHODS, {
           state: RequestState.SUCCESS,
