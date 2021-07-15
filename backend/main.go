@@ -75,7 +75,7 @@ func main() {
 
 	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"})
-	allowedOrigins := handlers.AllowedOrigins([]string{"https://lesson-organizer.com,https://lesson-organizer.com,http://localhost:8080"})
+	allowedOrigins := handlers.AllowedOrigins([]string{"https://lesson-organizer.de,https://lesson-organizer.com,http://localhost:8080"})
 
 	srv := &http.Server{
 		Handler:      handlers.CORS(allowedHeaders, allowedMethods, allowedOrigins)(loggedRouter),
