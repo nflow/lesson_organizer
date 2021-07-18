@@ -33,9 +33,10 @@ func main() {
 	router.Use(commonMiddleware)
 	router.Use(handlers.CORS())
 
-	router.HandleFunc("/v1/phases", handler.RetrievePhases).Methods("GET")
-	router.HandleFunc("/v1/phases", handler.CreatePhase).Methods("POST")
-	router.HandleFunc("/v1/phases/{id}", handler.DeletePhase).Methods("DELETE")
+	router.HandleFunc("/v1/phases", h.RetrievePhases).Methods("GET")
+	router.HandleFunc("/v1/phases", h.CreatePhase).Methods("POST")
+	router.HandleFunc("/v1/phases/{id}", h.ModifyPhase).Methods("PUT")
+	router.HandleFunc("/v1/phases/{id}", h.DeletePhase).Methods("DELETE")
 
 	router.HandleFunc("/v1/methods", h.RetrieveMethods).Methods("GET")
 	router.HandleFunc("/v1/methods", h.CreateMethod).Methods("POST")
