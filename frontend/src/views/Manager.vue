@@ -27,6 +27,34 @@
       </q-card-section>
     </q-card>
   </q-dialog>
+  <q-dialog v-model="createPhaseDialogVisible" persistent>
+    <q-card class="sm:w-full md:w-10/12">
+      <q-card-section>
+        <span class="font-bold text-xl">Create Phase</span>
+      </q-card-section>
+      <q-card-section>
+        <phase-form v-model="createPhaseModel" />
+      </q-card-section>
+      <q-card-section class="space-x-2">
+        <q-btn color="primary" @click="onCreatePhase" label="Create" />
+        <q-btn @click="createPhaseDialogVisible = false" label="Cancel" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
+  <q-dialog v-model="modifyPhaseDialogVisible" persistent>
+    <q-card class="sm:w-full md:w-10/12">
+      <q-card-section>
+        <span class="font-bold text-xl">Modify Phase</span>
+      </q-card-section>
+      <q-card-section>
+        <phase-form v-model="modifyPhaseModel" />
+      </q-card-section>
+      <q-card-section class="space-x-2">
+        <q-btn color="primary" @click="onModifyPhase" label="Update" />
+        <q-btn @click="modifyPhaseDialogVisible = false" label="Cancel" />
+      </q-card-section>
+    </q-card>
+  </q-dialog>
   <div class="flex flex-col bg-gray-200 m-0 h-full">
     <div
       class="
@@ -86,7 +114,7 @@
       </div>
       <div class="mb-2 p-2 bg-gray-300 rounded">
         <q-table
-          :loading="inProgressFetch()"
+          :loading="fetchMethodsInProgress()"
           :rows="methods"
           :columns="methodColumns"
           row-key="id"
@@ -122,6 +150,62 @@
         </q-table>
       </div>
     </div>
+
+    <div class="flex flex-col flex-auto p-5">
+      <h1
+        class="
+          text-xl text-white
+          font-bold
+          p-2
+          rounded
+          shadow
+          bg-gradient-to-r
+          from-blue
+          to-turquoise
+        "
+      >
+        Manage Phases
+      </h1>
+
+      <div class="pt-2 pl-2 pr-2 bg-gray-300 rounded">
+        <q-btn
+          color="primary"
+          icon="note_add"
+          @click="onOpenPhaseMethodDialog"
+          label="Create Phase"
+        />
+      </div>
+      <div class="mb-2 p-2 bg-gray-300 rounded">
+        <q-table
+          :loading="fetchMethodsInProgress()"
+          :rows="phases"
+          :columns="phaseColumns"
+          row-key="id"
+          :rows-per-page-options="[0]"
+          hide-pagination
+        >
+          <template v-slot:body-cell-actions="props">
+            <td :props="props">
+              <div class="text-right space-x-2">
+                <q-btn
+                  dense
+                  color="primary"
+                  size="sm"
+                  @click="openModifyPhaseDialog(props.row)"
+                  label="Modify"
+                />
+                <q-btn
+                  dense
+                  size="sm"
+                  @click="onRemovePhase(props.row)"
+                  label="Delete"
+                />
+              </div>
+            </td>
+          </template>
+        </q-table>
+      </div>
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -132,6 +216,7 @@ import { ApiActionTypes } from "@/store/modules/api/action-types";
 import MethodForm from "@/components/MethodForm.vue";
 import { CreateMethodDto, MethodDto, resolveLabelName } from "@/types/method";
 import { RequestState } from "@/types/api-state";
+import { CreatePhaseDto, PhaseDto } from "@/types/phase";
 
 export default defineComponent({
   name: "Manager",
@@ -143,7 +228,27 @@ export default defineComponent({
 
     onMounted(() => {
       store.dispatch(ApiActionTypes.FETCH_METHODS);
+      store.dispatch(ApiActionTypes.FETCH_PHASES);
     });
+
+    const methods = computed(() => store.getters.allMethods);
+    const methodColumns = [
+      { name: "title", label: "Title", field: "title", sortable: true },
+      {
+        name: "description",
+        label: "Description",
+        field: "description",
+        sortable: true,
+      },
+      {
+        name: "category",
+        label: "Category",
+        field: "category",
+        sortable: true,
+      },
+      { name: "labels", label: "Labels", field: "labels", sortable: true },
+      { name: "actions", label: "Actions" },
+    ];
 
     const emptyCreateMethodModel = (): CreateMethodDto => {
       return {
@@ -188,7 +293,17 @@ export default defineComponent({
       }
     };
 
-    const inProgressFetch = (): boolean => {
+    const onRemoveMethod = (v: MethodDto): void => {
+      store.dispatch(ApiActionTypes.DELETE_METHOD, v.id);
+    };
+
+    const phases = computed(() => store.getters.allPhases);
+    const phaseColumns = [
+      { name: "title", label: "Title", field: "title", sortable: true },
+      { name: "actions", label: "Actions" },
+    ];
+
+    const fetchMethodsInProgress = (): boolean => {
       if (store.state.api.allMethods?.state == RequestState.PENDING) {
         return true;
       }
@@ -196,46 +311,79 @@ export default defineComponent({
       return false;
     };
 
-    const methods = computed(() => store.getters.allMethods);
-    const methodColumns = [
-      { name: "title", label: "Title", field: "title", sortable: true },
-      {
-        name: "description",
-        label: "Description",
-        field: "description",
-        sortable: true,
-      },
-      {
-        name: "category",
-        label: "Category",
-        field: "category",
-        sortable: true,
-      },
-      { name: "labels", label: "Labels", field: "labels", sortable: true },
-      { name: "actions", label: "Actions", sortable: true },
-    ];
+    const emptyCreatePhaseModel = (): CreatePhaseDto => {
+      return {
+        title: "",
+      };
+    };
+    const createPhaseModel = ref(emptyCreatePhaseModel());
+    const createPhaseDialogVisible = ref(false);
+    const onOpenCreatePhaseDialog = (): void => {
+      createPhaseModel.value = emptyCreatePhaseModel();
+      createPhaseDialogVisible.value = true;
+    };
+    const onCreatePhase = async (): Promise<void> => {
+      await store.dispatch(ApiActionTypes.CREATE_PHASE, createPhaseModel.value);
 
-    const onRemoveMethod = (v: MethodDto): void => {
-      store.dispatch(ApiActionTypes.DELETE_METHOD, v.id);
+      if (store.state.api.createPhase?.state == RequestState.SUCCESS) {
+        createPhaseDialogVisible.value = false;
+      }
+    };
+
+    const modifyPhaseModel = ref({} as PhaseDto);
+    const modifyPhaseDialogVisible = ref(false);
+    const openModifyPhaseDialog = (phase: PhaseDto): void => {
+      Object.assign(modifyPhaseModel.value, phase);
+      console.log(modifyPhaseModel.value);
+      modifyPhaseDialogVisible.value = true;
+    };
+    const onModifyPhase = async (): Promise<void> => {
+      await store.dispatch(ApiActionTypes.MODIFY_PHASE, modifyPhaseModel.value);
+
+      if (store.state.api.modifyPhase?.state == RequestState.SUCCESS) {
+        modifyPhaseDialogVisible.value = false;
+      }
+    };
+
+    const onRemovePhase = (v: PhaseDto): void => {
+      store.dispatch(ApiActionTypes.DELETE_PHASE, v.id);
+    };
+
+    const fetchPhasesInProgress = (): boolean => {
+      if (store.state.api.allPhases?.state == RequestState.PENDING) {
+        return true;
+      }
+
+      return false;
     };
 
     return {
       methodColumns,
       methods,
-      inProgressFetch,
+      fetchMethodsInProgress,
       resolveLabelName,
-
       createMethodModel,
       createMethodDialogVisible,
       onOpenCreateMethodDialog,
       onCreateMethod,
-
       modifyMethodModel,
       modifyMethodDialogVisible,
       openModifyMethodDialog,
       onModifyMethod,
-
       onRemoveMethod,
+
+      phaseColumns,
+      phases,
+      fetchPhasesInProgress,
+      createPhaseModel,
+      createPhaseDialogVisible,
+      onOpenCreatePhaseDialog,
+      onCreatePhase,
+      modifyPhaseModel,
+      modifyPhaseDialogVisible,
+      openModifyPhaseDialog,
+      onModifyPhase,
+      onRemovePhase,
     };
   },
 });
