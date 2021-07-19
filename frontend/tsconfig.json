@@ -24,6 +24,6 @@
     "src/**/*.vue",
     "tests/**/*.ts",
     "tests/**/*.tsx"
-, "src/components/InputDialog.vue", "src/components/MethodForm.vue"  ],
+, "src/components/InputDialog.vue", "src/components/MethodForm.vue", "src/components/PhaseForm.vue"  ],
   "exclude": ["node_modules"]
 }

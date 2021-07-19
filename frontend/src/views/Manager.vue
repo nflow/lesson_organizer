@@ -88,7 +88,7 @@
         </div>
       </div>
     </div>
-    <div class="flex flex-col flex-auto p-5">
+    <div class="flex flex-col flex-initial p-5">
       <h1
         class="
           text-xl text-white
@@ -151,7 +151,7 @@
       </div>
     </div>
 
-    <div class="flex flex-col flex-auto p-5">
+    <div class="flex flex-col flex-initial p-5">
       <h1
         class="
           text-xl text-white
@@ -171,7 +171,7 @@
         <q-btn
           color="primary"
           icon="note_add"
-          @click="onOpenPhaseMethodDialog"
+          @click="onOpenCreatePhaseDialog"
           label="Create Phase"
         />
       </div>
@@ -214,6 +214,7 @@ import { ref } from "@vue/reactivity";
 import { useStore } from "@/store";
 import { ApiActionTypes } from "@/store/modules/api/action-types";
 import MethodForm from "@/components/MethodForm.vue";
+import PhaseForm from "@/components/PhaseForm.vue";
 import { CreateMethodDto, MethodDto, resolveLabelName } from "@/types/method";
 import { RequestState } from "@/types/api-state";
 import { CreatePhaseDto, PhaseDto } from "@/types/phase";
@@ -222,6 +223,7 @@ export default defineComponent({
   name: "Manager",
   components: {
     MethodForm,
+    PhaseForm,
   },
   setup() {
     const store = useStore();
@@ -233,20 +235,34 @@ export default defineComponent({
 
     const methods = computed(() => store.getters.allMethods);
     const methodColumns = [
-      { name: "title", label: "Title", field: "title", sortable: true },
+      {
+        name: "title",
+        label: "Title",
+        field: "title",
+        sortable: true,
+        align: "left",
+      },
       {
         name: "description",
         label: "Description",
         field: "description",
         sortable: true,
+        align: "left",
       },
       {
         name: "category",
         label: "Category",
         field: "category",
         sortable: true,
+        align: "left",
       },
-      { name: "labels", label: "Labels", field: "labels", sortable: true },
+      {
+        name: "labels",
+        label: "Labels",
+        field: "labels",
+        sortable: true,
+        align: "center",
+      },
       { name: "actions", label: "Actions" },
     ];
 
@@ -299,7 +315,13 @@ export default defineComponent({
 
     const phases = computed(() => store.getters.allPhases);
     const phaseColumns = [
-      { name: "title", label: "Title", field: "title", sortable: true },
+      {
+        name: "title",
+        label: "Title",
+        field: "title",
+        sortable: true,
+        align: "left",
+      },
       { name: "actions", label: "Actions" },
     ];
 
