@@ -52,19 +52,22 @@
         </div>
       </div>
     </div>
-    <Draggable
-      class="grid grid-flow-col overflow-x-auto flex-auto overflow-y-auto"
-      v-model="phases"
-      item-key="phase-id"
-      animation="150"
-      group="phases"
-      delay="60"
-      delayOnTouchOnly="true"
-    >
-      <template #item="{ element }">
-        <Phase v-model:methods="element.methods" :title="element.title" />
-      </template>
-    </Draggable>
+    <div class="grid grid-flow-col overflow-x-auto flex-auto overflow-y-auto">
+      <card-button class="auto-height" />
+      <Draggable
+        class="grid grid-flow-col"
+        v-model="phases"
+        item-key="phase-id"
+        animation="150"
+        group="phases"
+        delay="60"
+        delayOnTouchOnly="true"
+      >
+        <template #item="{ element }">
+          <Phase v-model:methods="element.methods" :title="element.title" />
+        </template>
+      </Draggable>
+    </div>
     <div class="flex-initial">
       <list class="self-start" v-model="ideas" />
     </div>
