@@ -2,22 +2,19 @@
   <button
     @click="$emit('click', $event)"
     class="
-      bg-gradient-to-br
-      border-2
+      bg-gray-400
       cursor-pointer
       duration-200
       flex flex-col
       font-bold
-      from-gray-400
       hover:opacity-100
       items-center
       justify-center
       opacity-40
-      pl-2
-      pr-2
+      pl-1
+      pr-1
       rounded
-      text-3xl text-white
-      to-gray-600
+      text-xl text-white
       transition
     "
   >

@@ -21,8 +21,8 @@
             text-white text-s
             bg-yellow-orange
             rounded
-            p-2
-            m-2
+            p-1
+            m-1
             text-center
           "
         >

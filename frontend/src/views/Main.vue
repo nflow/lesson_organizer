@@ -1,76 +1,73 @@
 <template>
-  <div class="flex flex-col bg-gray-200 m-0 h-full no-wrap">
+  <div class="flex flex-col bg-gray-200 m-0">
     <div
       class="
-        flex flex-col flex-initial
         bg-gradient-to-br
         from-blue
         to-turquoise
         p-4
-        space-y-4
-        shadow-md
+        shadow-mds
+        flex-none flex
+        sm:flex-row
+        flex-col
+        gap-2
       "
     >
-      <div class="flex flex-row gap-1 flex-auto space-x-2">
-        <div
-          class="
-            flex flex-initial flex-col
-            items-center
-            p-3
-            h-full
-            rounded
-            text-white
-            shadow-xl
-            bg-gradient-to-br
-            from-red-300
-            to-orange
-          "
-        >
-          <span class="flex-auto text-xl text-center font-logo"
-            >Lesson Organizer</span
-          >
-        </div>
-        <div class="flex-auto flex space-x-1">
-          <Draggable
-            class="flex flex-initial space-x-1"
-            v-model="goals"
-            item-key="goal-id"
-            animation="150"
-            group="goals"
-            delay="60"
-            delayOnTouchOnly="true"
-          >
-            <template #item="{ element }">
-              <Goal
-                :order_id="element.order_id"
-                :text="element.text"
-                :bgColor="element.color"
-              />
-            </template>
-          </Draggable>
-          <CardButton @click="console.log('foo')" class="flex-initial" />
-        </div>
+      <div
+        class="
+          flex-initial
+          items-center
+          p-2
+          rounded
+          text-white
+          shadow-xl
+          bg-gradient-to-br
+          from-red-300
+          to-orange
+          text-xl text-center
+          font-logo
+        "
+      >
+        Lesson Organizer
       </div>
-    </div>
-    <div class="grid grid-flow-col overflow-x-auto flex-auto overflow-y-auto">
-      <card-button class="auto-height" />
       <Draggable
-        class="grid grid-flow-col"
-        v-model="phases"
-        item-key="phase-id"
+        class="grid grid-flow-row sm:grid-flow-col gap-2"
+        v-model="goals"
+        item-key="goal-id"
         animation="150"
-        group="phases"
+        group="goals"
         delay="60"
         delayOnTouchOnly="true"
       >
         <template #item="{ element }">
-          <Phase v-model:methods="element.methods" :title="element.title" />
+          <Goal
+            :order_id="element.order_id"
+            :text="element.text"
+            :bgColor="element.color"
+          />
         </template>
       </Draggable>
+      <card-button @click="console.log('foo')" class="flex-initial" />
     </div>
-    <div class="flex-initial">
-      <list class="self-start" v-model="ideas" />
-    </div>
+  </div>
+  <div class="grid grid-flow-col overflow-x-auto overflow-y-auto bg-gray-200">
+    <card-button class="auto-height m-1" />
+    <Draggable
+      class="grid grid-flow-col"
+      v-model="phases"
+      item-key="phase-id"
+      animation="150"
+      group="phases"
+      delay="60"
+      delayOnTouchOnly="true"
+    >
+      <template #item="{ element }">
+        <Phase v-model:methods="element.methods" :title="element.title" />
+      </template>
+    </Draggable>
+  </div>
+  <div class="flex-initial">
+    <list class="self-start" v-model="ideas" />
   </div>
 </template>
 

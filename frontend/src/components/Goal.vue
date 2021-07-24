@@ -19,25 +19,9 @@
         ></path>
       </g>
     </svg>
-    <input
-      type="text"
-      class="
-        text-shadow
-        resize-y
-        max-w-xs
-        break-words
-        bg-transparent
-        align-middle
-        p-2
-        text-lg
-        block
-        rounded-lg
-        w-full
-        h-full
-        text-center
-      "
-      v-model="refText"
-    />
+    <div class="text-shadow break-words p-2 pl-10 text-lg text-center">
+      {{ refText }}
+    </div>
   </div>
 </template>
 
