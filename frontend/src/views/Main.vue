@@ -51,7 +51,24 @@
     </div>
   </div>
   <div class="grid grid-flow-col overflow-x-auto overflow-y-auto bg-gray-200">
-    <card-button class="auto-height m-1" />
+    <card-button @click="onAddPhase" class="auto-height m-1" />
+    <q-dialog full-width full-height v-model="showPhasesDialog"
+      ><q-card>
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h6">Add Phase</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section>
+          <q-table
+            :rows="allPhases"
+            :rows-per-page-options="[0]"
+            hide-pagination
+            grid
+          />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
     <Draggable
       class="grid grid-flow-col"
       v-model="phases"
@@ -78,9 +95,11 @@ import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { ContentDto } from "@/types/content";
-import { PhaseDto } from "@/types/phase";
-import { defineComponent, ref, Ref } from "@vue/runtime-core";
+import { BoardPhaseDto, PhaseDto } from "@/types/phase";
+import { computed, defineComponent, ref, Ref } from "@vue/runtime-core";
 import { GoalDto } from "@/types/goal";
+import { ApiActionTypes } from "@/store/modules/api/action-types";
+import { useStore } from "vuex";
 
 export default defineComponent({
   name: "Main",
@@ -92,6 +111,8 @@ export default defineComponent({
     Goal,
   },
   setup() {
+    const store = useStore();
+
     const goals: Ref<Array<GoalDto>> = ref([
       {
         id: "goal_id_1",
@@ -113,7 +134,7 @@ export default defineComponent({
       { id: "idea_id_6", value: "Zeitungsartikel Tsunami" },
     ]);
 
-    const phases: Ref<Array<PhaseDto>> = ref([
+    const phases: Ref<Array<BoardPhaseDto>> = ref([
       {
         id: "phase_id_1",
         title: "Einstieg",
@@ -219,7 +240,30 @@ export default defineComponent({
       },
     ]);
 
-    return { ideas, phases, goals };
+    let showPhasesDialog = ref(false);
+    const onAddPhase = (): void => {
+      store.dispatch(ApiActionTypes.FETCH_PHASES);
+      showPhasesDialog.value = true;
+    };
+    const allPhases = computed(() => store.getters.allPhases);
+    const onPhaseSelect = (row: PhaseDto): void => {
+      console.log(row);
+      phases.value.push({
+        ...row,
+        methods: [],
+      });
+      showPhasesDialog.value = false;
+    };
+
+    return {
+      ideas,
+      phases,
+      goals,
+      onAddPhase,
+      onPhaseSelect,
+      allPhases,
+      showPhasesDialog,
+    };
   },
 });
 </script>
