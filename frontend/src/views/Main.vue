@@ -36,7 +36,7 @@
         item-key="goal-id"
         animation="150"
         group="goals"
-        delay="60"
+        delay="100"
         delayOnTouchOnly="true"
       >
         <template #item="{ element }">
@@ -75,7 +75,7 @@
       item-key="phase-id"
       animation="150"
       group="phases"
-      delay="60"
+      delay="100"
       delayOnTouchOnly="true"
     >
       <template #item="{ element }">

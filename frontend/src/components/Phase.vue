@@ -9,7 +9,7 @@
       item-key="id"
       style="min-width: 20rem"
       class="flex flex-col"
-      delay="60"
+      delay="100"
       delayOnTouchOnly="true"
     >
       <template #header>
