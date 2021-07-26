@@ -159,7 +159,7 @@
     <div class="tw-flex tw-flex-col tw-flex-initial tw-p-5">
       <h1
         class="
-          tw-ext-xl
+          tw-text-xl
           tw-text-white
           tw-font-bold
           tw-p-2
