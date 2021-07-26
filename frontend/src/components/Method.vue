@@ -1,33 +1,41 @@
 <template>
   <div
     class="
-      max-w-md
-      p-0
-      bg-white
-      shadow-lg
-      rounded-lg
-      transition
-      duration-200
-      hover:shadow-2xl
+      tw-max-w-md
+      tw-p-0
+      tw-bg-white
+      tw-shadow-lg
+      tw-rounded-lg
+      tw-transition
+      tw-duration-200
+      hover:tw-shadow-2xl
     "
   >
     <div>
       <div
         class="
-          rounded-t-md
-          pl-4
-          pr-4
-          pt-4
-          text-gray-800 text-3xl
-          font-semibold
-          w-full
+          tw-rounded-t-md
+          tw-pl-4
+          tw-pr-4
+          tw-pt-4
+          tw-text-gray-800
+          tw-text-3xl
+          tw-font-semibold
+          tw-w-full
         "
       >
         {{ title }}
       </div>
       <div
         v-if="labels && labels.length > 0"
-        class="relative text-gray-600 pl-2 pr-2 w-full overflow-hidden"
+        class="
+          tw-relative
+          tw-text-gray-600
+          tw-pl-2
+          tw-pr-2
+          tw-w-full
+          tw-overflow-hidden
+        "
       >
         <q-chip v-for="(v, i) in labels" :key="i">
           {{ resolveLabelName(v) }}
@@ -35,25 +43,33 @@
       </div>
       <div
         v-if="description"
-        class="relative max-h-24 p-4 mt-2 text-gray-600 w-full overflow-hidden"
+        class="
+          tw-relative
+          tw-max-h-24
+          tw-p-4
+          tw-mt-2
+          tw-text-gray-600
+          tw-w-full
+          tw-overflow-hidden
+        "
       >
         <div
           class="
-            absolute
-            top-0
-            left-0
-            w-full
-            h-full
-            bg-gradient-to-b
-            from-transparent
-            to-white
+            tw-absolute
+            tw-top-0
+            tw-left-0
+            tw-w-full
+            tw-h-full
+            tw-bg-gradient-to-b
+            tw-from-transparent
+            tw-to-white
           "
         />
         {{ description }}
       </div>
     </div>
-    <div v-if="refIdeas" class="p-0 m-0 w-full">
-      <list class="p-4" v-model="refIdeas" />
+    <div v-if="refIdeas" class="tw-p-0 tw-m-0 tw-w-full">
+      <list class="tw-p-4" v-model="refIdeas" />
     </div>
   </div>
 </template>

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col hover:bg-gray-300">
+  <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
     <Draggable
       group="method"
       v-model="refMethods"
@@ -8,29 +8,29 @@
       animation="150"
       item-key="id"
       style="min-width: 20rem"
-      class="flex flex-col"
+      class="tw-flex tw-flex-col"
       delay="100"
       delayOnTouchOnly="true"
     >
       <template #header>
         <div
           class="
-            flex-initial
-            font-extrabold
-            hover:bg-orange
-            text-white text-s
-            bg-yellow-orange
-            rounded
-            p-1
-            m-1
-            text-center
+            tw-flex-initial tw-font-extrabold
+            tw-hover:bg-orange
+            tw-text-white
+            tw-text-sm
+            tw-bg-yellow-orange
+            tw-rounded
+            tw-p-1
+            tw-m-1
+            tw-text-center
           "
         >
           {{ title }}
         </div>
       </template>
       <template #item="{ element }">
-        <div class="flex flex-col p-4 space-y-10">
+        <div class="tw-flex tw-flex-col tw-p-2">
           <Method
             :title="element.title"
             :description="element.description"
@@ -40,7 +40,7 @@
         </div>
       </template>
     </Draggable>
-    <card-button @click="onAddMethod" class="mr-4 ml-4" />
+    <card-button @click="onAddMethod" class="tw-m-2" />
     <q-dialog full-width full-height v-model="showMethodsDialog"
       ><q-card>
         <q-card-section class="row items-center q-pb-none">

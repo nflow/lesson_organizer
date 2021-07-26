@@ -1,110 +1,115 @@
 <template>
   <q-dialog v-model="createMethodDialogVisible" persistent>
-    <q-card class="sm:w-full md:w-10/12">
+    <q-card class="sm:tw-w-full md:tw-w-10/12">
       <q-card-section>
-        <span class="font-bold text-xl">Create Method</span>
+        <span class="tw-font-bold tw-text-xl">Create Method</span>
       </q-card-section>
       <q-card-section>
         <method-form v-model="createMethodModel" />
       </q-card-section>
-      <q-card-section class="space-x-2">
+      <q-card-section class="tw-space-x-2">
         <q-btn color="primary" @click="onCreateMethod" label="Create" />
         <q-btn @click="createMethodDialogVisible = false" label="Cancel" />
       </q-card-section>
     </q-card>
   </q-dialog>
   <q-dialog v-model="modifyMethodDialogVisible" persistent>
-    <q-card class="sm:w-full md:w-10/12">
+    <q-card class="sm:tw-w-full md:tw-w-10/12">
       <q-card-section>
-        <span class="font-bold text-xl">Modify Method</span>
+        <span class="tw-font-bold tw-text-xl">Modify Method</span>
       </q-card-section>
       <q-card-section>
         <method-form v-model="modifyMethodModel" />
       </q-card-section>
-      <q-card-section class="space-x-2">
+      <q-card-section class="tw-space-x-2">
         <q-btn color="primary" @click="onModifyMethod" label="Update" />
         <q-btn @click="modifyMethodDialogVisible = false" label="Cancel" />
       </q-card-section>
     </q-card>
   </q-dialog>
   <q-dialog v-model="createPhaseDialogVisible" persistent>
-    <q-card class="sm:w-full md:w-10/12">
+    <q-card class="sm:tw-w-full md:tw-w-10/12">
       <q-card-section>
-        <span class="font-bold text-xl">Create Phase</span>
+        <span class="tw-font-bold tw-text-xl">Create Phase</span>
       </q-card-section>
       <q-card-section>
         <phase-form v-model="createPhaseModel" />
       </q-card-section>
-      <q-card-section class="space-x-2">
+      <q-card-section class="tw-space-x-2">
         <q-btn color="primary" @click="onCreatePhase" label="Create" />
         <q-btn @click="createPhaseDialogVisible = false" label="Cancel" />
       </q-card-section>
     </q-card>
   </q-dialog>
   <q-dialog v-model="modifyPhaseDialogVisible" persistent>
-    <q-card class="sm:w-full md:w-10/12">
+    <q-card class="sm:tw-w-full md:tw-w-10/12">
       <q-card-section>
-        <span class="font-bold text-xl">Modify Phase</span>
+        <span class="tw-font-bold tw-text-xl">Modify Phase</span>
       </q-card-section>
       <q-card-section>
         <phase-form v-model="modifyPhaseModel" />
       </q-card-section>
-      <q-card-section class="space-x-2">
+      <q-card-section class="tw-space-x-2">
         <q-btn color="primary" @click="onModifyPhase" label="Update" />
         <q-btn @click="modifyPhaseDialogVisible = false" label="Cancel" />
       </q-card-section>
     </q-card>
   </q-dialog>
-  <div class="flex flex-col bg-gray-200 m-0 h-full">
+  <div class="tw-flex tw-flex-col tw-bg-gray-200 tw-m-0 tw-h-full">
     <div
       class="
-        flex flex-col flex-initial
-        bg-gradient-to-br
-        from-blue
-        to-turquoise
-        p-4
-        shadow-md
-        space-y-4
+        tw-flex
+        tw-flex-col
+        tw-flex-initial
+        tw-bg-gradient-to-br
+        tw-from-blue
+        tw-to-turquoise
+        tw-p-4
+        tw-shadow-md
+        tw-space-y-4
       "
     >
-      <div class="flex flex-row gap-1 flex-auto space-x-2">
+      <div class="tw-flex tw-flex-row tw-gap-1 tw-flex-auto tw-space-x-2">
         <div
           class="
-            flex flex-initial flex-col
-            items-center
-            p-3
-            h-full
-            rounded
-            text-white
-            shadow-xl
-            bg-gradient-to-br
-            from-red-300
-            to-orange
+            tw-flex
+            tw-flex-initial
+            tw-flex-col
+            tw-items-center
+            tw-p-3
+            tw-h-full
+            tw-rounded
+            tw-text-white
+            tw-shadow-xl
+            tw-bg-gradient-to-br
+            tw-from-red-300
+            tw-to-orange
           "
         >
-          <span class="flex-auto text-xl text-center font-logo"
+          <span class="tw-flex-auto tw-text-xl tw-text-center tw-font-logo"
             >Lesson Organizer - Manager
           </span>
         </div>
       </div>
     </div>
-    <div class="flex flex-col flex-initial p-5">
+    <div class="tw-flex tw-flex-col tw-flex-initial tw-p-5">
       <h1
         class="
-          text-xl text-white
-          font-bold
-          p-2
-          rounded
-          shadow
-          bg-gradient-to-r
-          from-blue
-          to-turquoise
+          tw-text-xl
+          tw-text-white
+          tw-font-bold
+          tw-p-2
+          tw-rounded
+          tw-shadow
+          tw-bg-gradient-to-r
+          tw-from-blue
+          tw-to-turquoise
         "
       >
         Manage Methods
       </h1>
 
-      <div class="pt-2 pl-2 pr-2 bg-gray-300 rounded">
+      <div class="tw-pt-2 tw-pl-2 tw-pr-2 tw-bg-gray-300 tw-rounded">
         <q-btn
           color="primary"
           icon="note_add"
@@ -112,7 +117,7 @@
           label="Create Method"
         />
       </div>
-      <div class="mb-2 p-2 bg-gray-300 rounded">
+      <div class="tw-mb-2 tw-p-2 tw-bg-gray-300 tw-rounded">
         <q-table
           :loading="fetchMethodsInProgress()"
           :rows="methods"
@@ -130,7 +135,7 @@
           </template>
           <template v-slot:body-cell-actions="props">
             <td :props="props">
-              <div class="text-right space-x-2">
+              <div class="tw-text-right tw-space-x-2">
                 <q-btn
                   dense
                   color="primary"
@@ -151,23 +156,24 @@
       </div>
     </div>
 
-    <div class="flex flex-col flex-initial p-5">
+    <div class="tw-flex tw-flex-col tw-flex-initial tw-p-5">
       <h1
         class="
-          text-xl text-white
-          font-bold
-          p-2
-          rounded
-          shadow
-          bg-gradient-to-r
-          from-blue
-          to-turquoise
+          tw-ext-xl
+          tw-text-white
+          tw-font-bold
+          tw-p-2
+          tw-rounded
+          tw-shadow
+          tw-bg-gradient-to-r
+          tw-from-blue
+          tw-to-turquoise
         "
       >
         Manage Phases
       </h1>
 
-      <div class="pt-2 pl-2 pr-2 bg-gray-300 rounded">
+      <div class="tw-pt-2 tw-pl-2 tw-pr-2 tw-bg-gray-300 tw-rounded">
         <q-btn
           color="primary"
           icon="note_add"
@@ -175,7 +181,7 @@
           label="Create Phase"
         />
       </div>
-      <div class="mb-2 p-2 bg-gray-300 rounded">
+      <div class="tw-mb-2 tw-p-2 tw-bg-gray-300 tw-rounded">
         <q-table
           :loading="fetchMethodsInProgress()"
           :rows="phases"
@@ -186,7 +192,7 @@
         >
           <template v-slot:body-cell-actions="props">
             <td :props="props">
-              <div class="text-right space-x-2">
+              <div class="tw-text-right tw-space-x-2">
                 <q-btn
                   dense
                   color="primary"

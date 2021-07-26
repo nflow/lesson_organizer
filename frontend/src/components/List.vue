@@ -1,26 +1,37 @@
 <template>
-  <div class="w-full">
-    <div class="bg-white">
+  <div class="tw-w-full">
+    <div class="tw-bg-white">
       <Draggable
         v-model="refIdeas"
         tag="table"
         animation="150"
         group="ideas"
         item-key="id"
-        class="min-w-max w-full table-auto text-gray-600 text-sm font-light"
+        class="
+          tw-min-w-max
+          tw-w-full
+          tw-table-auto
+          tw-text-gray-600
+          tw-text-sm
+          tw-font-light
+        "
       >
         <template #item="{ element }">
-          <tr class="border-b border-gray-200 hover:bg-gray-100">
-            <td class="py-3 px-6 text-left">
-              <div class="relative">
+          <tr class="tw-border-b tw-border-gray-200 hover:tw-bg-gray-100">
+            <td class="tw-py-3 tw-px-6 tw-text-left">
+              <div class="tw-relative">
                 <span>{{ element.value }}</span>
-                <div class="absolute inset-y-0 right-0 flex items-center">
+                <div
+                  class="
+                    tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center
+                  "
+                >
                   <span
-                    class="cursor-pointer hover:text-red-500"
+                    class="tw-cursor-pointer hover:tw-text-red-500"
                     @click="remove(element.id)"
                   >
                     <svg
-                      class="w-6 h-6"
+                      class="tw-w-6 tw-h-6"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -42,29 +53,25 @@
         <template #footer>
           <tr
             class="
-              border-b
-              py-3
-              px-6
-              text-left
-              border-gray-200
-              hover:bg-gray-100
+              tw-border-b tw-py-3 tw-px-6 tw-text-left tw-border-gray-200
+              hover:tw-bg-gray-100
             "
           >
             <td>
-              <div class="relative">
+              <div class="tw-relative">
                 <div
                   class="
-                    absolute
-                    inset-y-0
-                    left-0
-                    pl-2
-                    flex
-                    items-center
-                    pointer-events-none
+                    tw-absolute
+                    tw-inset-y-0
+                    tw-left-0
+                    tw-pl-2
+                    tw-flex
+                    tw-items-center
+                    tw-pointer-events-none
                   "
                 >
                   <svg
-                    class="w-6 h-6 text-gray-300"
+                    class="tw-w-6 tw-h-6 tw-text-gray-300"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -84,15 +91,15 @@
                   type="text"
                   name="new-entry"
                   class="
-                    inset-0
-                    py-3
-                    px-6
-                    block
-                    w-full
-                    pl-9
-                    pr-12
-                    border-gray-200
-                    hover:bg-gray-100
+                    tw-inset-0
+                    tw-py-3
+                    tw-px-6
+                    tw-block
+                    tw-w-full
+                    tw-pl-9
+                    tw-pr-12
+                    tw-border-gray-200
+                    tw-hover:bg-gray-100
                   "
                   placeholder="Eine tolle Idee ..."
                   @keydown.enter="addNew"

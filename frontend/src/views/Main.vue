@@ -1,90 +1,107 @@
 <template>
-  <div class="flex flex-col bg-gray-200 m-0">
-    <div
-      class="
-        bg-gradient-to-br
-        from-blue
-        to-turquoise
-        p-4
-        shadow-mds
-        flex-none flex
-        sm:flex-row
-        flex-col
-        gap-2
-      "
-    >
+  <div class="tw-flex tw-flex-col tw-flex-nowrap tw-h-full">
+    <div class="tw-flex-initial tw-flex tw-flex-col tw-bg-gray-200 tw-m-0">
       <div
         class="
-          flex-initial
-          items-center
-          p-2
-          rounded
-          text-white
-          shadow-xl
-          bg-gradient-to-br
-          from-red-300
-          to-orange
-          text-xl text-center
-          font-logo
+          tw-flex-initial
+          tw-bg-gradient-to-br
+          tw-from-blue
+          tw-to-turquoise
+          tw-p-4
+          tw-shadow-mds
+          tw-flex
+          sm:tw-flex-row
+          tw-flex-col tw-gap-2
         "
       >
-        Lesson Organizer
+        <div
+          class="
+            tw-flex-initial
+            tw-items-center
+            tw-p-2
+            tw-rounded
+            tw-text-white
+            tw-shadow-xl
+            tw-bg-gradient-to-br
+            tw-from-red-300
+            tw-to-orange
+            tw-text-xl
+            tw-text-center
+            tw-font-logo
+          "
+        >
+          Lesson Organizer
+        </div>
+        <Draggable
+          class="tw-grid tw-grid-flow-row sm:tw-grid-flow-col tw-gap-2"
+          v-model="goals"
+          item-key="goal-id"
+          animation="150"
+          group="goals"
+          delay="100"
+          delayOnTouchOnly="true"
+        >
+          <template #item="{ element }">
+            <Goal
+              :order_id="element.order_id"
+              :text="element.text"
+              :bgColor="element.color"
+            />
+          </template>
+        </Draggable>
+        <card-button @click="console.log('foo')" class="flex-initial" />
       </div>
+    </div>
+    <div
+      class="
+        tw-relative
+        tw-flex-grow
+        tw-flex
+        tw-overflow-x-auto
+        tw-overflow-y-auto
+        tw-bg-gray-200
+      "
+    >
+      <card-button @click="onAddPhase" class="tw-sticky tw-top-0 tw-m-1" />
+      <q-dialog
+        full-width
+        full-height
+        v-model="showPhasesDialog"
+        class="tw-flex-grow"
+        ><q-card>
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">Add Phase</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+          <q-card-section>
+            <q-table
+              :rows="allPhases"
+              :rows-per-page-options="[0]"
+              @row-click="(a, row, e) => onPhaseSelect(row)"
+              hide-pagination
+              grid
+            />
+          </q-card-section>
+        </q-card>
+      </q-dialog>
       <Draggable
-        class="grid grid-flow-row sm:grid-flow-col gap-2"
-        v-model="goals"
-        item-key="goal-id"
+        class="tw-grid tw-grid-flow-col"
+        v-model="phases"
+        item-key="phase-id"
         animation="150"
-        group="goals"
+        group="phases"
         delay="100"
         delayOnTouchOnly="true"
       >
         <template #item="{ element }">
-          <Goal
-            :order_id="element.order_id"
-            :text="element.text"
-            :bgColor="element.color"
-          />
+          <Phase v-model:methods="element.methods" :title="element.title" />
         </template>
       </Draggable>
-      <card-button @click="console.log('foo')" class="flex-initial" />
     </div>
-  </div>
-  <div class="grid grid-flow-col overflow-x-auto overflow-y-auto bg-gray-200">
-    <card-button @click="onAddPhase" class="auto-height m-1" />
-    <q-dialog full-width full-height v-model="showPhasesDialog"
-      ><q-card>
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Add Phase</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-        <q-card-section>
-          <q-table
-            :rows="allPhases"
-            :rows-per-page-options="[0]"
-            hide-pagination
-            grid
-          />
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-    <Draggable
-      class="grid grid-flow-col"
-      v-model="phases"
-      item-key="phase-id"
-      animation="150"
-      group="phases"
-      delay="100"
-      delayOnTouchOnly="true"
-    >
-      <template #item="{ element }">
-        <Phase v-model:methods="element.methods" :title="element.title" />
-      </template>
-    </Draggable>
-  </div>
-  <div class="flex-initial">
-    <list class="self-start" v-model="ideas" />
+    <div>
+      <list class="tw-self-start" v-model="ideas" />
+    </div>
   </div>
 </template>
 
@@ -134,111 +151,7 @@ export default defineComponent({
       { id: "idea_id_6", value: "Zeitungsartikel Tsunami" },
     ]);
 
-    const phases: Ref<Array<BoardPhaseDto>> = ref([
-      {
-        id: "phase_id_1",
-        title: "Einstieg",
-        methods: [
-          {
-            id: "method_id_1",
-            title: "Mind-Map",
-            description:
-              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [],
-            labels: [],
-          },
-          {
-            id: "method_id_2",
-            title: "Blitzlicht",
-            description:
-              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [
-              { id: "idea_id_5", value: "Schaubild Tsunami-Frühwarnsystem" },
-            ],
-            labels: [],
-          },
-        ],
-      },
-      {
-        id: "phase_id_2",
-        title: "Erarbeitung",
-        methods: [
-          {
-            id: "method_id_3",
-            title: "Internetrecherche",
-            description:
-              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [
-              { id: "idea_id_3", value: "Fotos der Zerstörung" },
-              { id: "idea_id_4", value: "Augenzeugenbericht" },
-            ],
-            labels: [],
-          },
-        ],
-      },
-      {
-        id: "phase_id_3",
-        title: "Sicherung",
-        methods: [
-          {
-            id: "method_id_4",
-            title: "Soziometrische Abfrage",
-            description:
-              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [],
-            labels: [],
-          },
-        ],
-      },
-      {
-        id: "phase_id_4",
-        title: "Überleitung",
-        methods: [],
-      },
-      {
-        id: "phase_id_5",
-        title: "Übung",
-        methods: [
-          {
-            id: "method_id_5",
-            title: "Soziometrische Abfrage",
-            description:
-              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [],
-            labels: [],
-          },
-        ],
-      },
-      {
-        id: "phase_id_6",
-        title: "Erarbeitung",
-        methods: [],
-      },
-      {
-        id: "phase_id_7",
-        title: "Sicherung",
-        methods: [],
-      },
-      {
-        id: "phase_id_8",
-        title: "Überleitung",
-        methods: [
-          {
-            id: "method_id_6",
-            title: "Fishbowl-Diskussion",
-            description:
-              "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-            ideas: [],
-            labels: [],
-          },
-        ],
-      },
-      {
-        id: "phase_id_9",
-        title: "Übung",
-        methods: [],
-      },
-    ]);
+    const phases: Ref<Array<BoardPhaseDto>> = ref([]);
 
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {

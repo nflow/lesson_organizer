@@ -1,7 +1,17 @@
 <template>
-  <div class="relative block rounded shadow-xl border bg-turquoise text-white">
+  <div
+    class="
+      tw-relative
+      tw-block
+      tw-rounded
+      tw-shadow-xl
+      tw-border
+      tw-bg-turquoise
+      tw-text-white
+    "
+  >
     <svg
-      class="w-6 absolute opacity-70 text-white m-2"
+      class="tw-w-6 tw-absolute tw-opacity-70 tw-text-white tw-m-2"
       version="1.1"
       id="Layer_1"
       xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +29,11 @@
         ></path>
       </g>
     </svg>
-    <div class="text-shadow break-words p-2 pl-10 text-lg text-center">
+    <div
+      class="
+        tw-text-shadow tw-break-words tw-p-2 tw-pl-10 tw-text-lg tw-text-center
+      "
+    >
       {{ refText }}
     </div>
   </div>
