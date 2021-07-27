@@ -32,7 +32,7 @@
         >
           Lesson Organizer
         </div>
-        <Draggable
+        <draggable
           class="tw-grid tw-grid-flow-row sm:tw-grid-flow-col tw-gap-2"
           v-model="goals"
           item-key="goal-id"
@@ -42,13 +42,13 @@
           delayOnTouchOnly="true"
         >
           <template #item="{ element }">
-            <Goal
+            <goal
               :order_id="element.order_id"
               :text="element.text"
               :bgColor="element.color"
             />
           </template>
-        </Draggable>
+        </draggable>
         <card-button @click="console.log('foo')" class="flex-initial" />
       </div>
     </div>
@@ -85,7 +85,7 @@
           </q-card-section>
         </q-card>
       </q-dialog>
-      <Draggable
+      <draggable
         class="tw-grid tw-grid-flow-col"
         v-model="phases"
         item-key="phase-id"
@@ -95,9 +95,9 @@
         delayOnTouchOnly="true"
       >
         <template #item="{ element }">
-          <Phase v-model:methods="element.methods" :title="element.title" />
+          <phase v-model:methods="element.methods" :title="element.title" />
         </template>
-      </Draggable>
+      </draggable>
     </div>
     <div>
       <list class="tw-self-start" v-model="ideas" />

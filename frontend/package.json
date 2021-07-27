@@ -22,7 +22,8 @@
     "vue-class-component": "^8.0.0-0",
     "vue-router": "^4.0.0-0",
     "vuedraggable": "^4.0.3",
-    "vuex": "^4.0.0-0"
+    "vuex": "^4.0.0-0",
+    "vuex-persistedstate": "^4.0.0"
   },
   "devDependencies": {
     "@types/uuid": "^8.3.0",
