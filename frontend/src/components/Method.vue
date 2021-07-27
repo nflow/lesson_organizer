@@ -27,6 +27,20 @@
         {{ title }}
       </div>
       <div
+        v-if="category && category.length > 0"
+        class="
+          tw-rounded-t-md
+          tw-pl-4
+          tw-pr-4
+          tw-text-gray-800
+          tw-text-sm
+          tw-w-full
+          tw-italic
+        "
+      >
+        {{ category }}
+      </div>
+      <div
         v-if="labels && labels.length > 0"
         class="
           tw-relative
@@ -42,7 +56,7 @@
         </q-chip>
       </div>
       <div
-        v-if="description"
+        v-if="description && description.length > 0"
         class="
           tw-relative
           tw-max-h-24
@@ -94,6 +108,11 @@ export default defineComponent({
     title: {
       type: String,
       required: true,
+    },
+    category: {
+      type: String,
+      required: false,
+      default: undefined,
     },
     description: {
       type: String,

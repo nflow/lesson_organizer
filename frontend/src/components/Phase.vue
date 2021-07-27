@@ -1,6 +1,6 @@
 <template>
   <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
-    <Draggable
+    <draggable
       group="method"
       v-model="refMethods"
       fallbackOnBody="true"
@@ -31,15 +31,16 @@
       </template>
       <template #item="{ element }">
         <div class="tw-flex tw-flex-col tw-p-2">
-          <Method
+          <method
             :title="element.title"
+            :category="element.category"
             :description="element.description"
             :labels="element.labels"
             v-model:ideas="element.ideas"
           />
         </div>
       </template>
-    </Draggable>
+    </draggable>
     <card-button @click="onAddMethod" class="tw-m-2" />
     <q-dialog full-width full-height v-model="showMethodsDialog"
       ><q-card>
@@ -58,9 +59,10 @@
           >
             <template v-slot:item="props">
               <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-                <Method
+                <method
                   @click="onMethodSelect(props.row)"
                   :title="props.row.title"
+                  :category="props.row.category"
                   :description="props.row.description"
                   :labels="props.row.labels"
                 />
