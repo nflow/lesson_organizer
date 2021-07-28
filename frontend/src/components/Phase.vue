@@ -120,7 +120,6 @@ export default defineComponent({
     };
     const allMethods = computed(() => store.getters.allMethods);
     const onMethodSelect = (row: MethodDto): void => {
-      console.log(row);
       refMethods.value.push({
         ...row,
         ideas: [],

@@ -3,9 +3,9 @@ import { CreateMethodDto, MethodDto } from "@/types/method";
 import { CreatePhaseDto, PhaseDto } from "@/types/phase";
 import { MutationTree } from "vuex";
 import { ApiMutationTypes } from "./mutation-types";
-import { ApiStateTypes } from "./state";
+import { ApiState } from "./state";
 
-export type ApiMutationsTypes<S = ApiStateTypes> = {
+export type ApiMutationsTypes<S = ApiState> = {
   [ApiMutationTypes.SET_CREATE_METHOD](
     state: S,
     payload: Request<CreateMethodDto>
@@ -41,7 +41,7 @@ export type ApiMutationsTypes<S = ApiStateTypes> = {
   ): void;
 };
 
-export const mutations: MutationTree<ApiStateTypes> & ApiMutationsTypes = {
+export const mutations: MutationTree<ApiState> & ApiMutationsTypes = {
   [ApiMutationTypes.SET_CREATE_METHOD](
     state,
     payload: Request<CreateMethodDto>

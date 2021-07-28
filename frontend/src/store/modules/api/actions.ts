@@ -7,7 +7,7 @@ import { ApiMutationsTypes } from "./mutations";
 import { RootState } from "@/store";
 import { CreateMethodDto, MethodDto } from "@/types/method";
 import { RequestState } from "@/types/api-state";
-import { ApiStateTypes } from "./state";
+import { ApiState } from "./state";
 import { CreatePhaseDto, PhaseDto } from "@/types/phase";
 
 export type AugmentedActionContext = {
@@ -15,7 +15,7 @@ export type AugmentedActionContext = {
     key: K,
     payload: Parameters<ApiMutationsTypes[K]>[1]
   ): ReturnType<ApiMutationsTypes[K]>;
-} & Omit<ActionContext<ApiStateTypes, RootState>, "commit">;
+} & Omit<ActionContext<ApiState, RootState>, "commit">;
 
 export interface ApiActionsTypes {
   [ApiActionTypes.CREATE_METHOD](
@@ -47,7 +47,7 @@ export interface ApiActionsTypes {
   [ApiActionTypes.FETCH_PHASES]({ commit }: AugmentedActionContext): void;
 }
 
-export const actions: ActionTree<ApiStateTypes, RootState> & ApiActionsTypes = {
+export const actions: ActionTree<ApiState, RootState> & ApiActionsTypes = {
   async [ApiActionTypes.CREATE_METHOD](
     { commit, dispatch },
     payload: CreateMethodDto

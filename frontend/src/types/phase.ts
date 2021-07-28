@@ -1,4 +1,4 @@
-import { MethodDto } from "./MethodDto";
+import { BoardMethodDto } from "./method";
 
 export interface PhaseDto {
   id: string;
@@ -6,7 +6,7 @@ export interface PhaseDto {
 }
 
 export interface BoardPhaseDto extends PhaseDto {
-  methods: Array<MethodDto>;
+  methods: Array<BoardMethodDto>;
 }
 
 export interface CreatePhaseDto {

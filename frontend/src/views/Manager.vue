@@ -301,7 +301,6 @@ export default defineComponent({
     const modifyMethodDialogVisible = ref(false);
     const openModifyMethodDialog = (method: MethodDto): void => {
       Object.assign(modifyMethodModel.value, method);
-      console.log(modifyMethodModel.value);
       modifyMethodDialogVisible.value = true;
     };
     const onModifyMethod = async (): Promise<void> => {
@@ -362,7 +361,6 @@ export default defineComponent({
     const modifyPhaseDialogVisible = ref(false);
     const openModifyPhaseDialog = (phase: PhaseDto): void => {
       Object.assign(modifyPhaseModel.value, phase);
-      console.log(modifyPhaseModel.value);
       modifyPhaseDialogVisible.value = true;
     };
     const onModifyPhase = async (): Promise<void> => {

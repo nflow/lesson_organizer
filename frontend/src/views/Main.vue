@@ -34,7 +34,7 @@
         </div>
         <draggable
           class="tw-grid tw-grid-flow-row sm:tw-grid-flow-col tw-gap-2"
-          v-model="goals"
+          v-model="board.goals"
           item-key="goal-id"
           animation="150"
           group="goals"
@@ -87,7 +87,7 @@
       </q-dialog>
       <draggable
         class="tw-grid tw-grid-flow-col"
-        v-model="phases"
+        v-model="board.phases"
         item-key="phase-id"
         animation="150"
         group="phases"
@@ -100,7 +100,7 @@
       </draggable>
     </div>
     <div>
-      <list class="tw-self-start" v-model="ideas" />
+      <list class="tw-self-start" v-model="board.contents" />
     </div>
   </div>
 </template>
@@ -111,12 +111,12 @@ import Phase from "../components/Phase.vue";
 import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
-import { ContentDto } from "@/types/content";
-import { BoardPhaseDto, PhaseDto } from "@/types/phase";
-import { computed, defineComponent, ref, Ref } from "@vue/runtime-core";
-import { GoalDto } from "@/types/goal";
+import { PhaseDto } from "@/types/phase";
+import { computed, defineComponent, onMounted, ref } from "@vue/runtime-core";
 import { ApiActionTypes } from "@/store/modules/api/action-types";
 import { useStore } from "vuex";
+import { BoardDto } from "@/types/board";
+import { BoardMutationTypes } from "@/store/modules/board/mutation-types";
 
 export default defineComponent({
   name: "Main",
@@ -130,28 +130,27 @@ export default defineComponent({
   setup() {
     const store = useStore();
 
-    const goals: Ref<Array<GoalDto>> = ref([
-      {
-        id: "goal_id_1",
-        order_id: 1,
-        text: "A nice goal!",
-        color: "#fcba03",
+    onMounted(() => {
+      if (store.state.board.currentBoard == undefined) {
+        store.commit(BoardMutationTypes.SET_CURRENT_BOARD, {
+          id: "id",
+          name: "name",
+          goals: [],
+          contents: [],
+          phases: [],
+        });
+      }
+    });
+    const board = computed({
+      get: (): BoardDto => {
+        console.log("read ..");
+        return store.state.board.currentBoard;
       },
-      {
-        id: "goal_id_2",
-        order_id: 2,
-        text: "A loooooooooong goal!",
-        color: "#bafc03",
+      set: (value: BoardDto) => {
+        console.log("write back ..");
+        store.commit(BoardMutationTypes.SET_CURRENT_BOARD, value);
       },
-    ]);
-
-    const ideas: Ref<Array<ContentDto>> = ref([
-      { id: "idea_id_1", value: "Karte von Südost-Asien" },
-      { id: "idea_id_2", value: "Nachrichtenbeitrag" },
-      { id: "idea_id_6", value: "Zeitungsartikel Tsunami" },
-    ]);
-
-    const phases: Ref<Array<BoardPhaseDto>> = ref([]);
+    });
 
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
@@ -160,18 +159,17 @@ export default defineComponent({
     };
     const allPhases = computed(() => store.getters.allPhases);
     const onPhaseSelect = (row: PhaseDto): void => {
-      console.log(row);
-      phases.value.push({
+      const board = store.state.board.currentBoard;
+      board.phases.push({
         ...row,
         methods: [],
       });
+      store.commit(BoardMutationTypes.SET_CURRENT_BOARD, board);
       showPhasesDialog.value = false;
     };
 
     return {
-      ideas,
-      phases,
-      goals,
+      board,
       onAddPhase,
       onPhaseSelect,
       allPhases,

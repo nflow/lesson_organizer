@@ -5,7 +5,6 @@ export enum RequestState {
   SUCCESS,
   ERROR,
 }
-
 export interface Request<T> {
   state: RequestState;
   data?: T;

@@ -8,9 +8,9 @@ import { ApiGettersTypes, getters } from "./getters";
 import { actions, ApiActionsTypes } from "./actions";
 import { ApiMutationsTypes, mutations } from "./mutations";
 import { RootState } from "@/store";
-import state, { ApiStateTypes } from "./state";
+import state, { ApiState } from "./state";
 
-export type ApiStore<S = ApiStateTypes> = Omit<
+export type ApiStore<S = ApiState> = Omit<
   VuexStore<S>,
   "commit" | "getters" | "dispatch"
 > & {
@@ -34,7 +34,7 @@ export type ApiStore<S = ApiStateTypes> = Omit<
   ): ReturnType<ApiActionsTypes[K]>;
 };
 
-const api: Module<ApiStateTypes, RootState> = {
+const api: Module<ApiState, RootState> = {
   state,
   getters,
   mutations,
