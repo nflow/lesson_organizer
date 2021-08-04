@@ -119,8 +119,8 @@
       </div>
       <div class="tw-mb-2 tw-p-2 tw-bg-gray-300 tw-rounded">
         <q-table
-          :loading="fetchMethodsInProgress()"
-          :rows="methods"
+          :loading="methods.isLoading"
+          :rows="methods.data.value"
           :columns="methodColumns"
           row-key="id"
           :rows-per-page-options="[0]"
@@ -183,8 +183,8 @@
       </div>
       <div class="tw-mb-2 tw-p-2 tw-bg-gray-300 tw-rounded">
         <q-table
-          :loading="fetchMethodsInProgress()"
-          :rows="phases"
+          :loading="phases.isLoading"
+          :rows="phases.data.value"
           :columns="phaseColumns"
           row-key="id"
           :rows-per-page-options="[0]"
@@ -215,15 +215,23 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, onMounted } from "@vue/runtime-core";
+import { defineComponent } from "@vue/runtime-core";
 import { ref } from "@vue/reactivity";
-import { useStore } from "@/store";
-import { ApiActionTypes } from "@/store/modules/api/action-types";
 import MethodForm from "@/components/MethodForm.vue";
 import PhaseForm from "@/components/PhaseForm.vue";
 import { CreateMethodDto, MethodDto, resolveLabelName } from "@/types/method";
-import { RequestState } from "@/types/api-state";
 import { CreatePhaseDto, PhaseDto } from "@/types/phase";
+import { useQuery, useMutation, useQueryClient } from "vue-query";
+import {
+  getMethods,
+  getPhases,
+  postMethod,
+  putMethod,
+  deleteMethod,
+  postPhase,
+  putPhase,
+  deletePhase,
+} from "@/api";
 
 export default defineComponent({
   name: "Manager",
@@ -232,14 +240,25 @@ export default defineComponent({
     PhaseForm,
   },
   setup() {
-    const store = useStore();
+    const queryClient = useQueryClient();
 
-    onMounted(() => {
-      store.dispatch(ApiActionTypes.FETCH_METHODS);
-      store.dispatch(ApiActionTypes.FETCH_PHASES);
+    const methods = useQuery("methods", getMethods);
+    const createMethod = useMutation(postMethod, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("methods");
+      },
+    });
+    const updateMethod = useMutation(putMethod, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("methods");
+      },
+    });
+    const removeMethod = useMutation(deleteMethod, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("methods");
+      },
     });
 
-    const methods = computed(() => store.getters.allMethods);
     const methodColumns = [
       {
         name: "title",
@@ -287,12 +306,9 @@ export default defineComponent({
       createMethodDialogVisible.value = true;
     };
     const onCreateMethod = async (): Promise<void> => {
-      await store.dispatch(
-        ApiActionTypes.CREATE_METHOD,
-        createMethodModel.value
-      );
+      createMethod.mutate(createMethodModel.value);
 
-      if (store.state.api.createMethod?.state == RequestState.SUCCESS) {
+      if (createMethod.isSuccess) {
         createMethodDialogVisible.value = false;
       }
     };
@@ -304,21 +320,34 @@ export default defineComponent({
       modifyMethodDialogVisible.value = true;
     };
     const onModifyMethod = async (): Promise<void> => {
-      await store.dispatch(
-        ApiActionTypes.MODIFY_METHOD,
-        modifyMethodModel.value
-      );
+      updateMethod.mutate(modifyMethodModel.value);
 
-      if (store.state.api.modifyMethod?.state == RequestState.SUCCESS) {
+      if (updateMethod.isSuccess) {
         modifyMethodDialogVisible.value = false;
       }
     };
 
     const onRemoveMethod = (v: MethodDto): void => {
-      store.dispatch(ApiActionTypes.DELETE_METHOD, v.id);
+      removeMethod.mutate(v.id);
     };
 
-    const phases = computed(() => store.getters.allPhases);
+    const phases = useQuery("phases", getPhases);
+    const createPhase = useMutation(postPhase, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("phases");
+      },
+    });
+    const updatePhase = useMutation(putPhase, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("phases");
+      },
+    });
+    const removePhase = useMutation(deletePhase, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("phases");
+      },
+    });
+
     const phaseColumns = [
       {
         name: "title",
@@ -329,14 +358,6 @@ export default defineComponent({
       },
       { name: "actions", label: "Actions" },
     ];
-
-    const fetchMethodsInProgress = (): boolean => {
-      if (store.state.api.allMethods?.state == RequestState.PENDING) {
-        return true;
-      }
-
-      return false;
-    };
 
     const emptyCreatePhaseModel = (): CreatePhaseDto => {
       return {
@@ -350,9 +371,9 @@ export default defineComponent({
       createPhaseDialogVisible.value = true;
     };
     const onCreatePhase = async (): Promise<void> => {
-      await store.dispatch(ApiActionTypes.CREATE_PHASE, createPhaseModel.value);
+      createPhase.mutate(createPhaseModel.value);
 
-      if (store.state.api.createPhase?.state == RequestState.SUCCESS) {
+      if (createPhase.isSuccess) {
         createPhaseDialogVisible.value = false;
       }
     };
@@ -364,29 +385,20 @@ export default defineComponent({
       modifyPhaseDialogVisible.value = true;
     };
     const onModifyPhase = async (): Promise<void> => {
-      await store.dispatch(ApiActionTypes.MODIFY_PHASE, modifyPhaseModel.value);
+      updatePhase.mutate(modifyPhaseModel.value);
 
-      if (store.state.api.modifyPhase?.state == RequestState.SUCCESS) {
+      if (updatePhase.isSuccess) {
         modifyPhaseDialogVisible.value = false;
       }
     };
 
     const onRemovePhase = (v: PhaseDto): void => {
-      store.dispatch(ApiActionTypes.DELETE_PHASE, v.id);
-    };
-
-    const fetchPhasesInProgress = (): boolean => {
-      if (store.state.api.allPhases?.state == RequestState.PENDING) {
-        return true;
-      }
-
-      return false;
+      removePhase.mutate(v.id);
     };
 
     return {
       methodColumns,
       methods,
-      fetchMethodsInProgress,
       resolveLabelName,
       createMethodModel,
       createMethodDialogVisible,
@@ -400,7 +412,6 @@ export default defineComponent({
 
       phaseColumns,
       phases,
-      fetchPhasesInProgress,
       createPhaseModel,
       createPhaseDialogVisible,
       onOpenCreatePhaseDialog,

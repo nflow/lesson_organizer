@@ -11,6 +11,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.0-4",
     "@quasar/extras": "^1.0.0",
     "@types/sortablejs": "^1.10.6",
+    "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "quasar": "^2.0.0",
     "sass": "^1.35.2",

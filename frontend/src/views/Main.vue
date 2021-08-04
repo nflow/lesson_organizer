@@ -76,7 +76,7 @@
           </q-card-section>
           <q-card-section>
             <q-table
-              :rows="allPhases"
+              :rows="allPhases.data.value"
               :rows-per-page-options="[0]"
               @row-click="(a, row, e) => onPhaseSelect(row)"
               hide-pagination
@@ -112,11 +112,10 @@ import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
-import { computed, defineComponent, onMounted, ref } from "@vue/runtime-core";
-import { ApiActionTypes } from "@/store/modules/api/action-types";
-import { useStore } from "vuex";
+import { defineComponent, ref } from "@vue/runtime-core";
 import { BoardDto } from "@/types/board";
-import { BoardMutationTypes } from "@/store/modules/board/mutation-types";
+import { useQuery } from "vue-query";
+import { getPhases } from "@/api";
 
 export default defineComponent({
   name: "Main",
@@ -128,43 +127,24 @@ export default defineComponent({
     Goal,
   },
   setup() {
-    const store = useStore();
+    const board: BoardDto = {
+      id: "id",
+      name: "name",
+      goals: [],
+      contents: [],
+      phases: [],
+    };
 
-    onMounted(() => {
-      if (store.state.board.currentBoard == undefined) {
-        store.commit(BoardMutationTypes.SET_CURRENT_BOARD, {
-          id: "id",
-          name: "name",
-          goals: [],
-          contents: [],
-          phases: [],
-        });
-      }
-    });
-    const board = computed({
-      get: (): BoardDto => {
-        console.log("read ..");
-        return store.state.board.currentBoard;
-      },
-      set: (value: BoardDto) => {
-        console.log("write back ..");
-        store.commit(BoardMutationTypes.SET_CURRENT_BOARD, value);
-      },
-    });
-
+    const allPhases = useQuery("phases", getPhases);
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
-      store.dispatch(ApiActionTypes.FETCH_PHASES);
       showPhasesDialog.value = true;
     };
-    const allPhases = computed(() => store.getters.allPhases);
     const onPhaseSelect = (row: PhaseDto): void => {
-      const board = store.state.board.currentBoard;
       board.phases.push({
         ...row,
         methods: [],
       });
-      store.commit(BoardMutationTypes.SET_CURRENT_BOARD, board);
       showPhasesDialog.value = false;
     };
 

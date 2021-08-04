@@ -51,7 +51,7 @@
         </q-card-section>
         <q-card-section>
           <q-table
-            :rows="allMethods"
+            :rows="allMethods.value"
             :rows-per-page-options="[0]"
             :columns="methodColumns"
             hide-pagination
@@ -81,8 +81,8 @@ import Method from "../components/Method.vue";
 import CardButton from "../components/CardButton.vue";
 import Draggable from "vuedraggable";
 import { BoardMethodDto, MethodDto, resolveLabelName } from "@/types/method";
-import { useStore } from "vuex";
-import { ApiActionTypes } from "@/store/modules/api/action-types";
+import { useQuery } from "vue-query";
+import { getMethods } from "@/api";
 
 export default defineComponent({
   name: "Phase",
@@ -102,7 +102,8 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const store = useStore();
+    const allMethods = useQuery("methods", getMethods);
+
     const newEntryInput = ref("");
     const refMethods: ComputedRef<Array<BoardMethodDto>> = computed({
       get: () => {
@@ -115,10 +116,8 @@ export default defineComponent({
 
     let showMethodsDialog = ref(false);
     const onAddMethod = (): void => {
-      store.dispatch(ApiActionTypes.FETCH_METHODS);
       showMethodsDialog.value = true;
     };
-    const allMethods = computed(() => store.getters.allMethods);
     const onMethodSelect = (row: MethodDto): void => {
       refMethods.value.push({
         ...row,
