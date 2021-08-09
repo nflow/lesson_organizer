@@ -4,6 +4,8 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/nflow/lesson_organizer/model"
 	"gorm.io/gorm"
 )
@@ -24,59 +26,117 @@ func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
 	RespondWithSuccess(w, board)
 }
 
-func CreateBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateBoard(w http.ResponseWriter, r *http.Request) {
+	board := &model.Board{}
+	board.Goals = []model.Goal{}
+
+	if !HandleBodyDecode(w, r, board) {
+		return
+	}
+	board.ID = uuid.New()
+
+	if err := h.DB.Create(board).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+	}
+
+	RespondWithCode(w, http.StatusCreated, board)
+}
+
+func (h *Handler) RetrieveBoard(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	board := model.Board{}
+
+	if err := h.DB.First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+
+		return
+	}
+
+	if board.Goals == nil {
+		board.Goals = []model.Goal{}
+	}
+
+	if board.Phases == nil {
+		board.Phases = []model.Phase{}
+	}
+
+	if board.Contents == nil {
+		board.Contents = []model.Content{}
+	}
+
+	RespondWithSuccess(w, board)
+}
+
+func (h *Handler) DeleteBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func DeleteBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RetrieveBoardGoals(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RetrieveBoardGoals(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func CreateGoalInBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RemoveGoalFromBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RemoveGoalFromBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RetrieveBoardContents(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RetrieveBoardContents(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) CreateContentFromBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func CreateContentFromBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) UpdateContentFromBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func UpdateContentFromBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteContentFromBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func DeleteContentFromBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RetrieveBoardPhases(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RetrieveBoardPhases(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	board := model.Board{}
+	mapping := &model.AddPhase{}
+
+	if err := h.DB.First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	}
+
+	if !HandleBodyDecode(w, r, mapping) {
+		return
+	}
+
+	if err := h.DB.Update(board).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+	}
+
+	RespondWithCode(w, http.StatusCreated, board)
+}
+
+func (h *Handler) UpdatePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
-	return
-}
-
-func UpdatePhaseInBoard(w http.ResponseWriter, r *http.Request) {
-	return
-}
-
-func RemovePhaseFromBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) RemovePhaseFromBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 

@@ -9,3 +9,8 @@ type Board struct {
 	Contents []Content `json:"contents" gorm:"many2many:board_contents;"`
 	Phases   []Phase   `json:"phases" gorm:"many2many:board_phases;"`
 }
+
+type AddPhase struct {
+	BoardId uuid.UUID `json:"boardId" validate:"required,uuid"`
+	PhaseId uuid.UUID `json:"phaseId" validate:"required,uuid"`
+}

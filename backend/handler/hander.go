@@ -19,8 +19,6 @@ func HandleBodyDecode(w http.ResponseWriter, r *http.Request, v interface{}) boo
 	}
 	defer r.Body.Close()
 
-	log.Println(v)
-
 	return true
 }
 
@@ -36,6 +34,10 @@ func RespondWithSuccess(w http.ResponseWriter, v interface{}) {
 func RespondWithCode(w http.ResponseWriter, code int, v interface{}) {
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(v)
+}
+
+func RespondEmptyWithCode(w http.ResponseWriter, code int) {
+	w.WriteHeader(code)
 }
 
 func RespondWithEmptyArray(w http.ResponseWriter) {

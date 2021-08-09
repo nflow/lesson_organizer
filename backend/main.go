@@ -44,23 +44,24 @@ func main() {
 	router.HandleFunc("/v1/methods/{id}", h.DeleteMethod).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards", h.RetrieveBoards).Methods("GET")
-	router.HandleFunc("/v1/boards", handler.CreateBoard).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}", handler.DeleteBoard).Methods("DELETE")
+	router.HandleFunc("/v1/boards", h.CreateBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}", h.RetrieveBoard).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}", h.DeleteBoard).Methods("DELETE")
 
-	router.HandleFunc("/v1/boards/{boardId}/goals", handler.RetrieveBoardGoals).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/goals", handler.CreateGoalInBoard).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", handler.UpdateGoalInBoard).Methods("PUT")
-	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", handler.RemoveGoalFromBoard).Methods("DELETE")
+	router.HandleFunc("/v1/boards/{boardId}/goals", h.RetrieveBoardGoals).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/goals", h.CreateGoalInBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", h.UpdateGoalInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", h.RemoveGoalFromBoard).Methods("DELETE")
 
-	router.HandleFunc("/v1/boards/{boardId}/contents", handler.RetrieveBoardContents).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/contents", handler.CreateContentFromBoard).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", handler.UpdateContentFromBoard).Methods("PUT")
-	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", handler.DeleteContentFromBoard).Methods("DELETE")
+	router.HandleFunc("/v1/boards/{boardId}/contents", h.RetrieveBoardContents).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/contents", h.CreateContentFromBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", h.UpdateContentFromBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/contents/{contentId}", h.DeleteContentFromBoard).Methods("DELETE")
 
-	router.HandleFunc("/v1/boards/{boardId}/phases", handler.RetrieveBoardPhases).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases", handler.AddPhaseToBoard).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", handler.UpdatePhaseInBoard).Methods("PUT")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", handler.RemovePhaseFromBoard).Methods("DELETE")
+	router.HandleFunc("/v1/boards/{boardId}/phases", h.RetrieveBoardPhases).Methods("GET")
+	router.HandleFunc("/v1/boards/{boardId}/phases", h.AddPhaseToBoard).Methods("POST")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", h.UpdatePhaseInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", h.RemovePhaseFromBoard).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.RetrievePhaseMethods).Methods("GET")
 	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.AddMethodToPhase).Methods("POST")
@@ -76,7 +77,7 @@ func main() {
 
 	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	allowedMethods := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"})
-	allowedOrigins := handlers.AllowedOrigins([]string{"https://lesson-organizer.de,https://lesson-organizer.com,http://localhost:8080"})
+	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
 
 	srv := &http.Server{
 		Handler:      handlers.CORS(allowedHeaders, allowedMethods, allowedOrigins)(loggedRouter),

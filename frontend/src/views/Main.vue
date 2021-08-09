@@ -112,10 +112,12 @@ import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
-import { defineComponent, ref } from "@vue/runtime-core";
-import { BoardDto } from "@/types/board";
-import { useQuery } from "vue-query";
+import { defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
+import { BoardDto, CreateBoardDto } from "@/types/board";
+import { useMutation, useQuery } from "vue-query";
 import { getPhases } from "@/api";
+import { getBoard, postBoard } from "@/api/board";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   name: "Main",
@@ -127,13 +129,32 @@ export default defineComponent({
     Goal,
   },
   setup() {
-    const board: BoardDto = {
-      id: "id",
-      name: "name",
-      goals: [],
-      contents: [],
-      phases: [],
-    };
+    const router = useRouter();
+    const route = useRoute();
+    const createBoard = useMutation(postBoard);
+    onMounted(async () => {
+      if (!route.params.boardId) {
+        await createBoard.mutateAsync({
+          name: "New Board",
+          goals: [],
+          contents: [],
+          phases: [],
+        } as CreateBoardDto);
+
+        if (createBoard.isSuccess) {
+          console.log(createBoard.data.value);
+
+          router.replace({
+            name: "Main",
+            params: {
+              boardId: createBoard.data.value ? createBoard.data.value.id : "",
+            },
+          });
+        }
+      }
+    });
+
+    const board = useQuery("board", () => getBoard(route.params.boardId));
 
     const allPhases = useQuery("phases", getPhases);
     let showPhasesDialog = ref(false);
@@ -141,7 +162,11 @@ export default defineComponent({
       showPhasesDialog.value = true;
     };
     const onPhaseSelect = (row: PhaseDto): void => {
-      board.phases.push({
+      if (!board.data.value) {
+        return;
+      }
+
+      board.data.value.phases.push({
         ...row,
         methods: [],
       });

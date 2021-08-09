@@ -4,9 +4,10 @@ import Manager from "../views/Manager.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
+    path: "/:boardId?",
     name: "Main",
     component: Main,
+    props: true,
   },
   {
     path: "/manager",
