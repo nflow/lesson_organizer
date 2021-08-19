@@ -8,12 +8,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nflow/lesson_organizer/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
-	var board model.Board
+	var board []model.Board
 
-	if err := h.DB.Take(&board).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Preload("Phases").Find(&board).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondWithEmptyArray(w)
 
 		return
@@ -46,26 +47,12 @@ func (h *Handler) RetrieveBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	board := model.Board{}
 
-	if err := h.DB.First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Preload(clause.Associations).Preload("Phases.Methods").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
-
 		return
 	} else if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err)
-
 		return
-	}
-
-	if board.Goals == nil {
-		board.Goals = []model.Goal{}
-	}
-
-	if board.Phases == nil {
-		board.Phases = []model.Phase{}
-	}
-
-	if board.Contents == nil {
-		board.Contents = []model.Content{}
 	}
 
 	RespondWithSuccess(w, board)
@@ -113,23 +100,24 @@ func (h *Handler) RetrieveBoardPhases(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	board := model.Board{}
-	mapping := &model.AddPhase{}
+	phaseId := &model.PhaseIdentifier{}
 
-	if err := h.DB.First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if !HandleBodyDecode(w, r, phaseId) {
+		return
+	}
+
+	boardId, parsingErr := uuid.Parse(vars["boardId"])
+	if parsingErr != nil {
+		RespondWithCode(w, http.StatusBadRequest, parsingErr)
+		return
+	}
+
+	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Phases").Append(&model.Phase{ID: phaseId.ID}); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	}
 
-	if !HandleBodyDecode(w, r, mapping) {
-		return
-	}
-
-	if err := h.DB.Update(board).Error; err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err)
-	}
-
-	RespondWithCode(w, http.StatusCreated, board)
+	RespondWithCode(w, http.StatusCreated, phaseId)
 }
 
 func (h *Handler) UpdatePhaseInBoard(w http.ResponseWriter, r *http.Request) {
