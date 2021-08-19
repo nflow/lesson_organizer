@@ -8,7 +8,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nflow/lesson_organizer/model"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +46,7 @@ func (h *Handler) RetrieveBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	board := model.Board{}
 
-	if err := h.DB.Preload(clause.Associations).Preload("Phases.Methods").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Preload("Phases.Phase").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	} else if err != nil {
@@ -112,7 +111,7 @@ func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Phases").Append(&model.Phase{ID: phaseId.ID}); errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Phases").Append(&model.BoardPhase{ID: uuid.New(), PhaseID: phaseId.ID}); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	}

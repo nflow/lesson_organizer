@@ -11,12 +11,6 @@ type BoardContents struct {
 	Order     uint      `json:"order"`
 }
 
-type BoardPhases struct {
-	BoardID uuid.UUID `json:"boardId" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
-	PhaseID uuid.UUID `json:"phaseId" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
-	Order   uint      `json:"order"`
-}
-
 type PhaseMethods struct {
 	PhaseID  uuid.UUID       `json:"phaseId" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
 	MethodID uuid.UUID       `json:"methodId" validate:"required,uuid" gorm:"type:uuid;primary_key;"`

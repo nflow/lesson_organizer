@@ -3,14 +3,16 @@ package model
 import "github.com/google/uuid"
 
 type Board struct {
-	ID       uuid.UUID `json:"id" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
-	Name     string    `json:"name"`
-	Goals    []Goal    `json:"goals"`
-	Contents []Content `json:"contents" gorm:"many2many:board_contents;"`
-	Phases   []Phase   `json:"phases" gorm:"many2many:board_phases;"`
+	ID       uuid.UUID    `json:"id" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
+	Name     string       `json:"name"`
+	Goals    []Goal       `json:"goals"`
+	Contents []Content    `json:"contents" gorm:"many2many:board_contents;"`
+	Phases   []BoardPhase `json:"phases" `
 }
-
-type AddPhase struct {
-	BoardId uuid.UUID `json:"boardId" validate:"required,uuid"`
-	PhaseId uuid.UUID `json:"phaseId" validate:"required,uuid"`
+type BoardPhase struct {
+	ID      uuid.UUID `json:"id" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
+	BoardID uuid.UUID `json:"-" gorm:"type:uuid"`
+	PhaseID uuid.UUID `json:"-"`
+	Phase   Phase     `json:"phase"`
+	Order   uint      `json:"order"`
 }
