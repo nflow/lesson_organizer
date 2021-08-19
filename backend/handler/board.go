@@ -13,7 +13,7 @@ import (
 func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
 	var board []model.Board
 
-	if err := h.DB.Preload("Phases").Find(&board).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Find(&board).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondWithEmptyArray(w)
 
 		return
@@ -28,7 +28,6 @@ func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) CreateBoard(w http.ResponseWriter, r *http.Request) {
 	board := &model.Board{}
-	board.Goals = []model.Goal{}
 
 	if !HandleBodyDecode(w, r, board) {
 		return
@@ -46,7 +45,7 @@ func (h *Handler) RetrieveBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	board := model.Board{}
 
-	if err := h.DB.Preload("Phases.Phase").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Preload("Phases.Methods").Preload("Phases.Phase").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	} else if err != nil {

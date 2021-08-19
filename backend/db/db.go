@@ -13,19 +13,7 @@ func ConnectDB() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	if err := db.SetupJoinTable(&model.Board{}, "Contents", &BoardContents{}); err != nil {
-		return nil, err
-	}
-
-	if err := db.SetupJoinTable(&model.Phase{}, "Methods", &PhaseMethods{}); err != nil {
-		return nil, err
-	}
-
-	if err := db.SetupJoinTable(&PhaseMethods{}, "Contents", &MethodContents{}); err != nil {
-		return nil, err
-	}
-
-	if err := db.AutoMigrate(&model.Board{}, &model.Content{}, &model.Phase{}, &model.Method{}, &model.Goal{}, &model.BoardPhase{}); err != nil {
+	if err := db.AutoMigrate(&model.Board{}, &model.Phase{}, &model.Method{}, &model.BoardGoal{}, &model.BoardPhase{}, &model.BoardMethod{}, &model.BoardContent{}); err != nil {
 		return nil, err
 	}
 
