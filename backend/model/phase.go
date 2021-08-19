@@ -7,3 +7,7 @@ type Phase struct {
 	Title   string    `json:"title"`
 	Methods []Method  `gorm:"many2many:phase_methods;" json:"methods"`
 }
+
+type PhaseIdentifier struct {
+	ID uuid.UUID `json:"id" validate:"required,uuid"`
+}
