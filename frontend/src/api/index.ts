@@ -2,69 +2,84 @@ import config from "@/config";
 import { CreateMethodDto, MethodDto } from "@/types/method";
 import { CreatePhaseDto, PhaseDto } from "@/types/phase";
 import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "vue-query";
 
-export async function getMethods(): Promise<MethodDto[]> {
-  const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/methods`);
+export function getMethods() {
+  return useQuery("methods", async () => {
+    const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/methods`);
 
-  return data;
+    return data;
+  });
 }
 
-export async function postMethod(
-  payload: CreateMethodDto
-): Promise<MethodDto[]> {
-  const { data } = await axios.post(
-    `${config.CONFIG_API_URL}/v1/methods`,
-    payload
-  );
+export function postMethod() {
+  return useMutation(async (payload: CreateMethodDto) => {
+    const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/methods`,
+      payload
+    );
 
-  return data;
+    return data;
+  });
 }
 
-export async function putMethod(payload: MethodDto): Promise<MethodDto> {
-  const { data } = await axios.put(
-    `${config.CONFIG_API_URL}/v1/methods/${payload.id}`,
-    payload
-  );
+export function putMethod() {
+  return useMutation(async (payload: MethodDto) => {
+    const { data } = await axios.put(
+      `${config.CONFIG_API_URL}/v1/methods/${payload.id}`,
+      payload
+    );
 
-  return data;
+    return data;
+  });
 }
 
-export async function deleteMethod(id: string): Promise<MethodDto> {
-  const { data } = await axios.delete(
-    `${config.CONFIG_API_URL}/v1/methods/${id}`
-  );
+export function deleteMethod() {
+  return useMutation(async (id: string) => {
+    const { data } = await axios.delete(
+      `${config.CONFIG_API_URL}/v1/methods/${id}`
+    );
 
-  return data;
+    return data;
+  });
 }
 
-export async function getPhases(): Promise<PhaseDto[]> {
-  const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/phases`);
+export function getPhases() {
+  return useQuery("phases", async () => {
+    const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/phases`);
 
-  return data;
+    return data;
+  });
 }
 
-export async function postPhase(payload: CreatePhaseDto): Promise<PhaseDto[]> {
-  const { data } = await axios.post(
-    `${config.CONFIG_API_URL}/v1/phases`,
-    payload
-  );
+export function postPhase() {
+  return useMutation(async (payload: CreatePhaseDto) => {
+    const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/phases`,
+      payload
+    );
 
-  return data;
+    return data;
+  });
 }
 
-export async function putPhase(payload: PhaseDto): Promise<PhaseDto> {
-  const { data } = await axios.put(
-    `${config.CONFIG_API_URL}/v1/phases/${payload.id}`,
-    payload
-  );
+export function putPhase() {
+  return useMutation(async (payload: PhaseDto) => {
+    const { data } = await axios.put(
+      `${config.CONFIG_API_URL}/v1/phases/${payload.id}`,
+      payload
+    );
 
-  return data;
+    return data;
+  });
 }
 
-export async function deletePhase(id: string): Promise<PhaseDto> {
-  const { data } = await axios.delete(
-    `${config.CONFIG_API_URL}/v1/phases/${id}`
-  );
+export function deletePhase() {
+  return useMutation(async (id: string) => {
+    const { data } = await axios.delete(
+      `${config.CONFIG_API_URL}/v1/phases/${id}`
+    );
 
-  return data;
+    return data;
+  });
 }

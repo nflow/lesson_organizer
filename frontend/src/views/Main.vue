@@ -114,7 +114,6 @@ import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
 import { defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
 import { BoardDto, CreateBoardDto } from "@/types/board";
-import { useMutation, useQuery } from "vue-query";
 import { getPhases } from "@/api";
 import { getBoard, postBoard } from "@/api/board";
 import { useRoute, useRouter } from "vue-router";
@@ -131,7 +130,7 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const createBoard = useMutation(postBoard);
+    const createBoard = postBoard();
     onMounted(async () => {
       if (!route.params.boardId) {
         await createBoard.mutateAsync({
@@ -154,9 +153,9 @@ export default defineComponent({
       }
     });
 
-    const board = useQuery("board", () => getBoard(route.params.boardId));
+    const board = getBoard(route.params.boardId);
 
-    const allPhases = useQuery("phases", getPhases);
+    const allPhases = getPhases();
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
       showPhasesDialog.value = true;

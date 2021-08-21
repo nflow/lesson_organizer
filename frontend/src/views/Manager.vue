@@ -221,7 +221,6 @@ import MethodForm from "@/components/MethodForm.vue";
 import PhaseForm from "@/components/PhaseForm.vue";
 import { CreateMethodDto, MethodDto, resolveLabelName } from "@/types/method";
 import { CreatePhaseDto, PhaseDto } from "@/types/phase";
-import { useQuery, useMutation, useQueryClient } from "vue-query";
 import {
   getMethods,
   getPhases,
@@ -232,6 +231,7 @@ import {
   putPhase,
   deletePhase,
 } from "@/api";
+import { useQueryClient } from "vue-query";
 
 export default defineComponent({
   name: "Manager",
@@ -240,24 +240,10 @@ export default defineComponent({
     PhaseForm,
   },
   setup() {
-    const queryClient = useQueryClient();
-
-    const methods = useQuery("methods", getMethods);
-    const createMethod = useMutation(postMethod, {
-      onSuccess: () => {
-        queryClient.invalidateQueries("methods");
-      },
-    });
-    const updateMethod = useMutation(putMethod, {
-      onSuccess: () => {
-        queryClient.invalidateQueries("methods");
-      },
-    });
-    const removeMethod = useMutation(deleteMethod, {
-      onSuccess: () => {
-        queryClient.invalidateQueries("methods");
-      },
-    });
+    const methods = getMethods();
+    const createMethod = postMethod();
+    const updateMethod = putMethod();
+    const removeMethod = deleteMethod();
 
     const methodColumns = [
       {
@@ -306,9 +292,10 @@ export default defineComponent({
       createMethodDialogVisible.value = true;
     };
     const onCreateMethod = async (): Promise<void> => {
-      createMethod.mutate(createMethodModel.value);
+      await createMethod.mutateAsync(createMethodModel.value);
 
       if (createMethod.isSuccess) {
+        queryClient.invalidateQueries("methods");
         createMethodDialogVisible.value = false;
       }
     };
@@ -320,34 +307,27 @@ export default defineComponent({
       modifyMethodDialogVisible.value = true;
     };
     const onModifyMethod = async (): Promise<void> => {
-      updateMethod.mutate(modifyMethodModel.value);
+      await updateMethod.mutateAsync(modifyMethodModel.value);
 
       if (updateMethod.isSuccess) {
+        queryClient.invalidateQueries("methods");
         modifyMethodDialogVisible.value = false;
       }
     };
 
-    const onRemoveMethod = (v: MethodDto): void => {
-      removeMethod.mutate(v.id);
+    const onRemoveMethod = async (v: MethodDto): Promise<void> => {
+      await removeMethod.mutateAsync(v.id);
+
+      if (removeMethod.isSuccess) {
+        queryClient.invalidateQueries("methods");
+      }
     };
 
-    const phases = useQuery("phases", getPhases);
-    const createPhase = useMutation(postPhase, {
-      onSuccess: () => {
-        queryClient.invalidateQueries("phases");
-      },
-    });
-    const updatePhase = useMutation(putPhase, {
-      onSuccess: () => {
-        queryClient.invalidateQueries("phases");
-      },
-    });
-    const removePhase = useMutation(deletePhase, {
-      onSuccess: () => {
-        queryClient.invalidateQueries("phases");
-      },
-    });
-
+    const queryClient = useQueryClient();
+    const phases = getPhases();
+    const createPhase = postPhase();
+    const updatePhase = putPhase();
+    const removePhase = deletePhase();
     const phaseColumns = [
       {
         name: "title",
@@ -371,9 +351,10 @@ export default defineComponent({
       createPhaseDialogVisible.value = true;
     };
     const onCreatePhase = async (): Promise<void> => {
-      createPhase.mutate(createPhaseModel.value);
+      await createPhase.mutateAsync(createPhaseModel.value);
 
       if (createPhase.isSuccess) {
+        queryClient.invalidateQueries("phases");
         createPhaseDialogVisible.value = false;
       }
     };
@@ -385,15 +366,20 @@ export default defineComponent({
       modifyPhaseDialogVisible.value = true;
     };
     const onModifyPhase = async (): Promise<void> => {
-      updatePhase.mutate(modifyPhaseModel.value);
+      await updatePhase.mutateAsync(modifyPhaseModel.value);
 
       if (updatePhase.isSuccess) {
+        queryClient.invalidateQueries("phases");
         modifyPhaseDialogVisible.value = false;
       }
     };
 
-    const onRemovePhase = (v: PhaseDto): void => {
-      removePhase.mutate(v.id);
+    const onRemovePhase = async (v: PhaseDto): Promise<void> => {
+      await removePhase.mutateAsync(v.id);
+
+      if (removePhase.isSuccess) {
+        queryClient.invalidateQueries("phases");
+      }
     };
 
     return {

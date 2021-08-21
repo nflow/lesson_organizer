@@ -81,7 +81,6 @@ import Method from "../components/Method.vue";
 import CardButton from "../components/CardButton.vue";
 import Draggable from "vuedraggable";
 import { BoardMethodDto, MethodDto, resolveLabelName } from "@/types/method";
-import { useQuery } from "vue-query";
 import { getMethods } from "@/api";
 
 export default defineComponent({
@@ -102,7 +101,7 @@ export default defineComponent({
     },
   },
   setup(props, { emit }) {
-    const allMethods = useQuery("methods", getMethods);
+    const allMethods = getMethods();
 
     const newEntryInput = ref("");
     const refMethods: ComputedRef<Array<BoardMethodDto>> = computed({
