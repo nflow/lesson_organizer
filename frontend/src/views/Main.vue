@@ -113,10 +113,11 @@ import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
 import { defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
-import { BoardDto, CreateBoardDto } from "@/types/board";
+import { CreateBoardDto } from "@/types/board";
 import { getPhases } from "@/api";
-import { getBoard, postBoard } from "@/api/board";
+import { getBoard, postBoard, postPhaseAssociation } from "@/api/board";
 import { useRoute, useRouter } from "vue-router";
+import { useQueryClient } from "vue-query";
 
 export default defineComponent({
   name: "Main",
@@ -153,23 +154,22 @@ export default defineComponent({
       }
     });
 
+    const queryClient = useQueryClient();
     const board = getBoard(route.params.boardId);
-
     const allPhases = getPhases();
+    const addPhase = postPhaseAssociation(route.params.boardId);
+
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
       showPhasesDialog.value = true;
     };
-    const onPhaseSelect = (row: PhaseDto): void => {
-      if (!board.data.value) {
-        return;
-      }
+    const onPhaseSelect = async (row: PhaseDto): Promise<void> => {
+      await addPhase.mutateAsync({ id: row.id });
 
-      board.data.value.phases.push({
-        ...row,
-        methods: [],
-      });
-      showPhasesDialog.value = false;
+      if (addPhase.isSuccess) {
+        queryClient.invalidateQueries("board");
+        showPhasesDialog.value = false;
+      }
     };
 
     return {

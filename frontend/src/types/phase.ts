@@ -12,3 +12,7 @@ export interface BoardPhaseDto extends PhaseDto {
 export interface CreatePhaseDto {
   title: string;
 }
+
+export interface PhaseIdentifierDto {
+  id: string;
+}

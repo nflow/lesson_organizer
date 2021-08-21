@@ -2,7 +2,7 @@ import config from "@/config";
 import { CreateMethodDto, MethodDto } from "@/types/method";
 import { CreatePhaseDto, PhaseDto } from "@/types/phase";
 import axios from "axios";
-import { useMutation, useQuery, useQueryClient } from "vue-query";
+import { useMutation, useQuery } from "vue-query";
 
 export function getMethods() {
   return useQuery("methods", async () => {
