@@ -87,7 +87,7 @@
       </q-dialog>
       <draggable
         class="tw-grid tw-grid-flow-col"
-        v-model="board.phases"
+        v-model="board.data.value.phases"
         item-key="phase-id"
         animation="150"
         group="phases"
@@ -95,7 +95,10 @@
         delayOnTouchOnly="true"
       >
         <template #item="{ element }">
-          <phase v-model:methods="element.methods" :title="element.title" />
+          <phase
+            v-model:methods="element.phase.methods"
+            :title="element.phase.title"
+          />
         </template>
       </draggable>
     </div>
