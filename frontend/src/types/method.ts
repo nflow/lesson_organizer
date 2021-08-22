@@ -40,3 +40,7 @@ export interface CreateMethodDto {
   category: string;
   labels: Array<Label>;
 }
+
+export interface MethodIdentifierDto {
+  id: string;
+}

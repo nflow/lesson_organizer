@@ -1,5 +1,11 @@
 <template>
-  <div class="tw-flex tw-flex-col tw-flex-nowrap tw-h-full">
+  <div
+    class="tw-text-5xl"
+    v-if="createBoard.isLoading.value || board.isLoading.value"
+  >
+    Loading board ...
+  </div>
+  <div v-else class="tw-flex tw-flex-col tw-flex-nowrap tw-h-full">
     <div class="tw-flex-initial tw-flex tw-flex-col tw-bg-gray-200 tw-m-0">
       <div
         class="
@@ -86,6 +92,7 @@
         </q-card>
       </q-dialog>
       <draggable
+        v-if="board.isSuccess"
         class="tw-grid tw-grid-flow-col"
         v-model="board.data.value.phases"
         item-key="phase-id"
@@ -116,11 +123,11 @@ import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
 import { defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
-import { CreateBoardDto } from "@/types/board";
+import { BoardDto, CreateBoardDto } from "@/types/board";
 import { getPhases } from "@/api";
 import { getBoard, postBoard, postPhaseAssociation } from "@/api/board";
 import { useRoute, useRouter } from "vue-router";
-import { useQueryClient } from "vue-query";
+import { useQuery, useQueryClient } from "vue-query";
 
 export default defineComponent({
   name: "Main",
@@ -134,33 +141,37 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     const route = useRoute();
+    const boardId = ref(route.params.boardId);
+
+    const queryClient = useQueryClient();
     const createBoard = postBoard();
-    onMounted(async () => {
-      if (!route.params.boardId) {
-        await createBoard.mutateAsync({
+
+    if (!route.params.boardId) {
+      createBoard.mutate(
+        {
           name: "New Board",
           goals: [],
           contents: [],
           phases: [],
-        } as CreateBoardDto);
-
-        if (createBoard.isSuccess) {
-          console.log(createBoard.data.value);
-
-          router.replace({
-            name: "Main",
-            params: {
-              boardId: createBoard.data.value ? createBoard.data.value.id : "",
-            },
-          });
+        } as CreateBoardDto,
+        {
+          onSuccess: (data: BoardDto) => {
+            queryClient.setQueryData(["board"], data);
+            boardId.value = data.id;
+            router.replace({
+              name: "Main",
+              params: {
+                boardId: data ? data.id : "",
+              },
+            });
+          },
         }
-      }
-    });
+      );
+    }
 
-    const queryClient = useQueryClient();
-    const board = getBoard(route.params.boardId);
+    const board = getBoard(boardId);
     const allPhases = getPhases();
-    const addPhase = postPhaseAssociation(route.params.boardId);
+    const addPhase = postPhaseAssociation(boardId);
 
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
@@ -176,6 +187,7 @@ export default defineComponent({
     };
 
     return {
+      createBoard,
       board,
       onAddPhase,
       onPhaseSelect,
