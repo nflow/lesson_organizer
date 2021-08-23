@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -42,4 +43,15 @@ func RespondEmptyWithCode(w http.ResponseWriter, code int) {
 
 func RespondWithEmptyArray(w http.ResponseWriter) {
 	json.NewEncoder(w).Encode([]string{})
+}
+
+func parseUUID(w http.ResponseWriter, payload string, out *uuid.UUID) bool {
+
+	value, parsingErr := uuid.Parse(payload)
+	if parsingErr != nil {
+		RespondWithCode(w, http.StatusBadRequest, parsingErr)
+		return false
+	}
+	*out = value
+	return true
 }

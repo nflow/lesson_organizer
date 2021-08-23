@@ -2,6 +2,7 @@ package handler
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -130,8 +131,29 @@ func RetrievePhaseMethods(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func AddMethodToPhase(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) AddMethodToPhase(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	methodId := &model.MethodIdentifier{}
+
+	if !HandleBodyDecode(w, r, methodId) {
+		return
+	}
+
+	fmt.Println("foo")
+
+	var boardId, phaseId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) {
+		return
+	}
+
+	fmt.Println(boardId, phaseId)
+
+	if err := h.DB.Model(&model.BoardPhase{ID: phaseId}).Association("Methods").Append(&model.BoardMethod{ID: uuid.New(), MethodID: methodId.ID}); errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	}
+
+	RespondWithCode(w, http.StatusCreated, phaseId)
 }
 
 func UpdateMethodInPhase(w http.ResponseWriter, r *http.Request) {

@@ -5,8 +5,11 @@ export interface PhaseDto {
   title: string;
 }
 
-export interface BoardPhaseDto extends PhaseDto {
+export interface BoardPhaseDto {
+  id: string;
+  phase: PhaseDto;
   methods: Array<BoardMethodDto>;
+  order: number;
 }
 
 export interface CreatePhaseDto {

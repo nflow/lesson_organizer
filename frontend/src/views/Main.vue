@@ -102,15 +102,12 @@
         delayOnTouchOnly="true"
       >
         <template #item="{ element }">
-          <phase
-            v-model:methods="element.phase.methods"
-            :title="element.phase.title"
-          />
+          <phase :phaseObject="element" :boardId="board.data.value.id" />
         </template>
       </draggable>
     </div>
     <div>
-      <list class="tw-self-start" v-model="board.contents" />
+      <list class="tw-self-start" v-model="board.data.contents" />
     </div>
   </div>
 </template>
@@ -122,12 +119,12 @@ import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
-import { defineComponent, onMounted, Ref, ref } from "@vue/runtime-core";
+import { defineComponent, ref } from "@vue/runtime-core";
 import { BoardDto, CreateBoardDto } from "@/types/board";
 import { getPhases } from "@/api";
 import { getBoard, postBoard, postPhaseAssociation } from "@/api/board";
 import { useRoute, useRouter } from "vue-router";
-import { useQuery, useQueryClient } from "vue-query";
+import { useQueryClient } from "vue-query";
 
 export default defineComponent({
   name: "Main",

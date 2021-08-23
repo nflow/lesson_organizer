@@ -2,7 +2,7 @@
   <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
     <draggable
       group="method"
-      v-model="refMethods"
+      v-model="methods"
       fallbackOnBody="true"
       swapThreshold="0.65"
       animation="150"
@@ -26,7 +26,7 @@
             tw-text-center
           "
         >
-          {{ title }}
+          {{ phase.title }}
         </div>
       </template>
       <template #item="{ element }">
@@ -51,7 +51,7 @@
         </q-card-section>
         <q-card-section>
           <q-table
-            :rows="allMethods.value"
+            :rows="allMethods.data.value"
             :rows-per-page-options="[0]"
             :columns="methodColumns"
             hide-pagination
@@ -76,12 +76,15 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, PropType, ref } from "vue";
+import { defineComponent, PropType, ref, toRefs } from "vue";
 import Method from "../components/Method.vue";
 import CardButton from "../components/CardButton.vue";
 import Draggable from "vuedraggable";
-import { BoardMethodDto, MethodDto, resolveLabelName } from "@/types/method";
+import { MethodDto, resolveLabelName } from "@/types/method";
 import { getMethods } from "@/api";
+import { postMethodAssociation } from "@/api/board";
+import { BoardPhaseDto } from "@/types/phase";
+import { useQueryClient } from "vue-query";
 
 export default defineComponent({
   name: "Phase",
@@ -91,38 +94,35 @@ export default defineComponent({
     CardButton,
   },
   props: {
-    title: {
+    boardId: {
       type: String,
       required: true,
     },
-    methods: {
-      type: Object as PropType<Array<BoardMethodDto>>,
+    phaseObject: {
+      type: Object as PropType<BoardPhaseDto>,
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup(props) {
+    const queryClient = useQueryClient();
     const allMethods = getMethods();
+    const boardId = ref(props.boardId);
+    const { id, phase, methods } = toRefs(props.phaseObject);
 
-    const newEntryInput = ref("");
-    const refMethods: ComputedRef<Array<BoardMethodDto>> = computed({
-      get: () => {
-        return props.methods;
-      },
-      set: (value) => {
-        emit("update:methods", value);
-      },
-    });
-
+    const associateMethod = postMethodAssociation(boardId, id.value);
     let showMethodsDialog = ref(false);
     const onAddMethod = (): void => {
       showMethodsDialog.value = true;
     };
     const onMethodSelect = (row: MethodDto): void => {
-      refMethods.value.push({
-        ...row,
-        ideas: [],
-      });
-      showMethodsDialog.value = false;
+      associateMethod.mutate(
+        { id: row.id },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries("board");
+          },
+        }
+      );
     };
 
     const methodColumns = [
@@ -143,8 +143,8 @@ export default defineComponent({
     ];
 
     return {
-      newEntryInput,
-      refMethods,
+      phase,
+      methods,
 
       onAddMethod,
       showMethodsDialog,

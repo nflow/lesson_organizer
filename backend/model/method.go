@@ -21,3 +21,7 @@ type Method struct {
 	Category    string         `json:"category"`
 	Labels      pq.StringArray `json:"labels" gorm:"type:text[]"`
 }
+
+type MethodIdentifier struct {
+	ID uuid.UUID `json:"id" validate:"required,uuid"`
+}

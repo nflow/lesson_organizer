@@ -46,7 +46,7 @@ export function postMethodAssociation(
 ) {
   return useMutation(async (payload: MethodIdentifierDto) => {
     const { data } = await axios.post(
-      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases/${phaseId}`,
+      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases/${phaseId}/methods`,
       payload
     );
 
