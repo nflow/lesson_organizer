@@ -46,7 +46,7 @@ func (h *Handler) RetrieveBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	board := model.Board{}
 
-	if err := h.DB.Preload("Phases.Methods").Preload("Phases.Phase").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Preload("Phases.Methods").Preload("Phases.Content").Preload("Phases.Methods.Method").Preload("Phases.Phase").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	} else if err != nil {
@@ -138,8 +138,6 @@ func (h *Handler) AddMethodToPhase(w http.ResponseWriter, r *http.Request) {
 	if !HandleBodyDecode(w, r, methodId) {
 		return
 	}
-
-	fmt.Println("foo")
 
 	var boardId, phaseId uuid.UUID
 	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) {
