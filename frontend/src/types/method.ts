@@ -31,7 +31,7 @@ export interface MethodDto {
 }
 
 export interface BoardMethodDto extends MethodDto {
-  ideas: Array<ContentDto>;
+  contents: Array<ContentDto>;
 }
 
 export interface CreateMethodDto {

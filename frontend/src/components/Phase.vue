@@ -2,7 +2,7 @@
   <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
     <draggable
       group="method"
-      v-model="methods"
+      :list="methods"
       fallbackOnBody="true"
       swapThreshold="0.65"
       animation="150"
@@ -31,13 +31,7 @@
       </template>
       <template #item="{ element }">
         <div class="tw-flex tw-flex-col tw-p-2">
-          <method
-            :title="element.title"
-            :category="element.category"
-            :description="element.description"
-            :labels="element.labels"
-            v-model:ideas="element.ideas"
-          />
+          <method :method="element.method" :contents="element.contents" />
         </div>
       </template>
     </draggable>
@@ -61,10 +55,7 @@
               <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
                 <method
                   @click="onMethodSelect(props.row)"
-                  :title="props.row.title"
-                  :category="props.row.category"
-                  :description="props.row.description"
-                  :labels="props.row.labels"
+                  :method="props.row"
                 />
               </div>
             </template>

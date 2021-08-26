@@ -1,4 +1,5 @@
 export interface ContentDto {
   id: string;
-  value: string;
+  text: string;
+  order: number;
 }

@@ -2,7 +2,7 @@
   <div class="tw-w-full">
     <div class="tw-bg-white">
       <Draggable
-        v-model="refIdeas"
+        :list="conents"
         tag="table"
         animation="150"
         group="ideas"
@@ -114,7 +114,7 @@
 </template>
 
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, PropType, ref } from "vue";
+import { defineComponent, PropType, ref } from "vue";
 import { ContentDto } from "@/types/content";
 import { v4 as uuidv4 } from "uuid";
 import Draggable from "vuedraggable";
@@ -125,21 +125,13 @@ export default defineComponent({
     Draggable,
   },
   props: {
-    modelValue: {
+    conents: {
       type: Object as PropType<Array<ContentDto>>,
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup() {
     const newEntryInput = ref("");
-    const refIdeas: ComputedRef<Array<ContentDto>> = computed({
-      get: () => {
-        return props.modelValue;
-      },
-      set: (value) => {
-        emit("update:modelValue", value);
-      },
-    });
 
     const addNew = (): void => {
       if (!newEntryInput.value) {
@@ -147,28 +139,26 @@ export default defineComponent({
       }
 
       const newEntry: ContentDto = { id: uuidv4(), value: newEntryInput.value };
-      refIdeas.value.push(newEntry);
+      //contents.value.push(newEntry);
 
       newEntryInput.value = "";
     };
 
     const remove = (id: string): ContentDto | undefined => {
-      const index: number = refIdeas.value.findIndex(
-        (element: ContentDto) => element.id == id
-      );
-
-      if (index < 0) {
-        return undefined;
-      }
-
-      return refIdeas.value.splice(index, 1)[0];
+      // const index: number = refIdeas.value.findIndex(
+      //   (element: ContentDto) => element.id == id
+      // );
+      // if (index < 0) {
+      //   return undefined;
+      // }
+      // return refIdeas.value.splice(index, 1)[0];
+      return undefined;
     };
 
     return {
       newEntryInput,
       addNew,
       remove,
-      refIdeas,
     };
   },
 });

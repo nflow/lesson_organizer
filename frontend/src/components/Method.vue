@@ -24,10 +24,10 @@
           tw-w-full
         "
       >
-        {{ title }}
+        {{ method.title }}
       </div>
       <div
-        v-if="category && category.length > 0"
+        v-if="method.category && method.category.length > 0"
         class="
           tw-rounded-t-md
           tw-pl-4
@@ -38,10 +38,10 @@
           tw-italic
         "
       >
-        {{ category }}
+        {{ method.category }}
       </div>
       <div
-        v-if="labels && labels.length > 0"
+        v-if="method.labels && method.labels.length > 0"
         class="
           tw-relative
           tw-text-gray-600
@@ -51,12 +51,12 @@
           tw-overflow-hidden
         "
       >
-        <q-chip v-for="(v, i) in labels" :key="i">
+        <q-chip v-for="(v, i) in method.labels" :key="i">
           {{ resolveLabelName(v) }}
         </q-chip>
       </div>
       <div
-        v-if="description && description.length > 0"
+        v-if="method.description && method.description.length > 0"
         class="
           tw-relative
           tw-max-h-24
@@ -79,11 +79,11 @@
             tw-to-white
           "
         />
-        {{ description }}
+        {{ method.description }}
       </div>
     </div>
-    <div v-if="refIdeas" class="tw-p-0 tw-m-0 tw-w-full">
-      <list class="tw-p-4" v-model="refIdeas" />
+    <div v-if="contents" class="tw-p-0 tw-m-0 tw-w-full">
+      <list class="tw-p-4" :elements="contents" />
     </div>
   </div>
 </template>
@@ -91,13 +91,8 @@
 <script lang="ts">
 import { ContentDto } from "@/types/content";
 import List from "../components/List.vue";
-import {
-  computed,
-  ComputedRef,
-  defineComponent,
-  PropType,
-} from "@vue/runtime-core";
-import { Label, resolveLabelName } from "@/types/method";
+import { defineComponent, PropType } from "@vue/runtime-core";
+import { MethodDto, resolveLabelName } from "@/types/method";
 
 export default defineComponent({
   name: "Method",
@@ -105,41 +100,18 @@ export default defineComponent({
     List,
   },
   props: {
-    title: {
-      type: String,
+    method: {
+      type: Object as PropType<MethodDto>,
       required: true,
     },
-    category: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    description: {
-      type: String,
-      required: false,
-      default: undefined,
-    },
-    labels: {
-      type: Object as PropType<Label[]>,
-      required: true,
-    },
-    ideas: {
+    contents: {
       type: Object as PropType<Array<ContentDto>>,
       required: false,
       default: undefined,
     },
   },
-  setup(props, { emit }) {
-    const refIdeas = computed({
-      get: () => {
-        return props.ideas;
-      },
-      set: (value) => {
-        emit("update:ideas", value);
-      },
-    });
-
-    return { refIdeas, resolveLabelName };
+  setup() {
+    return { resolveLabelName };
   },
 });
 </script>
