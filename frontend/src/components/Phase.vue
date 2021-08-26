@@ -2,7 +2,7 @@
   <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
     <draggable
       group="method"
-      :list="methods"
+      :list="boardPhase.methods"
       fallbackOnBody="true"
       swapThreshold="0.65"
       animation="150"
@@ -26,7 +26,7 @@
             tw-text-center
           "
         >
-          {{ phase.title }}
+          {{ boardPhase.phase.title }}
         </div>
       </template>
       <template #item="{ element }">
@@ -67,7 +67,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, toRefs } from "vue";
+import { defineComponent, PropType, ref, toRef, toRefs } from "vue";
 import Method from "../components/Method.vue";
 import CardButton from "../components/CardButton.vue";
 import Draggable from "vuedraggable";
@@ -89,7 +89,7 @@ export default defineComponent({
       type: String,
       required: true,
     },
-    phaseObject: {
+    boardPhase: {
       type: Object as PropType<BoardPhaseDto>,
       required: true,
     },
@@ -97,10 +97,11 @@ export default defineComponent({
   setup(props) {
     const queryClient = useQueryClient();
     const allMethods = getMethods();
-    const boardId = ref(props.boardId);
-    const { id, phase, methods } = toRefs(props.phaseObject);
 
-    const associateMethod = postMethodAssociation(boardId, id.value);
+    const associateMethod = postMethodAssociation(
+      ref(props.boardId),
+      props.boardPhase.id
+    );
     let showMethodsDialog = ref(false);
     const onAddMethod = (): void => {
       showMethodsDialog.value = true;
@@ -111,6 +112,7 @@ export default defineComponent({
         {
           onSuccess: () => {
             queryClient.invalidateQueries("board");
+            showMethodsDialog.value = false;
           },
         }
       );
@@ -134,9 +136,6 @@ export default defineComponent({
     ];
 
     return {
-      phase,
-      methods,
-
       onAddMethod,
       showMethodsDialog,
       allMethods,

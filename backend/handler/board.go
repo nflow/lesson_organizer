@@ -46,7 +46,7 @@ func (h *Handler) RetrieveBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	board := model.Board{}
 
-	if err := h.DB.Preload("Phases.Methods").Preload("Phases.Content").Preload("Phases.Methods.Method").Preload("Phases.Phase").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Preload("Contents").Preload("Phases.Methods").Preload("Phases.Methods.Contents").Preload("Phases.Methods.Method").Preload("Phases.Phase").First(&board, "id = ?", vars["boardId"]).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	} else if err != nil {
