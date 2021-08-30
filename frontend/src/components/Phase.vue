@@ -31,7 +31,13 @@
       </template>
       <template #item="{ element }">
         <div class="tw-flex tw-flex-col tw-p-2">
-          <method :method="element.method" :contents="element.contents" />
+          <method
+            :boardId="boardId"
+            :phaseId="boardPhase.id"
+            :methodId="element.id"
+            :method="element.method"
+            :contents="element.contents"
+          />
         </div>
       </template>
     </draggable>

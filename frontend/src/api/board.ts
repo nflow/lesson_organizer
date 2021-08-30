@@ -1,5 +1,6 @@
 import config from "@/config";
 import { CreateBoardDto } from "@/types/board";
+import { CreateContentDto } from "@/types/content";
 import { MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
@@ -47,6 +48,32 @@ export function postMethodAssociation(
   return useMutation(async (payload: MethodIdentifierDto) => {
     const { data } = await axios.post(
       `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases/${phaseId}/methods`,
+      payload
+    );
+
+    return data;
+  });
+}
+
+export function postBoardContent(boardId: Ref<string | undefined>) {
+  return useMutation(async (payload: CreateContentDto) => {
+    const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/contents`,
+      payload
+    );
+
+    return data;
+  });
+}
+
+export function postMethodContent(
+  boardId: Ref<string | undefined>,
+  phaseId: Ref<string>,
+  methodId: Ref<string>
+) {
+  return useMutation(async (payload: CreateContentDto) => {
+    const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases/${phaseId.value}/methods/${methodId.value}/contents`,
       payload
     );
 

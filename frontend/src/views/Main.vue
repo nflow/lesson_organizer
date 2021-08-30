@@ -107,7 +107,11 @@
       </draggable>
     </div>
     <div>
-      <list class="tw-self-start" v-model="board.data.contents" />
+      <list
+        class="tw-self-start"
+        :boardId="board.data.value.id"
+        :conents="board.data.value.contents"
+      />
     </div>
   </div>
 </template>

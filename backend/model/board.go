@@ -35,10 +35,15 @@ type BoardMethod struct {
 	Order        uint           `json:"order"`
 }
 
+// TODO: Create seperate DTOs for everything and move to another package
+type CreateContentDto struct {
+	Text string `json:"text"`
+}
+
 type BoardContent struct {
 	ID            uuid.UUID `json:"id" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
-	BoardID       uuid.UUID `json:"-" gorm:"type:uuid"`
-	BoardMethodID uuid.UUID `json:"-" gorm:"type:uuid"`
+	BoardID       uuid.UUID `json:"boardId" gorm:"type:uuid"`
+	BoardMethodID uuid.UUID `json:"methodId" gorm:"type:uuid"`
 	Text          string    `json:"text"`
 	Order         uint      `json:"order"`
 }

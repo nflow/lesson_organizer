@@ -81,8 +81,27 @@ func (h *Handler) RetrieveBoardContents(w http.ResponseWriter, r *http.Request) 
 	return
 }
 
-func (h *Handler) CreateContentFromBoard(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) AddContentToBoard(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	payload := &model.CreateContentDto{}
+
+	if !HandleBodyDecode(w, r, payload) {
+		return
+	}
+
+	var boardId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) {
+		return
+	}
+
+	newContent := &model.BoardContent{ID: uuid.New(), BoardID: boardId, BoardMethodID: uuid.Nil, Text: payload.Text, Order: 0}
+
+	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Contents").Append(newContent); errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	}
+
+	RespondWithCode(w, http.StatusCreated, newContent)
 }
 
 func (h *Handler) UpdateContentFromBoard(w http.ResponseWriter, r *http.Request) {
@@ -166,8 +185,27 @@ func RetrieveMethodConents(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func AddContentToMethod(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) AddContentToMethod(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	payload := &model.CreateContentDto{}
+
+	if !HandleBodyDecode(w, r, payload) {
+		return
+	}
+
+	var boardId, phaseId, methodId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) || !parseUUID(w, vars["methodId"], &methodId) {
+		return
+	}
+
+	newContent := &model.BoardContent{ID: uuid.New(), BoardID: uuid.Nil, BoardMethodID: methodId, Text: payload.Text, Order: 0}
+
+	if err := h.DB.Model(&model.BoardMethod{ID: methodId}).Association("Contents").Append(newContent); errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	}
+
+	RespondWithCode(w, http.StatusCreated, newContent)
 }
 
 func UpdateContentInMethod(w http.ResponseWriter, r *http.Request) {

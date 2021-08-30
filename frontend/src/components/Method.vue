@@ -82,8 +82,17 @@
         {{ method.description }}
       </div>
     </div>
-    <div v-if="contents" class="tw-p-0 tw-m-0 tw-w-full">
-      <list class="tw-p-4" :elements="contents" />
+    <div
+      v-if="boardId && phaseId && methodId && contents"
+      class="tw-p-0 tw-m-0 tw-w-full"
+    >
+      <list
+        class="tw-p-4"
+        :boardId="boardId"
+        :phaseId="phaseId"
+        :methodId="methodId"
+        :conents="contents"
+      />
     </div>
   </div>
 </template>
@@ -100,6 +109,21 @@ export default defineComponent({
     List,
   },
   props: {
+    boardId: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
+    phaseId: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
+    methodId: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
     method: {
       type: Object as PropType<MethodDto>,
       required: true,

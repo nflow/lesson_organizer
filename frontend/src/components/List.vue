@@ -20,7 +20,7 @@
           <tr class="tw-border-b tw-border-gray-200 hover:tw-bg-gray-100">
             <td class="tw-py-3 tw-px-6 tw-text-left">
               <div class="tw-relative">
-                <span>{{ element.value }}</span>
+                <span>{{ element.text }}</span>
                 <div
                   class="
                     tw-absolute tw-inset-y-0 tw-right-0 tw-flex tw-items-center
@@ -115,9 +115,10 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from "vue";
-import { ContentDto } from "@/types/content";
-import { v4 as uuidv4 } from "uuid";
+import { ContentDto, CreateContentDto } from "@/types/content";
 import Draggable from "vuedraggable";
+import { postBoardContent, postMethodContent } from "@/api/board";
+import { useQueryClient } from "vue-query";
 
 export default defineComponent({
   name: "List",
@@ -125,23 +126,51 @@ export default defineComponent({
     Draggable,
   },
   props: {
+    boardId: {
+      type: String,
+      required: true,
+    },
+    phaseId: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
+    methodId: {
+      type: String,
+      required: false,
+      default: undefined,
+    },
     conents: {
       type: Object as PropType<Array<ContentDto>>,
       required: true,
     },
   },
-  setup() {
-    const newEntryInput = ref("");
+  setup(props) {
+    const queryClient = useQueryClient();
+    let createContent =
+      props.phaseId && props.methodId
+        ? postMethodContent(
+            ref(props.boardId),
+            ref(props.phaseId),
+            ref(props.methodId)
+          )
+        : postBoardContent(ref(props.boardId));
 
+    const newEntryInput = ref("");
     const addNew = (): void => {
       if (!newEntryInput.value) {
         return;
       }
+      const newEntry: CreateContentDto = {
+        text: newEntryInput.value,
+      };
 
-      const newEntry: ContentDto = { id: uuidv4(), value: newEntryInput.value };
-      //contents.value.push(newEntry);
-
-      newEntryInput.value = "";
+      createContent.mutate(newEntry, {
+        onSuccess: () => {
+          queryClient.invalidateQueries("board");
+          newEntryInput.value = "";
+        },
+      });
     };
 
     const remove = (id: string): ContentDto | undefined => {
