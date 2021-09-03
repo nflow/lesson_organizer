@@ -94,7 +94,7 @@ func (h *Handler) AddContentToBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newContent := &model.BoardContent{ID: uuid.New(), BoardID: boardId, BoardMethodID: uuid.Nil, Text: payload.Text, Order: 0}
+	newContent := &model.BoardContent{ID: uuid.New(), BoardID: boardId, BoardMethodID: uuid.Nil, Text: payload.Text, Rank: 0}
 
 	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Contents").Append(newContent); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
@@ -130,8 +130,14 @@ func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Phases").Append(&model.BoardPhase{ID: uuid.New(), PhaseID: phaseId.ID}); errors.Is(err, gorm.ErrRecordNotFound) {
-		RespondEmptyWithCode(w, http.StatusNotFound)
+	var lastPhase = &model.BoardPhase{}
+	if err := h.DB.Where("board_id = ?", boardId).Order("rank desc").FirstOrInit(lastPhase, &model.BoardPhase{Rank: 0}).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Phases").Append(&model.BoardPhase{ID: uuid.New(), PhaseID: phaseId.ID, Rank: lastPhase.Rank + 100}); errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -198,7 +204,7 @@ func (h *Handler) AddContentToMethod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newContent := &model.BoardContent{ID: uuid.New(), BoardID: uuid.Nil, BoardMethodID: methodId, Text: payload.Text, Order: 0}
+	newContent := &model.BoardContent{ID: uuid.New(), BoardID: uuid.Nil, BoardMethodID: methodId, Text: payload.Text, Rank: 0}
 
 	if err := h.DB.Model(&model.BoardMethod{ID: methodId}).Association("Contents").Append(newContent); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)

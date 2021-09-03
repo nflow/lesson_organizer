@@ -14,7 +14,7 @@ type BoardGoal struct {
 	ID      uuid.UUID `json:"id" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
 	BoardID uuid.UUID `json:"-" gorm:"type:uuid"`
 	Text    string    `json:"text"`
-	Order   uint      `json:"order"`
+	Rank    uint      `json:"rank"`
 }
 
 type BoardPhase struct {
@@ -23,7 +23,7 @@ type BoardPhase struct {
 	PhaseID uuid.UUID     `json:"-" gorm:"type:uuid"`
 	Phase   Phase         `json:"phase"`
 	Methods []BoardMethod `json:"methods"`
-	Order   uint          `json:"order"`
+	Rank    uint          `json:"rank"`
 }
 
 type BoardMethod struct {
@@ -32,7 +32,7 @@ type BoardMethod struct {
 	MethodID     uuid.UUID      `json:"-" gorm:"type:uuid"`
 	Method       Method         `json:"method"`
 	Contents     []BoardContent `json:"contents"`
-	Order        uint           `json:"order"`
+	Rank         uint           `json:"rank"`
 }
 
 // TODO: Create seperate DTOs for everything and move to another package
@@ -45,5 +45,5 @@ type BoardContent struct {
 	BoardID       uuid.UUID `json:"boardId" gorm:"type:uuid"`
 	BoardMethodID uuid.UUID `json:"methodId" gorm:"type:uuid"`
 	Text          string    `json:"text"`
-	Order         uint      `json:"order"`
+	Rank          uint      `json:"rank"`
 }
