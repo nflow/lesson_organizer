@@ -73,6 +73,17 @@ export function postMethodAssociation(
   });
 }
 
+export function putMethodOrder(boardId: string, phaseId: string) {
+  return useMutation(async (payload: MoveElementDto) => {
+    const { data } = await axios.put(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases/${phaseId}/methods`,
+      payload
+    );
+
+    return data;
+  });
+}
+
 export function postBoardContent(boardId: Ref<string | undefined>) {
   return useMutation(async (payload: CreateContentDto) => {
     const { data } = await axios.post(

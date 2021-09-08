@@ -212,7 +212,7 @@ export default defineComponent({
     };
 
     const onDropPhase = (evt: any) => {
-      if (evt.newIndex == evt.oldIndex || !board.data.value) {
+      if (evt.newDraggableIndex == evt.oldDraggableIndex || !board.data.value) {
         {
           {
             boardPhases;
@@ -226,10 +226,10 @@ export default defineComponent({
         return;
       }
 
-      const elementId = currentBoard.phases[evt.newIndex].id;
+      const elementId = currentBoard.phases[evt.newDraggableIndex].id;
       let afterId = undefined;
-      if (evt.newIndex > 0) {
-        afterId = board.data.value.phases[evt.newIndex - 1].id;
+      if (evt.newDraggableIndex > 0) {
+        afterId = board.data.value.phases[evt.newDraggableIndex - 1].id;
       }
 
       movePhase.mutate(

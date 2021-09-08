@@ -2,7 +2,8 @@
   <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
     <draggable
       group="method"
-      :list="boardPhase.methods"
+      v-model="phaseMethods"
+      @update="onDropMethod"
       fallbackOnBody="true"
       swapThreshold="0.65"
       animation="150"
@@ -73,15 +74,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref, toRef, toRefs } from "vue";
+import { computed, defineComponent, PropType, ref, toRef, toRefs } from "vue";
 import Method from "../components/Method.vue";
 import CardButton from "../components/CardButton.vue";
 import Draggable from "vuedraggable";
 import { MethodDto, resolveLabelName } from "@/types/method";
 import { getMethods } from "@/api";
-import { postMethodAssociation } from "@/api/board";
+import { postMethodAssociation, putMethodOrder } from "@/api/board";
 import { BoardPhaseDto } from "@/types/phase";
 import { useQueryClient } from "vue-query";
+import { BoardDto } from "@/types/board";
 
 export default defineComponent({
   name: "Phase",
@@ -103,6 +105,54 @@ export default defineComponent({
   setup(props) {
     const queryClient = useQueryClient();
     const allMethods = getMethods();
+    const moveMethod = putMethodOrder(props.boardId, props.boardPhase.id);
+
+    const phaseMethods = computed({
+      get: () => {
+        return props.boardPhase.methods;
+      },
+      set: (newMethodOrder) => {
+        const currentBoard = queryClient.getQueryData<BoardDto>("board");
+        if (!currentBoard) {
+          return;
+        }
+        const phase = currentBoard.phases.find(
+          (e) => e.id == props.boardPhase.id
+        );
+
+        if (!phase) {
+          return;
+        }
+        phase.methods = newMethodOrder;
+
+        queryClient.setQueryData("board", currentBoard);
+        return;
+      },
+    });
+    const onDropMethod = (evt: any) => {
+      if (evt.newDraggableIndex == evt.oldDraggableIndex) {
+        return;
+      }
+
+      const elementId = props.boardPhase.methods[evt.newDraggableIndex].id;
+      let afterId = undefined;
+      if (evt.newDraggableIndex > 0) {
+        afterId = props.boardPhase.methods[evt.newDraggableIndex - 1].id;
+      }
+
+      moveMethod.mutate(
+        {
+          id: elementId,
+          afterId: afterId,
+        },
+        {
+          onSuccess: () => {
+            // TODO: Could return the new list of phases .. or maybe not.
+            queryClient.invalidateQueries("board");
+          },
+        }
+      );
+    };
 
     const associateMethod = postMethodAssociation(
       ref(props.boardId),
@@ -142,7 +192,9 @@ export default defineComponent({
     ];
 
     return {
+      phaseMethods,
       onAddMethod,
+      onDropMethod,
       showMethodsDialog,
       allMethods,
       onMethodSelect,
