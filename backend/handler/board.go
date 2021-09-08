@@ -148,8 +148,57 @@ func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
 	RespondWithCode(w, http.StatusCreated, phaseId)
 }
 
-func (h *Handler) UpdatePhaseInBoard(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	moveEntity := &model.MoveEntityDto{}
+
+	if !HandleBodyDecode(w, r, moveEntity) {
+		return
+	}
+
+	var boardId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) {
+		return
+	}
+
+	predecessor := &model.BoardPhase{}
+	if moveEntity.AfterID != uuid.Nil {
+		if err := h.DB.First(predecessor, "id = ? AND board_id = ?", moveEntity.AfterID, boardId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+			RespondEmptyWithCode(w, http.StatusNotFound)
+			return
+		} else if err != nil {
+			RespondWithError(w, http.StatusInternalServerError, err)
+			return
+		}
+	} else {
+		fmt.Println(moveEntity.AfterID)
+		predecessor.Rank = 0
+	}
+
+	successor := &model.BoardPhase{}
+	if err := h.DB.Order("rank").First(successor, "board_id = ? AND rank > ?", boardId, predecessor.Rank).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		successor.Rank = predecessor.Rank + 100
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	rankDelta := (successor.Rank - predecessor.Rank) / 2
+	if rankDelta > 0 {
+		fmt.Printf("New rank: %d\n", rankDelta)
+		if err := h.DB.Model(&model.BoardPhase{ID: moveEntity.ID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+			RespondEmptyWithCode(w, http.StatusNotFound)
+			return
+		} else if err != nil {
+			RespondWithError(w, http.StatusInternalServerError, err)
+			return
+		}
+	} else {
+		fmt.Println("Recalculate phase ranks ...")
+		// TODO: Recalculate phase ranks
+	}
+
+	RespondWithSuccess(w, http.StatusCreated)
 }
 
 func (h *Handler) RemovePhaseFromBoard(w http.ResponseWriter, r *http.Request) {
@@ -172,8 +221,6 @@ func (h *Handler) AddMethodToPhase(w http.ResponseWriter, r *http.Request) {
 	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) {
 		return
 	}
-
-	fmt.Println(boardId, phaseId)
 
 	if err := h.DB.Model(&model.BoardPhase{ID: phaseId}).Association("Methods").Append(&model.BoardMethod{ID: uuid.New(), MethodID: methodId.ID}); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)

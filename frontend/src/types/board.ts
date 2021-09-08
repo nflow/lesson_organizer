@@ -15,3 +15,8 @@ export interface BoardDto {
   contents: ContentDto[];
   phases: BoardPhaseDto[];
 }
+
+export interface MoveElementDto {
+  id: string;
+  afterId: string | undefined;
+}

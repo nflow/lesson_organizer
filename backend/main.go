@@ -60,7 +60,7 @@ func main() {
 
 	router.HandleFunc("/v1/boards/{boardId}/phases", h.RetrieveBoardPhases).Methods("GET")
 	router.HandleFunc("/v1/boards/{boardId}/phases", h.AddPhaseToBoard).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", h.UpdatePhaseInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/phases", h.MovePhaseInBoard).Methods("PUT")
 	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", h.RemovePhaseFromBoard).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.RetrievePhaseMethods).Methods("GET")

@@ -94,7 +94,8 @@
       <draggable
         v-if="board.isSuccess"
         class="tw-grid tw-grid-flow-col"
-        v-model="board.data.value.phases"
+        v-model="boardPhases"
+        @end="onDropPhase"
         item-key="phase-id"
         animation="150"
         group="phases"
@@ -122,11 +123,16 @@ import Phase from "../components/Phase.vue";
 import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
-import { PhaseDto } from "@/types/phase";
-import { defineComponent, ref } from "@vue/runtime-core";
+import { BoardPhaseDto, PhaseDto } from "@/types/phase";
+import { defineComponent, Ref, ref } from "@vue/runtime-core";
 import { BoardDto, CreateBoardDto } from "@/types/board";
 import { getPhases } from "@/api";
-import { getBoard, postBoard, postPhaseAssociation } from "@/api/board";
+import {
+  getBoard,
+  postBoard,
+  postPhaseAssociation,
+  putPhaseOrder,
+} from "@/api/board";
 import { useRoute, useRouter } from "vue-router";
 import { useQueryClient } from "vue-query";
 
@@ -170,9 +176,15 @@ export default defineComponent({
       );
     }
 
-    const board = getBoard(boardId);
+    let boardPhases: Ref<BoardPhaseDto[]> = ref([]);
+    const board = getBoard(boardId, {
+      onSuccess: (data: BoardDto) => {
+        boardPhases.value = data.phases;
+      },
+    });
     const allPhases = getPhases();
     const addPhase = postPhaseAssociation(boardId);
+    const movePhase = putPhaseOrder(boardId);
 
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
@@ -187,11 +199,38 @@ export default defineComponent({
       }
     };
 
+    const onDropPhase = async (evt: any) => {
+      if (evt.newIndex == evt.oldIndex || !board.data.value) {
+        {
+          {
+            boardPhases;
+          }
+        }
+        return;
+      }
+      const elementId = board.data.value.phases[evt.oldIndex].id;
+
+      let afterId = undefined;
+      if (evt.newIndex - evt.oldIndex > 0) {
+        afterId = board.data.value.phases[evt.newIndex].id;
+      } else if (evt.newIndex > 0) {
+        afterId = board.data.value.phases[evt.newIndex - 1].id;
+      }
+
+      await movePhase.mutateAsync({
+        id: elementId,
+        afterId: afterId,
+      });
+      queryClient.invalidateQueries("board");
+    };
+
     return {
       createBoard,
       board,
+      boardPhases,
       onAddPhase,
       onPhaseSelect,
+      onDropPhase,
       allPhases,
       showPhasesDialog,
     };

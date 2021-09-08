@@ -47,3 +47,8 @@ type BoardContent struct {
 	Text          string    `json:"text"`
 	Rank          uint      `json:"rank"`
 }
+
+type MoveEntityDto struct {
+	ID      uuid.UUID `json:"id"`
+	AfterID uuid.UUID `json:"afterId"`
+}

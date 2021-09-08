@@ -1,22 +1,34 @@
 import config from "@/config";
-import { CreateBoardDto } from "@/types/board";
+import { CreateBoardDto, MoveElementDto } from "@/types/board";
 import { CreateContentDto } from "@/types/content";
 import { MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
 import { Ref } from "vue";
 import { useMutation, useQuery } from "vue-query";
+import type { UseQueryOptions } from "react-query/types/react/types";
 
-export function getBoard(boardId: Ref<string | string[]>) {
-  return useQuery("board", async () => {
-    if (boardId.value) {
-      const { data } = await axios.get(
-        `${config.CONFIG_API_URL}/v1/boards/${boardId.value}`
-      );
+export function getBoard<
+  TQueryFnData = unknown,
+  TError = unknown,
+  TData = TQueryFnData
+>(
+  boardId: Ref<string | string[]>,
+  options: UseQueryOptions<TQueryFnData, TError, TData>
+) {
+  return useQuery(
+    "board",
+    async () => {
+      if (boardId.value) {
+        const { data } = await axios.get(
+          `${config.CONFIG_API_URL}/v1/boards/${boardId.value}`
+        );
 
-      return data;
-    }
-  });
+        return data;
+      }
+    },
+    options
+  );
 }
 
 export function postBoard() {
@@ -33,6 +45,17 @@ export function postBoard() {
 export function postPhaseAssociation(boardId: Ref<string | string[]>) {
   return useMutation(async (payload: PhaseIdentifierDto) => {
     const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases`,
+      payload
+    );
+
+    return data;
+  });
+}
+
+export function putPhaseOrder(boardId: Ref<string | string[]>) {
+  return useMutation(async (payload: MoveElementDto) => {
+    const { data } = await axios.put(
       `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases`,
       payload
     );
