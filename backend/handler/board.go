@@ -161,9 +161,9 @@ func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	predecessor := &model.BoardPhase{}
+	predecessor := model.BoardPhase{}
 	if moveEntity.AfterID != uuid.Nil {
-		if err := h.DB.First(predecessor, "id = ? AND board_id = ?", moveEntity.AfterID, boardId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		if err := h.DB.First(&predecessor, "id = ? AND board_id = ?", moveEntity.AfterID, boardId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondEmptyWithCode(w, http.StatusNotFound)
 			return
 		} else if err != nil {
@@ -175,8 +175,8 @@ func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 		predecessor.Rank = 0
 	}
 
-	successor := &model.BoardPhase{}
-	if err := h.DB.Order("rank").First(successor, "board_id = ? AND rank > ?", boardId, predecessor.Rank).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	successor := model.BoardPhase{}
+	if err := h.DB.Order("rank").First(&successor, "board_id = ? AND rank > ?", boardId, predecessor.Rank).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		successor.Rank = predecessor.Rank + 100
 	} else if err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err)
@@ -184,18 +184,38 @@ func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rankDelta := (successor.Rank - predecessor.Rank) / 2
-	if rankDelta > 0 {
-		fmt.Printf("New rank: %d\n", rankDelta)
-		if err := h.DB.Model(&model.BoardPhase{ID: moveEntity.ID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-			RespondEmptyWithCode(w, http.StatusNotFound)
-			return
-		} else if err != nil {
-			RespondWithError(w, http.StatusInternalServerError, err)
+	if rankDelta <= 0 {
+		fmt.Println("Recalculate phase ranks ...")
+		var results []model.BoardPhase
+		result := h.DB.Model(&model.BoardPhase{}).Order("rank").Where("board_id = ?", boardId).FindInBatches(&results, 100, func(tx *gorm.DB, batch int) error {
+			var currentRank uint = 0
+			for index := range results {
+				currentRank += 100
+				results[index].Rank = currentRank
+
+				if results[index].ID == predecessor.ID {
+					predecessor = results[index]
+				}
+				if results[index].ID == successor.ID {
+					successor = results[index]
+				}
+			}
+			tx.Save(&results)
+			rankDelta = (successor.Rank - predecessor.Rank) / 2
+
+			return nil
+		})
+		if result.Error != nil {
+			RespondWithError(w, http.StatusInternalServerError, result.Error)
 			return
 		}
-	} else {
-		fmt.Println("Recalculate phase ranks ...")
-		// TODO: Recalculate phase ranks
+	}
+	if err := h.DB.Model(&model.BoardPhase{ID: moveEntity.ID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
 	}
 
 	RespondWithSuccess(w, http.StatusCreated)
