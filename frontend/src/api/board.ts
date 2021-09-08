@@ -8,14 +8,7 @@ import { Ref } from "vue";
 import { useMutation, useQuery } from "vue-query";
 import type { UseQueryOptions } from "react-query/types/react/types";
 
-export function getBoard<
-  TQueryFnData = unknown,
-  TError = unknown,
-  TData = TQueryFnData
->(
-  boardId: Ref<string | string[]>,
-  options: UseQueryOptions<TQueryFnData, TError, TData>
-) {
+export function getBoard(boardId: Ref<string | string[]>) {
   return useQuery(
     "board",
     async () => {
@@ -27,7 +20,9 @@ export function getBoard<
         return data;
       }
     },
-    options
+    {
+      staleTime: 10000,
+    }
   );
 }
 

@@ -5,11 +5,17 @@ import axios from "axios";
 import { useMutation, useQuery } from "vue-query";
 
 export function getMethods() {
-  return useQuery("methods", async () => {
-    const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/methods`);
+  return useQuery(
+    "methods",
+    async () => {
+      const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/methods`);
 
-    return data;
-  });
+      return data;
+    },
+    {
+      staleTime: 60000,
+    }
+  );
 }
 
 export function postMethod() {
@@ -45,11 +51,17 @@ export function deleteMethod() {
 }
 
 export function getPhases() {
-  return useQuery("phases", async () => {
-    const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/phases`);
+  return useQuery(
+    "phases",
+    async () => {
+      const { data } = await axios.get(`${config.CONFIG_API_URL}/v1/phases`);
 
-    return data;
-  });
+      return data;
+    },
+    {
+      staleTime: 60000,
+    }
+  );
 }
 
 export function postPhase() {

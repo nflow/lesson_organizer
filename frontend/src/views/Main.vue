@@ -95,7 +95,7 @@
         v-if="board.isSuccess"
         class="tw-grid tw-grid-flow-col"
         v-model="boardPhases"
-        @end="onDropPhase"
+        @update="onDropPhase"
         item-key="phase-id"
         animation="150"
         group="phases"
@@ -123,8 +123,8 @@ import Phase from "../components/Phase.vue";
 import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
-import { BoardPhaseDto, PhaseDto } from "@/types/phase";
-import { defineComponent, Ref, ref } from "@vue/runtime-core";
+import { PhaseDto } from "@/types/phase";
+import { computed, defineComponent, ref } from "@vue/runtime-core";
 import { BoardDto, CreateBoardDto } from "@/types/board";
 import { getPhases } from "@/api";
 import {
@@ -176,12 +176,24 @@ export default defineComponent({
       );
     }
 
-    let boardPhases: Ref<BoardPhaseDto[]> = ref([]);
-    const board = getBoard(boardId, {
-      onSuccess: (data: BoardDto) => {
-        boardPhases.value = data.phases;
+    const boardPhases = computed({
+      get: () => {
+        return board.data.value.phases;
+      },
+      set: (newPhaseOrder) => {
+        const currentBoard: BoardDto = board.data.value;
+        // TODO: Refactor to use separate lists
+        queryClient.setQueryData("board", {
+          id: currentBoard.id,
+          name: currentBoard.name,
+          goals: currentBoard.goals,
+          contents: currentBoard.contents,
+          phases: newPhaseOrder,
+        } as BoardDto);
+        return;
       },
     });
+    const board = getBoard(boardId);
     const allPhases = getPhases();
     const addPhase = postPhaseAssociation(boardId);
     const movePhase = putPhaseOrder(boardId);
@@ -199,7 +211,7 @@ export default defineComponent({
       }
     };
 
-    const onDropPhase = async (evt: any) => {
+    const onDropPhase = (evt: any) => {
       if (evt.newIndex == evt.oldIndex || !board.data.value) {
         {
           {
@@ -208,20 +220,30 @@ export default defineComponent({
         }
         return;
       }
-      const elementId = board.data.value.phases[evt.oldIndex].id;
 
+      const currentBoard = queryClient.getQueryData<BoardDto>("board");
+      if (!currentBoard) {
+        return;
+      }
+
+      const elementId = currentBoard.phases[evt.newIndex].id;
       let afterId = undefined;
-      if (evt.newIndex - evt.oldIndex > 0) {
-        afterId = board.data.value.phases[evt.newIndex].id;
-      } else if (evt.newIndex > 0) {
+      if (evt.newIndex > 0) {
         afterId = board.data.value.phases[evt.newIndex - 1].id;
       }
 
-      await movePhase.mutateAsync({
-        id: elementId,
-        afterId: afterId,
-      });
-      queryClient.invalidateQueries("board");
+      movePhase.mutate(
+        {
+          id: elementId,
+          afterId: afterId,
+        },
+        {
+          onSuccess: () => {
+            // TODO: Could return the new list of phases .. or maybe not.
+            queryClient.invalidateQueries("board");
+          },
+        }
+      );
     };
 
     return {
