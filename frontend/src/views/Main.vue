@@ -95,7 +95,7 @@
         v-if="board.isSuccess"
         class="tw-grid tw-grid-flow-col"
         v-model="boardPhases"
-        @update="onDropPhase"
+        @update="onUpdatePhase"
         item-key="phase-id"
         animation="150"
         group="phases"
@@ -211,7 +211,7 @@ export default defineComponent({
       }
     };
 
-    const onDropPhase = (evt: any) => {
+    const onUpdatePhase = (evt: any) => {
       if (evt.newDraggableIndex == evt.oldDraggableIndex || !board.data.value) {
         {
           {
@@ -252,7 +252,7 @@ export default defineComponent({
       boardPhases,
       onAddPhase,
       onPhaseSelect,
-      onDropPhase,
+      onUpdatePhase,
       allPhases,
       showPhasesDialog,
     };

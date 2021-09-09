@@ -3,7 +3,8 @@
     <draggable
       group="method"
       v-model="phaseMethods"
-      @update="onDropMethod"
+      @update="onUpdateMethod"
+      :move="onMoveMethod"
       fallbackOnBody="true"
       swapThreshold="0.65"
       animation="150"
@@ -129,7 +130,7 @@ export default defineComponent({
         return;
       },
     });
-    const onDropMethod = (evt: any) => {
+    const onUpdateMethod = (evt: any) => {
       if (evt.newDraggableIndex == evt.oldDraggableIndex) {
         return;
       }
@@ -152,6 +153,11 @@ export default defineComponent({
           },
         }
       );
+    };
+
+    const onMoveMethod = (evt: any, origianlEvent: any) => {
+      console.log(evt);
+      console.log(origianlEvent);
     };
 
     const associateMethod = postMethodAssociation(
@@ -194,7 +200,8 @@ export default defineComponent({
     return {
       phaseMethods,
       onAddMethod,
-      onDropMethod,
+      onUpdateMethod,
+      onMoveMethod,
       showMethodsDialog,
       allMethods,
       onMethodSelect,
