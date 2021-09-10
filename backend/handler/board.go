@@ -8,6 +8,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/nflow/lesson_organizer/model"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
@@ -222,8 +223,21 @@ func (h *Handler) RemovePhaseFromBoard(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RetrievePhaseMethods(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) RetrievePhaseMethods(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	var phaseId uuid.UUID
+	if !parseUUID(w, vars["phaseId"], &phaseId) {
+		return
+	}
+
+	var methods []model.BoardMethod
+	if err := h.DB.Order("rank").Preload(clause.Associations).Find(&methods, "board_phase_id = ?", phaseId).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	RespondWithSuccess(w, methods)
 }
 
 func (h *Handler) AddMethodToPhase(w http.ResponseWriter, r *http.Request) {
@@ -234,8 +248,8 @@ func (h *Handler) AddMethodToPhase(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var boardId, phaseId uuid.UUID
-	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) {
+	var phaseId uuid.UUID
+	if !parseUUID(w, vars["phaseId"], &phaseId) {
 		return
 	}
 
@@ -261,8 +275,8 @@ func (h *Handler) MoveMethod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var boardId, phaseId uuid.UUID
-	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) {
+	var phaseId uuid.UUID
+	if !parseUUID(w, vars["phaseId"], &phaseId) {
 		return
 	}
 
@@ -278,7 +292,7 @@ func (h *Handler) MoveMethod(w http.ResponseWriter, r *http.Request) {
 
 	if moveEntity.ParentPhaseID != uuid.Nil {
 		phase := &model.BoardPhase{}
-		if err := h.DB.First(phase, "id = ? AND board_id = ?", moveEntity.ParentPhaseID, boardId).Error; err != nil {
+		if err := h.DB.First(phase, "id = ?", moveEntity.ParentPhaseID).Error; err != nil {
 			if errors.Is(err, gorm.ErrRecordNotFound) {
 				RespondEmptyWithCode(w, http.StatusNotFound)
 			} else {

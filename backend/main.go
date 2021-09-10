@@ -63,15 +63,15 @@ func main() {
 	router.HandleFunc("/v1/boards/{boardId}/phases", h.MovePhaseInBoard).Methods("PUT")
 	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}", h.RemovePhaseFromBoard).Methods("DELETE")
 
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", handler.RetrievePhaseMethods).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", h.AddMethodToPhase).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods", h.MoveMethod).Methods("PUT")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}", handler.DeleteMethodFromPhase).Methods("DELETE")
+	router.HandleFunc("/v1/phases/{phaseId}/methods", h.RetrievePhaseMethods).Methods("GET")
+	router.HandleFunc("/v1/phases/{phaseId}/methods", h.AddMethodToPhase).Methods("POST")
+	router.HandleFunc("/v1/phases/{phaseId}/methods", h.MoveMethod).Methods("PUT")
+	router.HandleFunc("/v1/phases/{phaseId}/methods/{methodId}", handler.DeleteMethodFromPhase).Methods("DELETE")
 
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents", handler.RetrieveMethodConents).Methods("GET")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents", h.AddContentToMethod).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.UpdateContentInMethod).Methods("PUT")
-	router.HandleFunc("/v1/boards/{boardId}/phases/{phaseId}/methods/{methodId}/contents/{contentsId}", handler.RemoveContentFromMethod).Methods("DELETE")
+	router.HandleFunc("/v1/methods/{methodId}/contents", handler.RetrieveMethodConents).Methods("GET")
+	router.HandleFunc("/v1/methods/{methodId}/contents", h.AddContentToMethod).Methods("POST")
+	router.HandleFunc("/v1/methods/{methodId}/contents/{contentsId}", handler.UpdateContentInMethod).Methods("PUT")
+	router.HandleFunc("/v1/methods/{methodId}/contents/{contentsId}", handler.RemoveContentFromMethod).Methods("DELETE")
 
 	loggedRouter := handlers.LoggingHandler(os.Stdout, router)
 

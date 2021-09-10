@@ -1,11 +1,12 @@
 import config from "@/config";
 import { CreateBoardDto, MoveMethodDto, MovePhaseDto } from "@/types/board";
 import { CreateContentDto } from "@/types/content";
-import { MethodIdentifierDto } from "@/types/method";
+import { BoardMethodDto, MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
 import { Ref } from "vue";
 import { useMutation, useQuery } from "vue-query";
+import { UseQueryReturnType } from "vue-query/lib/useBaseQuery";
 
 export function getBoard(boardId: Ref<string | string[]>) {
   return useQuery(
@@ -58,13 +59,10 @@ export function putPhaseOrder(boardId: Ref<string | string[]>) {
   });
 }
 
-export function postMethodAssociation(
-  boardId: Ref<string | string[]>,
-  phaseId: string
-) {
+export function postMethodAssociation(phaseId: string) {
   return useMutation(async (payload: MethodIdentifierDto) => {
     const { data } = await axios.post(
-      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases/${phaseId}/methods`,
+      `${config.CONFIG_API_URL}/v1/phases/${phaseId}/methods`,
       payload
     );
 
@@ -72,10 +70,28 @@ export function postMethodAssociation(
   });
 }
 
-export function putMethodOrder(boardId: string, phaseId: string) {
+export function getPhaseMethods(
+  phaseId: string
+): UseQueryReturnType<BoardMethodDto[], Error> {
+  return useQuery(
+    ["phase_methods", phaseId],
+    async () => {
+      const { data } = await axios.get(
+        `${config.CONFIG_API_URL}/v1/phases/${phaseId}/methods`
+      );
+
+      return data;
+    },
+    {
+      staleTime: 10000,
+    }
+  );
+}
+
+export function putMethodOrder(phaseId: string) {
   return useMutation(async (payload: MoveMethodDto) => {
     const { data } = await axios.put(
-      `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases/${phaseId}/methods`,
+      `${config.CONFIG_API_URL}/v1/phases/${phaseId}/methods`,
       payload
     );
 
@@ -94,14 +110,10 @@ export function postBoardContent(boardId: Ref<string | undefined>) {
   });
 }
 
-export function postMethodContent(
-  boardId: Ref<string | undefined>,
-  phaseId: Ref<string>,
-  methodId: Ref<string>
-) {
+export function postMethodContent(methodId: string) {
   return useMutation(async (payload: CreateContentDto) => {
     const { data } = await axios.post(
-      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases/${phaseId.value}/methods/${methodId.value}/contents`,
+      `${config.CONFIG_API_URL}/v1/methods/${methodId}/contents`,
       payload
     );
 

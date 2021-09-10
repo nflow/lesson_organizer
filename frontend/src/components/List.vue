@@ -128,10 +128,6 @@ export default defineComponent({
   props: {
     boardId: {
       type: String,
-      required: true,
-    },
-    phaseId: {
-      type: String,
       required: false,
       default: undefined,
     },
@@ -147,14 +143,9 @@ export default defineComponent({
   },
   setup(props) {
     const queryClient = useQueryClient();
-    let createContent =
-      props.phaseId && props.methodId
-        ? postMethodContent(
-            ref(props.boardId),
-            ref(props.phaseId),
-            ref(props.methodId)
-          )
-        : postBoardContent(ref(props.boardId));
+    let createContent = props.methodId
+      ? postMethodContent(props.methodId)
+      : postBoardContent(ref(props.boardId));
 
     const newEntryInput = ref("");
     const addNew = (): void => {
