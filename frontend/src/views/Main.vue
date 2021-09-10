@@ -196,7 +196,7 @@ export default defineComponent({
     const board = getBoard(boardId);
     const allPhases = getPhases();
     const addPhase = postPhaseAssociation(boardId);
-    const movePhase = putPhaseOrder(boardId);
+    const updatePhase = putPhaseOrder(boardId);
 
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
@@ -232,10 +232,10 @@ export default defineComponent({
         afterId = board.data.value.phases[evt.newDraggableIndex - 1].id;
       }
 
-      movePhase.mutate(
+      updatePhase.mutate(
         {
-          id: elementId,
-          afterId: afterId,
+          phaseId: elementId,
+          afterPhaseId: afterId,
         },
         {
           onSuccess: () => {

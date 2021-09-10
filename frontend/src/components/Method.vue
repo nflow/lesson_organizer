@@ -1,5 +1,6 @@
 <template>
   <div
+    :id="method.id"
     class="
       tw-max-w-md
       tw-p-0

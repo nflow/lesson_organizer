@@ -2,7 +2,6 @@ package handler
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -150,7 +149,7 @@ func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
 
 func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	moveEntity := &model.RankEntityDto{}
+	moveEntity := &model.MovePhaseDto{}
 
 	if !HandleBodyDecode(w, r, moveEntity) {
 		return
@@ -162,8 +161,8 @@ func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	predecessor := model.BoardPhase{}
-	if moveEntity.AfterID != uuid.Nil {
-		if err := h.DB.First(&predecessor, "id = ? AND board_id = ?", moveEntity.AfterID, boardId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if moveEntity.AfterPhaseID != uuid.Nil {
+		if err := h.DB.First(&predecessor, "id = ? AND board_id = ?", moveEntity.AfterPhaseID, boardId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondEmptyWithCode(w, http.StatusNotFound)
 			return
 		} else if err != nil {
@@ -171,7 +170,6 @@ func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		fmt.Println(moveEntity.AfterID)
 		predecessor.Rank = 0
 	}
 
@@ -209,7 +207,7 @@ func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if err := h.DB.Model(&model.BoardPhase{ID: moveEntity.ID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Model(&model.BoardPhase{ID: moveEntity.PhaseID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	} else if err != nil {
@@ -255,9 +253,9 @@ func (h *Handler) AddMethodToPhase(w http.ResponseWriter, r *http.Request) {
 	RespondWithCode(w, http.StatusCreated, phaseId)
 }
 
-func (h *Handler) MoveMethodInPhase(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) MoveMethod(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	moveEntity := &model.RankEntityDto{}
+	moveEntity := &model.MoveMethodDto{}
 
 	if !HandleBodyDecode(w, r, moveEntity) {
 		return
@@ -267,15 +265,39 @@ func (h *Handler) MoveMethodInPhase(w http.ResponseWriter, r *http.Request) {
 	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) {
 		return
 	}
-	fmt.Println(phaseId)
+
+	method := &model.BoardMethod{}
+	if err := h.DB.First(method, "id = ? AND board_phase_id = ?", moveEntity.MethodID, phaseId).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			RespondEmptyWithCode(w, http.StatusNotFound)
+		} else {
+			RespondWithError(w, http.StatusInternalServerError, err)
+		}
+		return
+	}
+
+	if moveEntity.ParentPhaseID != uuid.Nil {
+		phase := &model.BoardPhase{}
+		if err := h.DB.First(phase, "id = ? AND board_id = ?", moveEntity.ParentPhaseID, boardId).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				RespondEmptyWithCode(w, http.StatusNotFound)
+			} else {
+				RespondWithError(w, http.StatusInternalServerError, err)
+			}
+			return
+		}
+		method.BoardPhaseID = phase.ID
+		phaseId = phase.ID
+	}
 
 	predecessor := model.BoardMethod{}
-	if moveEntity.AfterID != uuid.Nil {
-		if err := h.DB.First(&predecessor, "id = ? AND board_phase_id = ?", moveEntity.AfterID, phaseId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-			RespondEmptyWithCode(w, http.StatusNotFound)
-			return
-		} else if err != nil {
-			RespondWithError(w, http.StatusInternalServerError, err)
+	if moveEntity.AfterMethodID != uuid.Nil {
+		if err := h.DB.First(&predecessor, "id = ? AND board_phase_id = ?", moveEntity.AfterMethodID, phaseId).Error; err != nil {
+			if errors.Is(err, gorm.ErrRecordNotFound) {
+				RespondEmptyWithCode(w, http.StatusNotFound)
+			} else {
+				RespondWithError(w, http.StatusInternalServerError, err)
+			}
 			return
 		}
 	} else {
@@ -283,11 +305,13 @@ func (h *Handler) MoveMethodInPhase(w http.ResponseWriter, r *http.Request) {
 	}
 
 	successor := model.BoardMethod{}
-	if err := h.DB.Order("rank").First(&successor, "board_phase_id = ? AND rank > ?", phaseId, predecessor.Rank).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		successor.Rank = predecessor.Rank + 100
-	} else if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err)
-		return
+	if err := h.DB.Order("rank").First(&successor, "board_phase_id = ? AND rank > ?", phaseId, predecessor.Rank).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			successor.Rank = predecessor.Rank + 100
+		} else {
+			RespondWithError(w, http.StatusInternalServerError, err)
+			return
+		}
 	}
 
 	rankDelta := (successor.Rank - predecessor.Rank) / 2
@@ -316,84 +340,15 @@ func (h *Handler) MoveMethodInPhase(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if err := h.DB.Model(&model.BoardMethod{ID: moveEntity.ID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		RespondEmptyWithCode(w, http.StatusNotFound)
-		return
-	} else if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err)
-		return
-	}
 
-	RespondWithSuccess(w, moveEntity)
-}
+	method.Rank = predecessor.Rank + rankDelta
 
-func (h *Handler) MoveMethodBetweenPhases(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	moveEntity := &model.MoveEntityDto{}
-
-	if !HandleBodyDecode(w, r, moveEntity) {
-		return
-	}
-
-	var boardId, phaseId, methodId uuid.UUID
-	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) || !parseUUID(w, vars["methodId"], &methodId) {
-		return
-	}
-
-	predecessor := model.BoardMethod{}
-	if moveEntity.AfterID != uuid.Nil {
-		if err := h.DB.First(&predecessor, "id = ? AND board_id = ? AND phase_id = ?", moveEntity.AfterID, boardId, phaseId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+	if err := h.DB.Save(method).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondEmptyWithCode(w, http.StatusNotFound)
-			return
-		} else if err != nil {
+		} else {
 			RespondWithError(w, http.StatusInternalServerError, err)
-			return
 		}
-	} else {
-		fmt.Println(moveEntity.AfterID)
-		predecessor.Rank = 0
-	}
-
-	successor := model.BoardMethod{}
-	if err := h.DB.Order("rank").First(&successor, "board_id = ? AND phase_id = ? AND rank > ?", boardId, phaseId, predecessor.Rank).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		successor.Rank = predecessor.Rank + 100
-	} else if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err)
-		return
-	}
-
-	rankDelta := (successor.Rank - predecessor.Rank) / 2
-	if rankDelta <= 0 {
-		var results []model.BoardMethod
-		result := h.DB.Model(&model.BoardMethod{}).Order("rank").Where("board_id = ? AND phase_id = ?", boardId, phaseId).FindInBatches(&results, 100, func(tx *gorm.DB, batch int) error {
-			var currentRank uint = 0
-			for index := range results {
-				currentRank += 100
-				results[index].Rank = currentRank
-
-				if results[index].ID == predecessor.ID {
-					predecessor = results[index]
-				}
-				if results[index].ID == successor.ID {
-					successor = results[index]
-				}
-			}
-			tx.Save(&results)
-			rankDelta = (successor.Rank - predecessor.Rank) / 2
-
-			return nil
-		})
-		if result.Error != nil {
-			RespondWithError(w, http.StatusInternalServerError, result.Error)
-			return
-		}
-	}
-	if err := h.DB.Model(&model.BoardMethod{ID: moveEntity.ID}).Updates(model.BoardMethod{BoardPhaseID: phaseId, Rank: predecessor.Rank + rankDelta}).Error; errors.Is(err, gorm.ErrRecordNotFound) {
-		RespondEmptyWithCode(w, http.StatusNotFound)
-		return
-	} else if err != nil {
-		RespondWithError(w, http.StatusInternalServerError, err)
-		return
 	}
 
 	RespondWithSuccess(w, moveEntity)

@@ -16,7 +16,13 @@ export interface BoardDto {
   phases: BoardPhaseDto[];
 }
 
-export interface MoveElementDto {
-  id: string;
-  afterId: string | undefined;
+export interface MovePhaseDto {
+  phaseId: string;
+  afterPhaseId: string | undefined;
+}
+
+export interface MoveMethodDto {
+  methodId: string;
+  parentPhaseId: string | undefined;
+  afterMethodId: string | undefined;
 }

@@ -1,12 +1,11 @@
 import config from "@/config";
-import { CreateBoardDto, MoveElementDto } from "@/types/board";
+import { CreateBoardDto, MoveMethodDto, MovePhaseDto } from "@/types/board";
 import { CreateContentDto } from "@/types/content";
 import { MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
 import { Ref } from "vue";
 import { useMutation, useQuery } from "vue-query";
-import type { UseQueryOptions } from "react-query/types/react/types";
 
 export function getBoard(boardId: Ref<string | string[]>) {
   return useQuery(
@@ -49,7 +48,7 @@ export function postPhaseAssociation(boardId: Ref<string | string[]>) {
 }
 
 export function putPhaseOrder(boardId: Ref<string | string[]>) {
-  return useMutation(async (payload: MoveElementDto) => {
+  return useMutation(async (payload: MovePhaseDto) => {
     const { data } = await axios.put(
       `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases`,
       payload
@@ -74,7 +73,7 @@ export function postMethodAssociation(
 }
 
 export function putMethodOrder(boardId: string, phaseId: string) {
-  return useMutation(async (payload: MoveElementDto) => {
+  return useMutation(async (payload: MoveMethodDto) => {
     const { data } = await axios.put(
       `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases/${phaseId}/methods`,
       payload

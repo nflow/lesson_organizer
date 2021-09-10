@@ -1,10 +1,10 @@
 <template>
   <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
     <draggable
+      :id="boardPhase.id"
       group="method"
       v-model="phaseMethods"
-      @update="onUpdateMethod"
-      :move="onMoveMethod"
+      @end="onUpdateMethod"
       fallbackOnBody="true"
       swapThreshold="0.65"
       animation="150"
@@ -32,7 +32,7 @@
         </div>
       </template>
       <template #item="{ element }">
-        <div class="tw-flex tw-flex-col tw-p-2">
+        <div :id="element.id" class="tw-flex tw-flex-col tw-p-2">
           <method
             :boardId="boardId"
             :phaseId="boardPhase.id"
@@ -75,7 +75,15 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, ref, toRef, toRefs } from "vue";
+import {
+  computed,
+  defineComponent,
+  getCurrentInstance,
+  PropType,
+  ref,
+  toRef,
+  toRefs,
+} from "vue";
 import Method from "../components/Method.vue";
 import CardButton from "../components/CardButton.vue";
 import Draggable from "vuedraggable";
@@ -85,6 +93,7 @@ import { postMethodAssociation, putMethodOrder } from "@/api/board";
 import { BoardPhaseDto } from "@/types/phase";
 import { useQueryClient } from "vue-query";
 import { BoardDto } from "@/types/board";
+import { Mutex } from "async-mutex";
 
 export default defineComponent({
   name: "Phase",
@@ -106,14 +115,17 @@ export default defineComponent({
   setup(props) {
     const queryClient = useQueryClient();
     const allMethods = getMethods();
-    const moveMethod = putMethodOrder(props.boardId, props.boardPhase.id);
-
+    const updateMethod = putMethodOrder(props.boardId, props.boardPhase.id);
+    const mutex: Mutex =
+      getCurrentInstance()?.appContext.config.globalProperties
+        .boardCacheUpdateMutex;
     const phaseMethods = computed({
       get: () => {
         return props.boardPhase.methods;
       },
-      set: (newMethodOrder) => {
+      set: async (newMethodOrder) => {
         const currentBoard = queryClient.getQueryData<BoardDto>("board");
+        console.log(currentBoard);
         if (!currentBoard) {
           return;
         }
@@ -125,26 +137,35 @@ export default defineComponent({
           return;
         }
         phase.methods = newMethodOrder;
-
         queryClient.setQueryData("board", currentBoard);
         return;
       },
     });
+
     const onUpdateMethod = (evt: any) => {
-      if (evt.newDraggableIndex == evt.oldDraggableIndex) {
+      if (
+        evt.newDraggableIndex == evt.oldDraggableIndex &&
+        evt.to.id == evt.from.id
+      ) {
         return;
       }
 
-      const elementId = props.boardPhase.methods[evt.newDraggableIndex].id;
       let afterId = undefined;
       if (evt.newDraggableIndex > 0) {
-        afterId = props.boardPhase.methods[evt.newDraggableIndex - 1].id;
+        const board = queryClient.getQueryData<BoardDto>("board");
+        if (board) {
+          const phase = board.phases.find((e) => e.id == evt.to.id);
+          if (phase) {
+            afterId = phase.methods[evt.newDraggableIndex - 1].id;
+          }
+        }
       }
 
-      moveMethod.mutate(
+      updateMethod.mutate(
         {
-          id: elementId,
-          afterId: afterId,
+          methodId: evt.item.id,
+          parentPhaseId: evt.from.id != evt.to.id ? evt.to.id : undefined,
+          afterMethodId: afterId,
         },
         {
           onSuccess: () => {
@@ -153,11 +174,6 @@ export default defineComponent({
           },
         }
       );
-    };
-
-    const onMoveMethod = (evt: any, origianlEvent: any) => {
-      console.log(evt);
-      console.log(origianlEvent);
     };
 
     const associateMethod = postMethodAssociation(
@@ -201,7 +217,6 @@ export default defineComponent({
       phaseMethods,
       onAddMethod,
       onUpdateMethod,
-      onMoveMethod,
       showMethodsDialog,
       allMethods,
       onMethodSelect,

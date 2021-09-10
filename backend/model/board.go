@@ -48,13 +48,13 @@ type BoardContent struct {
 	Rank          uint      `json:"rank"`
 }
 
-type RankEntityDto struct {
-	ID      uuid.UUID `json:"id"`
-	AfterID uuid.UUID `json:"afterId"`
+type MovePhaseDto struct {
+	PhaseID      uuid.UUID `json:"phaseId"`
+	AfterPhaseID uuid.UUID `json:"afterPhaseId"`
 }
 
-type MoveEntityDto struct {
-	ID       uuid.UUID `json:"id"`
-	TargetID uuid.UUID `json:"targetId"`
-	AfterID  uuid.UUID `json:"afterId"`
+type MoveMethodDto struct {
+	MethodID      uuid.UUID `json:"methodId"`
+	ParentPhaseID uuid.UUID `json:"parentPhaseId"`
+	AfterMethodID uuid.UUID `json:"afterMethodId"`
 }
