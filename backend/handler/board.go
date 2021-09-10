@@ -82,7 +82,20 @@ func (h *Handler) RemoveGoalFromBoard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) RetrieveBoardContents(w http.ResponseWriter, r *http.Request) {
-	return
+	vars := mux.Vars(r)
+
+	var boardId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) {
+		return
+	}
+
+	var contents []model.BoardContent
+	if err := h.DB.Order("rank").Preload(clause.Associations).Find(&contents, "board_id = ?", boardId).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	RespondWithSuccess(w, contents)
 }
 
 func (h *Handler) AddContentToBoard(w http.ResponseWriter, r *http.Request) {
@@ -372,8 +385,21 @@ func DeleteMethodFromPhase(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
-func RetrieveMethodConents(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) RetrieveMethodConents(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	var methodId uuid.UUID
+	if !parseUUID(w, vars["methodId"], &methodId) {
+		return
+	}
+
+	var contents []model.BoardContent
+	if err := h.DB.Order("rank").Preload(clause.Associations).Find(&contents, "board_method_id = ?", methodId).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	RespondWithSuccess(w, contents)
 }
 
 func (h *Handler) AddContentToMethod(w http.ResponseWriter, r *http.Request) {

@@ -1,6 +1,6 @@
 import config from "@/config";
 import { CreateBoardDto, MoveMethodDto, MovePhaseDto } from "@/types/board";
-import { CreateContentDto } from "@/types/content";
+import { ContentDto, CreateContentDto } from "@/types/content";
 import { BoardMethodDto, MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
@@ -99,6 +99,24 @@ export function putMethodOrder(phaseId: string) {
   });
 }
 
+export function getBoardContents(
+  boardId: Ref<string | undefined>
+): UseQueryReturnType<ContentDto[], Error> {
+  return useQuery(
+    ["board_contents", boardId.value],
+    async () => {
+      const { data } = await axios.get(
+        `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/contents`
+      );
+
+      return data;
+    },
+    {
+      staleTime: 10000,
+    }
+  );
+}
+
 export function postBoardContent(boardId: Ref<string | undefined>) {
   return useMutation(async (payload: CreateContentDto) => {
     const { data } = await axios.post(
@@ -108,6 +126,24 @@ export function postBoardContent(boardId: Ref<string | undefined>) {
 
     return data;
   });
+}
+
+export function getMethodContents(
+  methodId: string
+): UseQueryReturnType<ContentDto[], Error> {
+  return useQuery(
+    ["method_contents", methodId],
+    async () => {
+      const { data } = await axios.get(
+        `${config.CONFIG_API_URL}/v1/methods/${methodId}/contents`
+      );
+
+      return data;
+    },
+    {
+      staleTime: 10000,
+    }
+  );
 }
 
 export function postMethodContent(methodId: string) {

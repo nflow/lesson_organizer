@@ -117,7 +117,12 @@
 import { defineComponent, PropType, ref } from "vue";
 import { ContentDto, CreateContentDto } from "@/types/content";
 import Draggable from "vuedraggable";
-import { postBoardContent, postMethodContent } from "@/api/board";
+import {
+  getBoardContents,
+  getMethodContents,
+  postBoardContent,
+  postMethodContent,
+} from "@/api/board";
 import { useQueryClient } from "vue-query";
 
 export default defineComponent({
@@ -143,7 +148,11 @@ export default defineComponent({
   },
   setup(props) {
     const queryClient = useQueryClient();
-    let createContent = props.methodId
+
+    const contents = props.methodId
+      ? getMethodContents(props.methodId)
+      : getBoardContents(ref(props.boardId));
+    const createContent = props.methodId
       ? postMethodContent(props.methodId)
       : postBoardContent(ref(props.boardId));
 
