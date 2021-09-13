@@ -136,19 +136,6 @@ export function postBoardContent(
   });
 }
 
-export function putBoardContent(
-  boardId: string
-): UseMutationReturnType<unknown, Error, MoveContentDto, unknown> {
-  return useMutation(async (payload: MoveContentDto) => {
-    const { data } = await axios.post(
-      `${config.CONFIG_API_URL}/v1/boards/${boardId}/contents`,
-      payload
-    );
-
-    return data;
-  });
-}
-
 export function getMethodContents(
   methodId: string
 ): UseQueryReturnType<ContentDto[], Error> {
@@ -180,12 +167,15 @@ export function postMethodContent(
   });
 }
 
-export function putMethodContent(
-  methodId: string
-): UseMutationReturnType<unknown, Error, MoveContentDto, unknown> {
+export function putContent(): UseMutationReturnType<
+  unknown,
+  Error,
+  MoveContentDto,
+  unknown
+> {
   return useMutation(async (payload: MoveContentDto) => {
-    const { data } = await axios.post(
-      `${config.CONFIG_API_URL}/v1/methods/${methodId}/contents`,
+    const { data } = await axios.put(
+      `${config.CONFIG_API_URL}/v1/contents`,
       payload
     );
 

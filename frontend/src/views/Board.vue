@@ -108,13 +108,13 @@
       </draggable>
     </div>
     <div>
-      <list class="tw-self-start" :boardId="board.data.value.id" />
+      <content-list class="tw-self-start" :boardId="board.data.value.id" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import List from "../components/List.vue";
+import ContentList from "../components/ContentList.vue";
 import Phase from "../components/Phase.vue";
 import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
@@ -133,11 +133,11 @@ import { useRoute, useRouter } from "vue-router";
 import { useQueryClient } from "vue-query";
 
 export default defineComponent({
-  name: "Main",
+  name: "Board",
   components: {
     Draggable,
     Phase,
-    List,
+    ContentList,
     CardButton,
     Goal,
   },
@@ -162,7 +162,7 @@ export default defineComponent({
             queryClient.setQueryData(["board"], data);
             boardId.value = data.id;
             router.replace({
-              name: "Main",
+              name: "Board",
               params: {
                 boardId: data ? data.id : "",
               },

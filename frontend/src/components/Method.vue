@@ -84,21 +84,21 @@
       </div>
     </div>
     <div v-if="methodId && contents" class="tw-p-0 tw-m-0 tw-w-full">
-      <list class="tw-p-4" :methodId="methodId" />
+      <content-list class="tw-p-4" :methodId="methodId" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { ContentDto } from "@/types/content";
-import List from "../components/List.vue";
+import ContentList from "./ContentList.vue";
 import { defineComponent, PropType } from "@vue/runtime-core";
 import { MethodDto, resolveLabelName } from "@/types/method";
 
 export default defineComponent({
   name: "Method",
   components: {
-    List,
+    ContentList,
   },
   props: {
     phaseId: {

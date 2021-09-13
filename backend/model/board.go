@@ -58,3 +58,10 @@ type MoveMethodDto struct {
 	ParentPhaseID uuid.UUID `json:"parentPhaseId"`
 	AfterMethodID uuid.UUID `json:"afterMethodId"`
 }
+
+type MoveContentDto struct {
+	ContentID      uuid.UUID `json:"contentId"`
+	ParentMethodID uuid.UUID `json:"parentMethodId"`
+	ParentBoardID  uuid.UUID `json:"parentBoardId"`
+	AfterContentID uuid.UUID `json:"afterContentId"`
+}

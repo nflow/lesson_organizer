@@ -3,7 +3,7 @@
     <div class="tw-bg-white">
       <Draggable
         :id="boardId ? boardId : methodId"
-        :data-query-id="boardId ? 'board_contents' : 'method_contents'"
+        :data-parent-type="boardId ? 'board' : 'method'"
         v-model="contents"
         @end="onUpdateContent"
         tag="table"
@@ -20,7 +20,10 @@
         "
       >
         <template #item="{ element }">
-          <tr class="tw-border-b tw-border-gray-200 hover:tw-bg-gray-100">
+          <tr
+            :id="element.id"
+            class="tw-border-b tw-border-gray-200 hover:tw-bg-gray-100"
+          >
             <td class="tw-py-3 tw-px-6 tw-text-left">
               <div class="tw-relative">
                 <span>{{ element.text }}</span>
@@ -117,7 +120,7 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent, PropType, ref } from "vue";
+import { computed, defineComponent, ref } from "vue";
 import { ContentDto, CreateContentDto } from "@/types/content";
 import Draggable from "vuedraggable";
 import {
@@ -125,14 +128,12 @@ import {
   getMethodContents,
   postBoardContent,
   postMethodContent,
-  putBoardContent,
-  putMethodContent,
+  putContent,
 } from "@/api/board";
 import { useQueryClient } from "vue-query";
-import { putMethod } from "@/api";
 
 export default defineComponent({
-  name: "List",
+  name: "ContentList",
   components: {
     Draggable,
   },
@@ -190,54 +191,62 @@ export default defineComponent({
       });
     };
 
-    const updateContent = props.methodId
-      ? putMethodContent(props.methodId)
-      : props.boardId
-      ? putBoardContent(props.boardId)
-      : undefined;
+    const updateContent = putContent();
+
+    if (!updateContent) {
+      return;
+    }
+
     const onUpdateContent = (evt: any) => {
+      console.log(evt);
       if (
         evt.newDraggableIndex == evt.oldDraggableIndex &&
         evt.to.id == evt.from.id
       ) {
         return;
       }
-      const queryToId = evt.to.attributes["data-query-id"].value;
-      const queryFromId = evt.from.attributes["data-query-id"].value;
-      if (!queryToId && !queryFromId) {
-        return;
-      }
+
+      const isBoard = (object: HTMLElement): boolean => {
+        return object.attributes.getNamedItem("data-parent-type")?.value ==
+          "board"
+          ? true
+          : false;
+      };
 
       let afterId = undefined;
       if (evt.newDraggableIndex > 0) {
         const contents = queryClient.getQueryData<ContentDto[]>([
-          queryToId,
+          isBoard(evt.to) ? "board_contents" : "method_contents",
           evt.to.id,
         ]);
         if (contents) {
-          afterId = contents[evt.newDraggableIndex - 1].text;
+          afterId = contents[evt.newDraggableIndex - 1].id;
         }
       }
-      console.log(afterId);
-      // updateContent.mutate(
-      //   {
-      //     contentId: evt.item.id,
-      //     parentMethodId: evt.from.id != evt.to.id ? evt.to.id : undefined,
-      //     parentBoardId: evt.from.id != evt.to.id ? evt.to.id : undefined,
-      //     afterContentId: afterId,
-      //   },
-      //   {
-      //     onSuccess: () => {
-      //       // TODO: Could return the new list of phases .. or maybe not.
-      //       queryClient.invalidateQueries(["method_content", evt.to.id]);
-      //       queryClient.invalidateQueries(["board_content", evt.to.id]);
-      //       if (evt.from.id != evt.to.id) {
-      //         queryClient.invalidateQueries(["method_content", evt.from.id]);
-      //         queryClient.invalidateQueries(["board_content", evt.from.id]);
-      //       }
-      //     },
-      //   }
-      // );
+
+      updateContent.mutate(
+        {
+          contentId: evt.item.id,
+          parentBoardId: isBoard(evt.to) ? evt.to.id : undefined,
+          parentMethodId: !isBoard(evt.to) ? evt.to.id : undefined,
+          afterContentId: afterId,
+        },
+        {
+          onSuccess: () => {
+            // TODO: Could return the new list of phases .. or maybe not.
+            queryClient.invalidateQueries([
+              isBoard(evt.to) ? "board_contents" : "method_contents",
+              evt.to.id,
+            ]);
+            if (evt.from.id != evt.to.id) {
+              queryClient.invalidateQueries([
+                isBoard(evt.from) ? "board_contents" : "method_contents",
+                evt.from.id,
+              ]);
+            }
+          },
+        }
+      );
     };
 
     const remove = (id: string): ContentDto | undefined => {

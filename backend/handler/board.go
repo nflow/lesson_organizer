@@ -111,7 +111,13 @@ func (h *Handler) AddContentToBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	newContent := &model.BoardContent{ID: uuid.New(), BoardID: boardId, BoardMethodID: uuid.Nil, Text: payload.Text, Rank: 0}
+	var lastContent = &model.BoardContent{}
+	if err := h.DB.Where("board_id = ?", boardId).Order("rank desc").FirstOrInit(lastContent, &model.BoardPhase{Rank: 0}).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	newContent := &model.BoardContent{ID: uuid.New(), BoardID: boardId, BoardMethodID: uuid.Nil, Text: payload.Text, Rank: lastContent.Rank + 100}
 
 	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Contents").Append(newContent); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
@@ -410,12 +416,18 @@ func (h *Handler) AddContentToMethod(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var boardId, phaseId, methodId uuid.UUID
-	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) || !parseUUID(w, vars["methodId"], &methodId) {
+	var methodId uuid.UUID
+	if !parseUUID(w, vars["methodId"], &methodId) {
 		return
 	}
 
-	newContent := &model.BoardContent{ID: uuid.New(), BoardID: uuid.Nil, BoardMethodID: methodId, Text: payload.Text, Rank: 0}
+	var lastContent = &model.BoardContent{}
+	if err := h.DB.Where("board_method_id = ?", methodId).Order("rank desc").FirstOrInit(lastContent, &model.BoardPhase{Rank: 0}).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	newContent := &model.BoardContent{ID: uuid.New(), BoardID: uuid.Nil, BoardMethodID: methodId, Text: payload.Text, Rank: lastContent.Rank + 100}
 
 	if err := h.DB.Model(&model.BoardMethod{ID: methodId}).Association("Contents").Append(newContent); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
@@ -425,10 +437,104 @@ func (h *Handler) AddContentToMethod(w http.ResponseWriter, r *http.Request) {
 	RespondWithCode(w, http.StatusCreated, newContent)
 }
 
-func UpdateContentInMethod(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) UpdateContent(w http.ResponseWriter, r *http.Request) {
+	payload := &model.MoveContentDto{}
+
+	if !HandleBodyDecode(w, r, payload) {
+		return
+	}
+
+	entry := model.BoardContent{}
+	if err := h.DB.First(&entry, payload.ContentID).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	var parent_column string
+	var parent_id uuid.UUID
+	if payload.ParentBoardID != uuid.Nil {
+		parent_column = "board_id"
+		parent_id = payload.ParentBoardID
+		entry.BoardID = payload.ParentBoardID
+		entry.BoardMethodID = uuid.Nil
+	} else if payload.ParentMethodID != uuid.Nil {
+		parent_column = "board_method_id"
+		parent_id = payload.ParentMethodID
+		entry.BoardID = uuid.Nil
+		entry.BoardMethodID = payload.ParentMethodID
+	} else if entry.BoardMethodID != uuid.Nil {
+		parent_column = "board_method_id"
+		parent_id = entry.BoardMethodID
+	} else {
+		parent_column = "board_id"
+		parent_id = entry.BoardID
+	}
+
+	predecessor := model.BoardContent{}
+	if payload.AfterContentID != uuid.Nil {
+		if err := h.DB.First(&predecessor, "id = ? AND "+parent_column+" = ?", payload.AfterContentID, parent_id).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+			RespondEmptyWithCode(w, http.StatusNotFound)
+			return
+		} else if err != nil {
+			RespondWithError(w, http.StatusInternalServerError, err)
+			return
+		}
+	} else {
+		predecessor.Rank = 0
+	}
+
+	successor := model.BoardContent{}
+	if err := h.DB.Order("rank").First(&successor, parent_column+" = ? AND rank > ?", parent_id, predecessor.Rank).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		successor.Rank = predecessor.Rank + 100
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	rankDelta := (successor.Rank - predecessor.Rank) / 2
+	if rankDelta <= 0 {
+		var results []model.BoardContent
+		result := h.DB.Model(&model.BoardContent{}).Order("rank").Where(parent_column+" = ?", parent_id).FindInBatches(&results, 100, func(tx *gorm.DB, batch int) error {
+			var currentRank uint = 0
+			for index := range results {
+				currentRank += 100
+				results[index].Rank = currentRank
+
+				if results[index].ID == predecessor.ID {
+					predecessor = results[index]
+				}
+				if results[index].ID == successor.ID {
+					successor = results[index]
+				}
+			}
+			tx.Save(&results)
+			rankDelta = (successor.Rank - predecessor.Rank) / 2
+
+			return nil
+		})
+		if result.Error != nil {
+			RespondWithError(w, http.StatusInternalServerError, result.Error)
+			return
+		}
+	}
+
+	entry.Rank = predecessor.Rank + rankDelta
+
+	if err := h.DB.Save(entry).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	entry.Rank = predecessor.Rank + rankDelta
+	RespondWithSuccess(w, entry)
 }
 
-func RemoveContentFromMethod(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) DeleteContent(w http.ResponseWriter, r *http.Request) {
 	return
 }
