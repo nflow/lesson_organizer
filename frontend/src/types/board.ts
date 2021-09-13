@@ -21,6 +21,13 @@ export interface MovePhaseDto {
   afterPhaseId: string | undefined;
 }
 
+export interface MoveContentDto {
+  contentId: string;
+  parentBoardId: string | undefined;
+  parentMethodId: string | undefined;
+  afterContentId: string | undefined;
+}
+
 export interface MoveMethodDto {
   methodId: string;
   parentPhaseId: string | undefined;

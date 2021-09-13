@@ -113,18 +113,21 @@ export default defineComponent({
       get: () => {
         return phaseMethodsQuery.data.value;
       },
-      set: async (methods) => {
+      set: (methods) => {
         queryClient.setQueryData(["phase_methods", props.phaseId], methods);
       },
     });
 
     const onUpdateMethod = (evt: any) => {
+      console.log(evt);
       if (
         evt.newDraggableIndex == evt.oldDraggableIndex &&
         evt.to.id == evt.from.id
       ) {
         return;
       }
+
+      //  queryClient.getQueryData(["board_contents"]);
 
       let afterId = undefined;
       if (evt.newDraggableIndex > 0) {

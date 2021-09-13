@@ -2,7 +2,10 @@
   <div class="tw-w-full">
     <div class="tw-bg-white">
       <Draggable
-        :list="conents"
+        :id="boardId ? boardId : methodId"
+        :data-query-id="boardId ? 'board_contents' : 'method_contents'"
+        v-model="contents"
+        @end="onUpdateContent"
         tag="table"
         animation="150"
         group="ideas"
@@ -114,7 +117,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType, ref } from "vue";
+import { computed, defineComponent, PropType, ref } from "vue";
 import { ContentDto, CreateContentDto } from "@/types/content";
 import Draggable from "vuedraggable";
 import {
@@ -122,8 +125,11 @@ import {
   getMethodContents,
   postBoardContent,
   postMethodContent,
+  putBoardContent,
+  putMethodContent,
 } from "@/api/board";
 import { useQueryClient } from "vue-query";
+import { putMethod } from "@/api";
 
 export default defineComponent({
   name: "List",
@@ -141,17 +147,28 @@ export default defineComponent({
       required: false,
       default: undefined,
     },
-    conents: {
-      type: Object as PropType<Array<ContentDto>>,
-      required: true,
-    },
   },
   setup(props) {
     const queryClient = useQueryClient();
 
-    const contents = props.methodId
+    const contentsQuery = props.methodId
       ? getMethodContents(props.methodId)
       : getBoardContents(ref(props.boardId));
+
+    const contents = computed({
+      get: () => {
+        return contentsQuery.data.value;
+      },
+      set: (data) => {
+        queryClient.setQueryData(
+          props.methodId
+            ? ["method_contents", props.methodId]
+            : ["board_contents", props.boardId],
+          data
+        );
+      },
+    });
+
     const createContent = props.methodId
       ? postMethodContent(props.methodId)
       : postBoardContent(ref(props.boardId));
@@ -173,6 +190,56 @@ export default defineComponent({
       });
     };
 
+    const updateContent = props.methodId
+      ? putMethodContent(props.methodId)
+      : props.boardId
+      ? putBoardContent(props.boardId)
+      : undefined;
+    const onUpdateContent = (evt: any) => {
+      if (
+        evt.newDraggableIndex == evt.oldDraggableIndex &&
+        evt.to.id == evt.from.id
+      ) {
+        return;
+      }
+      const queryToId = evt.to.attributes["data-query-id"].value;
+      const queryFromId = evt.from.attributes["data-query-id"].value;
+      if (!queryToId && !queryFromId) {
+        return;
+      }
+
+      let afterId = undefined;
+      if (evt.newDraggableIndex > 0) {
+        const contents = queryClient.getQueryData<ContentDto[]>([
+          queryToId,
+          evt.to.id,
+        ]);
+        if (contents) {
+          afterId = contents[evt.newDraggableIndex - 1].text;
+        }
+      }
+      console.log(afterId);
+      // updateContent.mutate(
+      //   {
+      //     contentId: evt.item.id,
+      //     parentMethodId: evt.from.id != evt.to.id ? evt.to.id : undefined,
+      //     parentBoardId: evt.from.id != evt.to.id ? evt.to.id : undefined,
+      //     afterContentId: afterId,
+      //   },
+      //   {
+      //     onSuccess: () => {
+      //       // TODO: Could return the new list of phases .. or maybe not.
+      //       queryClient.invalidateQueries(["method_content", evt.to.id]);
+      //       queryClient.invalidateQueries(["board_content", evt.to.id]);
+      //       if (evt.from.id != evt.to.id) {
+      //         queryClient.invalidateQueries(["method_content", evt.from.id]);
+      //         queryClient.invalidateQueries(["board_content", evt.from.id]);
+      //       }
+      //     },
+      //   }
+      // );
+    };
+
     const remove = (id: string): ContentDto | undefined => {
       // const index: number = refIdeas.value.findIndex(
       //   (element: ContentDto) => element.id == id
@@ -186,6 +253,8 @@ export default defineComponent({
 
     return {
       newEntryInput,
+      onUpdateContent,
+      contents,
       addNew,
       remove,
     };

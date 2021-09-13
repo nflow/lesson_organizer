@@ -84,7 +84,7 @@
       </div>
     </div>
     <div v-if="methodId && contents" class="tw-p-0 tw-m-0 tw-w-full">
-      <list class="tw-p-4" :methodId="methodId" :conents="contents" />
+      <list class="tw-p-4" :methodId="methodId" />
     </div>
   </div>
 </template>

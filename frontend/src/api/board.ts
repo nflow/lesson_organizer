@@ -1,5 +1,10 @@
 import config from "@/config";
-import { CreateBoardDto, MoveMethodDto, MovePhaseDto } from "@/types/board";
+import {
+  CreateBoardDto,
+  MoveContentDto,
+  MoveMethodDto,
+  MovePhaseDto,
+} from "@/types/board";
 import { ContentDto, CreateContentDto } from "@/types/content";
 import { BoardMethodDto, MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
@@ -7,6 +12,7 @@ import axios from "axios";
 import { Ref } from "vue";
 import { useMutation, useQuery } from "vue-query";
 import { UseQueryReturnType } from "vue-query/lib/useBaseQuery";
+import { UseMutationReturnType } from "vue-query/lib/useMutation";
 
 export function getBoard(boardId: Ref<string | string[]>) {
   return useQuery(
@@ -117,10 +123,25 @@ export function getBoardContents(
   );
 }
 
-export function postBoardContent(boardId: Ref<string | undefined>) {
+export function postBoardContent(
+  boardId: Ref<string | undefined>
+): UseMutationReturnType<unknown, Error, CreateContentDto, unknown> {
   return useMutation(async (payload: CreateContentDto) => {
     const { data } = await axios.post(
       `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/contents`,
+      payload
+    );
+
+    return data;
+  });
+}
+
+export function putBoardContent(
+  boardId: string
+): UseMutationReturnType<unknown, Error, MoveContentDto, unknown> {
+  return useMutation(async (payload: MoveContentDto) => {
+    const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/contents`,
       payload
     );
 
@@ -146,8 +167,23 @@ export function getMethodContents(
   );
 }
 
-export function postMethodContent(methodId: string) {
+export function postMethodContent(
+  methodId: string
+): UseMutationReturnType<unknown, Error, CreateContentDto, unknown> {
   return useMutation(async (payload: CreateContentDto) => {
+    const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/methods/${methodId}/contents`,
+      payload
+    );
+
+    return data;
+  });
+}
+
+export function putMethodContent(
+  methodId: string
+): UseMutationReturnType<unknown, Error, MoveContentDto, unknown> {
+  return useMutation(async (payload: MoveContentDto) => {
     const { data } = await axios.post(
       `${config.CONFIG_API_URL}/v1/methods/${methodId}/contents`,
       payload
