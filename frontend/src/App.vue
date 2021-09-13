@@ -1,9 +1,9 @@
 <template>
   <router-view />
-  <VueQueryDevTools :initialIsOpen="true" />
+  <VueQueryDevTools v-if="isDevelopment" :initialIsOpen="true" />
 </template>
 <script lang="ts">
-import { defineComponent } from "vue";
+import { computed, defineComponent } from "vue";
 import { useQueryProvider } from "vue-query";
 import { VueQueryDevTools } from "vue-query/devtools";
 
@@ -13,7 +13,11 @@ export default defineComponent({
     VueQueryDevTools,
   },
   setup() {
+    const isDevelopment = computed(() => {
+      return process.env.NODE_ENV === "development";
+    });
     useQueryProvider();
+    return { isDevelopment };
   },
 });
 </script>
