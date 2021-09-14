@@ -438,9 +438,15 @@ func (h *Handler) AddContentToMethod(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateContent(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 	payload := &model.MoveContentDto{}
 
 	if !HandleBodyDecode(w, r, payload) {
+		return
+	}
+
+	var contentId uuid.UUID
+	if !parseUUID(w, vars["contentId"], &contentId) {
 		return
 	}
 
@@ -536,5 +542,21 @@ func (h *Handler) UpdateContent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) DeleteContent(w http.ResponseWriter, r *http.Request) {
-	return
+	vars := mux.Vars(r)
+
+	var contentId uuid.UUID
+	if !parseUUID(w, vars["contentId"], &contentId) {
+		return
+	}
+
+	record := &model.BoardContent{}
+	if err := h.DB.Delete(record, contentId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	RespondWithSuccess(w, record)
 }

@@ -158,8 +158,18 @@ export function postMethodContent(methodId: string) {
 export function putContent() {
   return useMutation(async (payload: MoveContentDto) => {
     const { data } = await axios.put(
-      `${config.CONFIG_API_URL}/v1/contents`,
+      `${config.CONFIG_API_URL}/v1/contents/${payload.contentId}`,
       payload
+    );
+
+    return data;
+  });
+}
+
+export function deleteContent() {
+  return useMutation(async (contentId: string) => {
+    const { data } = await axios.delete(
+      `${config.CONFIG_API_URL}/v1/contents/${contentId}`
     );
 
     return data;

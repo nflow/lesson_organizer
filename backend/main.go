@@ -71,8 +71,8 @@ func main() {
 	router.HandleFunc("/v1/methods/{methodId}/contents", h.RetrieveMethodConents).Methods("GET")
 	router.HandleFunc("/v1/methods/{methodId}/contents", h.AddContentToMethod).Methods("POST")
 
-	router.HandleFunc("/v1/contents", h.UpdateContent).Methods("PUT")
-	router.HandleFunc("/v1/contents", h.DeleteContent).Methods("DELETE")
+	router.HandleFunc("/v1/contents/{contentId}", h.UpdateContent).Methods("PUT")
+	router.HandleFunc("/v1/contents/{contentId}", h.DeleteContent).Methods("DELETE")
 
 	loggedRouter := handlers.LoggingHandler(os.Stdout, router)
 

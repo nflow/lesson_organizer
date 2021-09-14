@@ -34,7 +34,7 @@
                 >
                   <span
                     class="tw-cursor-pointer hover:tw-text-red-500"
-                    @click="remove(element.id)"
+                    @click="remove(element)"
                   >
                     <svg
                       class="tw-w-6 tw-h-6"
@@ -124,6 +124,7 @@ import { computed, defineComponent, ref } from "vue";
 import { ContentDto, CreateContentDto } from "@/types/content";
 import Draggable from "vuedraggable";
 import {
+  deleteContent,
   getBoardContents,
   getMethodContents,
   postBoardContent,
@@ -249,15 +250,34 @@ export default defineComponent({
       );
     };
 
-    const remove = (id: string): ContentDto | undefined => {
-      // const index: number = refIdeas.value.findIndex(
-      //   (element: ContentDto) => element.id == id
-      // );
-      // if (index < 0) {
-      //   return undefined;
-      // }
-      // return refIdeas.value.splice(index, 1)[0];
-      return undefined;
+    const removeContent = deleteContent();
+
+    if (!removeContent) {
+      return;
+    }
+
+    const remove = (content: ContentDto) => {
+      removeContent.mutate(content.id, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(
+            props.methodId
+              ? ["method_contents", props.methodId]
+              : ["board_contents", props.boardId]
+          );
+        },
+      });
+
+      const newList = [...contentsQuery.data.value];
+
+      newList.splice(newList.indexOf(content), 1);
+      console.log(newList);
+
+      queryClient.setQueryData(
+        props.methodId
+          ? ["method_contents", props.methodId]
+          : ["board_contents", props.boardId],
+        newList
+      );
     };
 
     return {
