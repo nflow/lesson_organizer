@@ -33,11 +33,11 @@
                   "
                 >
                   <span
-                    class="tw-cursor-pointer hover:tw-text-red-500"
+                    class="tw-cursor-pointer hover:tw-text-red-400"
                     @click="remove(element)"
                   >
                     <svg
-                      class="tw-w-6 tw-h-6"
+                      class="tw-w-4 tw-h-full"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -47,8 +47,8 @@
                         stroke-linecap="round"
                         stroke-linejoin="round"
                         stroke-width="2"
-                        d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"
-                      />
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
                     </svg>
                   </span>
                 </div>
@@ -186,10 +186,23 @@ export default defineComponent({
 
       createContent.mutate(newEntry, {
         onSuccess: () => {
-          queryClient.invalidateQueries("board");
+          queryClient.invalidateQueries(
+            props.methodId
+              ? ["method_contents", props.methodId]
+              : ["board_contents", props.boardId]
+          );
           newEntryInput.value = "";
         },
       });
+
+      const newList: ContentDto[] = [...contentsQuery.data.value, newEntry];
+
+      queryClient.setQueryData(
+        props.methodId
+          ? ["method_contents", props.methodId]
+          : ["board_contents", props.boardId],
+        newList
+      );
     };
 
     const updateContent = putContent();
@@ -270,7 +283,6 @@ export default defineComponent({
       const newList = [...contentsQuery.data.value];
 
       newList.splice(newList.indexOf(content), 1);
-      console.log(newList);
 
       queryClient.setQueryData(
         props.methodId

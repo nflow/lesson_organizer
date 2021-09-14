@@ -17,7 +17,7 @@
       <template #header>
         <div
           class="
-            tw-flex-initial tw-font-extrabold
+            tw-relative tw-flex-initial tw-font-extrabold
             tw-hover:bg-orange
             tw-text-white
             tw-text-sm
@@ -29,10 +29,66 @@
           "
         >
           {{ phase.title }}
+          <span
+            class="
+              tw-absolute
+              tw-m-auto
+              tw-top-0
+              tw-bottom-0
+              tw-right-1
+              tw-cursor-pointer
+              hover:tw-text-red-400
+            "
+            @click="remove(element)"
+          >
+            <svg
+              class="tw-w-4 tw-h-full"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              ></path>
+            </svg>
+          </span>
         </div>
       </template>
       <template #item="{ element }">
-        <div :id="element.id" class="tw-flex tw-flex-col tw-p-2">
+        <div :id="element.id" class="tw-relative tw-flex tw-flex-col tw-p-2">
+          <span
+            class="
+              tw-bg-white
+              tw-shadow-md
+              tw-p-1
+              tw-rounded-md
+              tw-absolute
+              tw-top-1
+              tw-right-1
+              tw-cursor-pointer
+              hover:tw-text-red-400
+            "
+            @click="remove(element)"
+          >
+            <svg
+              class="tw-w-4 tw-h-full"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              ></path>
+            </svg>
+          </span>
           <method
             :methodId="element.id"
             :method="element.method"
