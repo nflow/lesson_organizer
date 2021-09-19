@@ -103,7 +103,11 @@
         delayOnTouchOnly="true"
       >
         <template #item="{ element }">
-          <phase :phaseId="element.id" :phase="element.phase" />
+          <phase
+            :phaseId="element.id"
+            :boardId="board.data.value.id"
+            :phase="element.phase"
+          />
         </template>
       </draggable>
     </div>

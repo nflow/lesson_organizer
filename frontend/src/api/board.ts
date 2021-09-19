@@ -11,6 +11,7 @@ import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
 import { Ref } from "vue";
 import { useMutation, useQuery } from "vue-query";
+import { stringifyQuery } from "vue-router";
 
 export function getBoard(boardId: Ref<string | string[]>) {
   return useQuery(
@@ -170,6 +171,26 @@ export function deleteContent() {
   return useMutation(async (contentId: string) => {
     const { data } = await axios.delete(
       `${config.CONFIG_API_URL}/v1/contents/${contentId}`
+    );
+
+    return data;
+  });
+}
+
+export function deletePhase() {
+  return useMutation(async ([boardId, phaseId]: string[]) => {
+    const { data } = await axios.delete(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases/${phaseId}`
+    );
+
+    return data;
+  });
+}
+
+export function deleteMethod() {
+  return useMutation(async ([boardId, phaseId, methodId]: string[]) => {
+    const { data } = await axios.delete(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases/${phaseId}/methods/${methodId}`
     );
 
     return data;

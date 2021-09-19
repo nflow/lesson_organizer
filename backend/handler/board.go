@@ -11,6 +11,18 @@ import (
 	"gorm.io/gorm/clause"
 )
 
+func (h *Handler) FetchBoardById(w http.ResponseWriter, boardId uuid.UUID) *model.Board {
+	board := &model.Board{}
+	if err := h.DB.First(board).Error; err != nil {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return nil
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return nil
+	}
+	return board
+}
+
 func (h *Handler) RetrieveBoards(w http.ResponseWriter, r *http.Request) {
 	var board []model.Board
 
@@ -239,7 +251,54 @@ func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) RemovePhaseFromBoard(w http.ResponseWriter, r *http.Request) {
-	return
+	vars := mux.Vars(r)
+
+	var boardId, phaseId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) {
+		return
+	}
+
+	board := h.FetchBoardById(w, boardId)
+	if board == nil {
+		return
+	}
+
+	var phase model.BoardPhase
+	if err := h.DB.Preload("Phase").First(&phase, "id = ? AND board_id = ?", phaseId, boardId).Error; err != nil {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	var methods []model.BoardMethod
+	if err := h.DB.Find(&methods, "board_phase_id = ?", phaseId).Error; err != nil {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	for _, method := range methods {
+		if err := h.DB.Delete(&model.BoardContent{}, "board_method_id = ?", method.ID).Error; err != nil {
+			RespondWithError(w, http.StatusInternalServerError, err)
+			return
+		}
+
+		if err := h.DB.Delete(method).Error; err != nil {
+			RespondWithError(w, http.StatusInternalServerError, err)
+			return
+		}
+	}
+
+	if err := h.DB.Delete(phase).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	RespondWithSuccess(w, phase)
 }
 
 func (h *Handler) RetrievePhaseMethods(w http.ResponseWriter, r *http.Request) {
@@ -387,8 +446,39 @@ func (h *Handler) MoveMethod(w http.ResponseWriter, r *http.Request) {
 	RespondWithSuccess(w, moveEntity)
 }
 
-func DeleteMethodFromPhase(w http.ResponseWriter, r *http.Request) {
-	return
+func (h *Handler) DeleteMethodFromPhase(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+
+	var boardId, phaseId, methodId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["phaseId"], &phaseId) || !parseUUID(w, vars["methodId"], &methodId) {
+		return
+	}
+
+	board := h.FetchBoardById(w, boardId)
+	if board == nil {
+		return
+	}
+
+	var method model.BoardMethod
+	if err := h.DB.Preload(clause.Associations).First(&method, "id = ? AND board_phase_id = ?", methodId, phaseId).Error; err != nil {
+		RespondEmptyWithCode(w, http.StatusNotFound)
+		return
+	} else if err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := h.DB.Delete(&model.BoardContent{}, "board_method_id = ?", methodId).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err := h.DB.Delete(&method).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
+
+	RespondWithSuccess(w, method)
 }
 
 func (h *Handler) RetrieveMethodConents(w http.ResponseWriter, r *http.Request) {

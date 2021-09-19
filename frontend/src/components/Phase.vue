@@ -39,7 +39,7 @@
               tw-cursor-pointer
               hover:tw-text-red-400
             "
-            @click="remove(element)"
+            @click="removePhase()"
           >
             <svg
               class="tw-w-4 tw-h-full"
@@ -72,7 +72,7 @@
               tw-cursor-pointer
               hover:tw-text-red-400
             "
-            @click="remove(element)"
+            @click="removeMethod(element)"
           >
             <svg
               class="tw-w-4 tw-h-full"
@@ -136,12 +136,14 @@ import Draggable from "vuedraggable";
 import { BoardMethodDto, MethodDto, resolveLabelName } from "@/types/method";
 import { getMethods } from "@/api";
 import {
+  deleteMethod,
+  deletePhase,
   getPhaseMethods,
   postMethodAssociation,
   putMethodOrder,
 } from "@/api/board";
 import { useQueryClient } from "vue-query";
-import { PhaseDto } from "@/types/phase";
+import { BoardPhaseDto, PhaseDto } from "@/types/phase";
 
 export default defineComponent({
   name: "Phase",
@@ -151,6 +153,10 @@ export default defineComponent({
     CardButton,
   },
   props: {
+    boardId: {
+      type: String,
+      required: true,
+    },
     phaseId: {
       type: String,
       required: true,
@@ -231,6 +237,29 @@ export default defineComponent({
       );
     };
 
+    const removePhaseMutation = deletePhase();
+    const removePhase = (): void => {
+      removePhaseMutation.mutate([props.boardId, props.phaseId], {
+        onSuccess: () => {
+          // TODO: Replace board
+          queryClient.invalidateQueries(["board"]);
+        },
+      });
+    };
+
+    const removeMethodMutation = deleteMethod();
+    const removeMethod = (element: MethodDto): void => {
+      removeMethodMutation.mutate([props.boardId, props.phaseId, element.id], {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["phase_methods", props.phaseId]);
+        },
+      });
+
+      const newList = [...phaseMethodsQuery.data.value];
+      newList.splice(newList.indexOf(element), 1);
+      queryClient.setQueryData(["phase_methods", props.phaseId], newList);
+    };
+
     const methodColumns = [
       { name: "title", label: "Title", field: "title", sortable: true },
       {
@@ -257,6 +286,8 @@ export default defineComponent({
       onMethodSelect,
       resolveLabelName,
       methodColumns,
+      removePhase,
+      removeMethod,
     };
   },
 });
