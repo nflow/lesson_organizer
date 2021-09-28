@@ -42,6 +42,22 @@ export function postBoard() {
   });
 }
 
+export function getBoardPhases(boardId: Ref<string | string[]>) {
+  return useQuery(
+    ["board_phases", boardId.value],
+    async () => {
+      const { data } = await axios.get(
+        `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases`
+      );
+
+      return data;
+    },
+    {
+      staleTime: 10000,
+    }
+  );
+}
+
 export function postPhaseAssociation(boardId: Ref<string | string[]>) {
   return useMutation(async (payload: PhaseIdentifierDto) => {
     const { data } = await axios.post(

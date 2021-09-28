@@ -148,7 +148,19 @@ func (h *Handler) DeleteContentFromBoard(w http.ResponseWriter, r *http.Request)
 }
 
 func (h *Handler) RetrieveBoardPhases(w http.ResponseWriter, r *http.Request) {
-	return
+	vars := mux.Vars(r)
+
+	var boardId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) {
+		return
+	}
+
+	phases := &[]model.BoardPhase{}
+	if err := h.DB.Preload(clause.Associations).Find(phases, "board_id = ?", boardId).Error; err != nil {
+		RespondWithError(w, http.StatusInternalServerError, err)
+	}
+
+	RespondWithSuccess(w, phases)
 }
 
 func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {

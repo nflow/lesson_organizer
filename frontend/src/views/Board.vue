@@ -92,7 +92,7 @@
         </q-card>
       </q-dialog>
       <draggable
-        v-if="board.isSuccess"
+        v-if="boardPhases.isSuccess"
         class="tw-grid tw-grid-flow-col"
         v-model="boardPhases"
         @update="onUpdatePhase"
@@ -124,11 +124,12 @@ import CardButton from "../components/CardButton.vue";
 import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
-import { computed, defineComponent, ref } from "@vue/runtime-core";
+import { computed, defineComponent, ref, Suspense } from "@vue/runtime-core";
 import { BoardDto, CreateBoardDto } from "@/types/board";
 import { getPhases } from "@/api";
 import {
   getBoard,
+  getBoardPhases,
   postBoard,
   postPhaseAssociation,
   putPhaseOrder,
@@ -145,7 +146,7 @@ export default defineComponent({
     CardButton,
     Goal,
   },
-  setup() {
+  async setup() {
     const router = useRouter();
     const route = useRoute();
     const boardId = ref(route.params.boardId);
@@ -176,46 +177,43 @@ export default defineComponent({
       );
     }
 
-    const boardPhases = computed({
-      get: () => {
-        return board.data.value.phases;
-      },
-      set: (newPhaseOrder) => {
-        const currentBoard: BoardDto = board.data.value;
-        // TODO: Refactor to use separate lists
-        queryClient.setQueryData("board", {
-          id: currentBoard.id,
-          name: currentBoard.name,
-          goals: currentBoard.goals,
-          contents: currentBoard.contents,
-          phases: newPhaseOrder,
-        } as BoardDto);
-        return;
-      },
-    });
     const board = getBoard(boardId);
+
     const allPhases = getPhases();
     const addPhase = postPhaseAssociation(boardId);
     const updatePhase = putPhaseOrder(boardId);
+    const retrievePhases = getBoardPhases(boardId);
+    const boardPhases = computed({
+      get: () => {
+        return retrievePhases.data.value;
+      },
+      set: (phases) => {
+        queryClient.setQueryData(["board_phases", boardId], phases);
+      },
+    });
 
     let showPhasesDialog = ref(false);
     const onAddPhase = (): void => {
       showPhasesDialog.value = true;
     };
     const onPhaseSelect = async (row: PhaseDto): Promise<void> => {
-      await addPhase.mutateAsync({ id: row.id });
+      await addPhase.mutate(
+        { id: row.id },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["board_phases", boardId]);
+          },
+        }
+      );
 
-      if (addPhase.isSuccess) {
-        queryClient.invalidateQueries("board");
-        showPhasesDialog.value = false;
-      }
+      showPhasesDialog.value = false;
     };
 
     const onUpdatePhase = (evt: any) => {
       if (evt.newDraggableIndex == evt.oldDraggableIndex || !board.data.value) {
         {
           {
-            boardPhases;
+            // TODO: foo
           }
         }
         return;
@@ -239,8 +237,7 @@ export default defineComponent({
         },
         {
           onSuccess: () => {
-            // TODO: Could return the new list of phases .. or maybe not.
-            queryClient.invalidateQueries("board");
+            queryClient.invalidateQueries(["board_phases", boardId]);
           },
         }
       );
