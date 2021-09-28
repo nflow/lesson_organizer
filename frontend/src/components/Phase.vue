@@ -143,7 +143,7 @@ import {
   putMethodOrder,
 } from "@/api/board";
 import { useQueryClient } from "vue-query";
-import { BoardPhaseDto, PhaseDto } from "@/types/phase";
+import { PhaseDto } from "@/types/phase";
 
 export default defineComponent({
   name: "Phase",

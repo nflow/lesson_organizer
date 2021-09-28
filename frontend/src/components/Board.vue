@@ -1,10 +1,5 @@
 <template>
-  <div
-    class="tw-text-5xl"
-    v-if="createBoard.isLoading.value || board.isLoading.value"
-  >
-    Loading board ...
-  </div>
+  <div class="tw-text-5xl" v-if="board.isLoading.value">Loading board ...</div>
   <div v-else class="tw-flex tw-flex-col tw-flex-nowrap tw-h-full">
     <div class="tw-flex-initial tw-flex tw-flex-col tw-bg-gray-200 tw-m-0">
       <div
@@ -92,7 +87,6 @@
         </q-card>
       </q-dialog>
       <draggable
-        v-if="boardPhases.isSuccess"
         class="tw-grid tw-grid-flow-col"
         v-model="boardPhases"
         @update="onUpdatePhase"
@@ -118,23 +112,21 @@
 </template>
 
 <script lang="ts">
-import ContentList from "../components/ContentList.vue";
-import Phase from "../components/Phase.vue";
-import CardButton from "../components/CardButton.vue";
-import Goal from "../components/Goal.vue";
+import ContentList from "./ContentList.vue";
+import Phase from "./Phase.vue";
+import CardButton from "./CardButton.vue";
+import Goal from "./Goal.vue";
 import Draggable from "vuedraggable";
 import { PhaseDto } from "@/types/phase";
-import { computed, defineComponent, ref, Suspense } from "@vue/runtime-core";
-import { BoardDto, CreateBoardDto } from "@/types/board";
+import { computed, defineComponent, ref } from "@vue/runtime-core";
+import { BoardDto } from "@/types/board";
 import { getPhases } from "@/api";
 import {
   getBoard,
   getBoardPhases,
-  postBoard,
   postPhaseAssociation,
   putPhaseOrder,
 } from "@/api/board";
-import { useRoute, useRouter } from "vue-router";
 import { useQueryClient } from "vue-query";
 
 export default defineComponent({
@@ -146,49 +138,26 @@ export default defineComponent({
     CardButton,
     Goal,
   },
-  async setup() {
-    const router = useRouter();
-    const route = useRoute();
-    const boardId = ref(route.params.boardId);
-
+  props: {
+    boardId: {
+      type: String,
+      required: true,
+    },
+  },
+  setup(props) {
     const queryClient = useQueryClient();
-    const createBoard = postBoard();
-
-    if (!route.params.boardId) {
-      createBoard.mutate(
-        {
-          name: "New Board",
-          goals: [],
-          contents: [],
-          phases: [],
-        } as CreateBoardDto,
-        {
-          onSuccess: (data: BoardDto) => {
-            queryClient.setQueryData(["board"], data);
-            boardId.value = data.id;
-            router.replace({
-              name: "Board",
-              params: {
-                boardId: data ? data.id : "",
-              },
-            });
-          },
-        }
-      );
-    }
-
-    const board = getBoard(boardId);
+    const board = getBoard(props.boardId);
 
     const allPhases = getPhases();
-    const addPhase = postPhaseAssociation(boardId);
-    const updatePhase = putPhaseOrder(boardId);
-    const retrievePhases = getBoardPhases(boardId);
+    const addPhase = postPhaseAssociation(props.boardId);
+    const updatePhase = putPhaseOrder(props.boardId);
+    const retrievePhases = getBoardPhases(props.boardId);
     const boardPhases = computed({
       get: () => {
         return retrievePhases.data.value;
       },
       set: (phases) => {
-        queryClient.setQueryData(["board_phases", boardId], phases);
+        queryClient.setQueryData(["board_phases", props.boardId], phases);
       },
     });
 
@@ -201,7 +170,7 @@ export default defineComponent({
         { id: row.id },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries(["board_phases", boardId]);
+            queryClient.invalidateQueries(["board_phases", props.boardId]);
           },
         }
       );
@@ -237,14 +206,13 @@ export default defineComponent({
         },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries(["board_phases", boardId]);
+            queryClient.invalidateQueries(["board_phases", props.boardId]);
           },
         }
       );
     };
 
     return {
-      createBoard,
       board,
       boardPhases,
       onAddPhase,

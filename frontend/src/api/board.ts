@@ -13,13 +13,13 @@ import { Ref } from "vue";
 import { useMutation, useQuery } from "vue-query";
 import { stringifyQuery } from "vue-router";
 
-export function getBoard(boardId: Ref<string | string[]>) {
+export function getBoard(boardId: string) {
   return useQuery(
     "board",
     async () => {
-      if (boardId.value) {
+      if (boardId) {
         const { data } = await axios.get(
-          `${config.CONFIG_API_URL}/v1/boards/${boardId.value}`
+          `${config.CONFIG_API_URL}/v1/boards/${boardId}`
         );
 
         return data;
@@ -42,12 +42,12 @@ export function postBoard() {
   });
 }
 
-export function getBoardPhases(boardId: Ref<string | string[]>) {
+export function getBoardPhases(boardId: string) {
   return useQuery(
-    ["board_phases", boardId.value],
+    ["board_phases", boardId],
     async () => {
       const { data } = await axios.get(
-        `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases`
+        `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases`
       );
 
       return data;
@@ -58,10 +58,10 @@ export function getBoardPhases(boardId: Ref<string | string[]>) {
   );
 }
 
-export function postPhaseAssociation(boardId: Ref<string | string[]>) {
+export function postPhaseAssociation(boardId: string) {
   return useMutation(async (payload: PhaseIdentifierDto) => {
     const { data } = await axios.post(
-      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases`,
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases`,
       payload
     );
 
@@ -69,10 +69,10 @@ export function postPhaseAssociation(boardId: Ref<string | string[]>) {
   });
 }
 
-export function putPhaseOrder(boardId: Ref<string | string[]>) {
+export function putPhaseOrder(boardId: string) {
   return useMutation(async (payload: MovePhaseDto) => {
     const { data } = await axios.put(
-      `${config.CONFIG_API_URL}/v1/boards/${boardId.value}/phases`,
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/phases`,
       payload
     );
 

@@ -1,12 +1,12 @@
 import { createRouter, createWebHashHistory, RouteRecordRaw } from "vue-router";
-import Board from "../views/Board.vue";
+import Landing from "../views/Landing.vue";
 import Manager from "../views/Manager.vue";
 
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/:boardId?",
-    name: "Board",
-    component: Board,
+    name: "Landing",
+    component: Landing,
     props: true,
   },
   {
