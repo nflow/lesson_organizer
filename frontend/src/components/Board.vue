@@ -89,7 +89,7 @@
       <draggable
         class="tw-grid tw-grid-flow-col"
         v-model="boardPhases"
-        @update="onUpdatePhase"
+        @end="onUpdatePhase"
         item-key="phase-id"
         animation="150"
         group="phases"
@@ -117,9 +117,8 @@ import Phase from "./Phase.vue";
 import CardButton from "./CardButton.vue";
 import Goal from "./Goal.vue";
 import Draggable from "vuedraggable";
-import { PhaseDto } from "@/types/phase";
+import { BoardPhaseDto, PhaseDto } from "@/types/phase";
 import { computed, defineComponent, ref } from "@vue/runtime-core";
-import { BoardDto } from "@/types/board";
 import { getPhases } from "@/api";
 import {
   getBoard,
@@ -151,12 +150,13 @@ export default defineComponent({
     const allPhases = getPhases();
     const addPhase = postPhaseAssociation(props.boardId);
     const updatePhase = putPhaseOrder(props.boardId);
-    const retrievePhases = getBoardPhases(props.boardId);
+    const retrieveBoardPhases = getBoardPhases(props.boardId);
     const boardPhases = computed({
       get: () => {
-        return retrievePhases.data.value;
+        return retrieveBoardPhases.data.value;
       },
       set: (phases) => {
+        console.log(phases);
         queryClient.setQueryData(["board_phases", props.boardId], phases);
       },
     });
@@ -179,29 +179,26 @@ export default defineComponent({
     };
 
     const onUpdatePhase = (evt: any) => {
-      if (evt.newDraggableIndex == evt.oldDraggableIndex || !board.data.value) {
-        {
-          {
-            // TODO: foo
-          }
-        }
+      if (evt.newDraggableIndex == evt.oldDraggableIndex) {
         return;
       }
 
-      const currentBoard = queryClient.getQueryData<BoardDto>("board");
-      if (!currentBoard) {
-        return;
-      }
-
-      const elementId = currentBoard.phases[evt.newDraggableIndex].id;
       let afterId = undefined;
       if (evt.newDraggableIndex > 0) {
-        afterId = board.data.value.phases[evt.newDraggableIndex - 1].id;
+        const phases = queryClient.getQueryData<BoardPhaseDto[]>([
+          "board_phases",
+          props.boardId,
+        ]);
+        if (phases) {
+          console.log(evt.item.id);
+          afterId = phases[evt.newDraggableIndex - 1].id;
+          console.log(afterId);
+        }
       }
 
       updatePhase.mutate(
         {
-          phaseId: elementId,
+          phaseId: evt.item.id,
           afterPhaseId: afterId,
         },
         {

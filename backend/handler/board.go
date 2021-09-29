@@ -156,7 +156,7 @@ func (h *Handler) RetrieveBoardPhases(w http.ResponseWriter, r *http.Request) {
 	}
 
 	phases := &[]model.BoardPhase{}
-	if err := h.DB.Preload(clause.Associations).Find(phases, "board_id = ?", boardId).Error; err != nil {
+	if err := h.DB.Order("rank").Preload(clause.Associations).Find(phases, "board_id = ?", boardId).Error; err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err)
 	}
 

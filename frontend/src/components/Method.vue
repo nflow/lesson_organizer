@@ -25,7 +25,7 @@
           tw-w-full
         "
       >
-        {{ method.title }}
+        {{ methodId }}
       </div>
       <div
         v-if="method.category && method.category.length > 0"

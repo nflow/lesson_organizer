@@ -1,131 +1,128 @@
 <template>
-  <div class="tw-flex tw-flex-col hover:tw-bg-gray-300">
-    <draggable
-      :id="phaseId"
-      group="method"
-      v-model="phaseMethods"
-      @end="onUpdateMethod"
-      fallbackOnBody="true"
-      swapThreshold="0.65"
-      animation="150"
-      item-key="id"
-      style="min-width: 20rem"
-      class="tw-flex tw-flex-col"
-      delay="100"
-      delayOnTouchOnly="true"
-    >
-      <template #header>
-        <div
+  <draggable
+    :id="phaseId"
+    group="method"
+    v-model="phaseMethods"
+    @end="onUpdateMethod"
+    fallbackOnBody="true"
+    swapThreshold="0.65"
+    animation="150"
+    item-key="id"
+    style="min-width: 20rem"
+    class="tw-w-96 tw-flex tw-flex-col hover:tw-bg-gray-300"
+    delay="100"
+    delayOnTouchOnly="true"
+  >
+    <template #header>
+      <div
+        class="
+          tw-relative tw-flex-initial tw-font-extrabold
+          tw-hover:bg-orange
+          tw-text-white
+          tw-text-sm
+          tw-bg-yellow-orange
+          tw-rounded
+          tw-p-1
+          tw-m-1
+          tw-text-center
+        "
+      >
+        {{ phaseId }}
+        <span
           class="
-            tw-relative tw-flex-initial tw-font-extrabold
-            tw-hover:bg-orange
-            tw-text-white
-            tw-text-sm
-            tw-bg-yellow-orange
-            tw-rounded
-            tw-p-1
-            tw-m-1
-            tw-text-center
+            tw-absolute
+            tw-m-auto
+            tw-top-0
+            tw-bottom-0
+            tw-right-1
+            tw-cursor-pointer
+            hover:tw-text-red-400
           "
+          @click="removePhase()"
         >
-          {{ phase.title }}
-          <span
-            class="
-              tw-absolute
-              tw-m-auto
-              tw-top-0
-              tw-bottom-0
-              tw-right-1
-              tw-cursor-pointer
-              hover:tw-text-red-400
-            "
-            @click="removePhase()"
+          <svg
+            class="tw-w-4 tw-h-full"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              class="tw-w-4 tw-h-full"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              ></path>
-            </svg>
-          </span>
-        </div>
-      </template>
-      <template #item="{ element }">
-        <div :id="element.id" class="tw-relative tw-flex tw-flex-col tw-p-2">
-          <span
-            class="
-              tw-bg-white
-              tw-shadow-md
-              tw-p-1
-              tw-rounded-md
-              tw-absolute
-              tw-top-1
-              tw-right-1
-              tw-cursor-pointer
-              hover:tw-text-red-400
-            "
-            @click="removeMethod(element)"
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            ></path>
+          </svg>
+        </span>
+      </div>
+    </template>
+    <template #item="{ element }">
+      <div :id="element.id" class="tw-relative tw-flex tw-flex-col tw-p-2">
+        <span
+          class="
+            tw-bg-white
+            tw-shadow-md
+            tw-p-1
+            tw-rounded-md
+            tw-absolute
+            tw-top-1
+            tw-right-1
+            tw-cursor-pointer
+            hover:tw-text-red-400
+          "
+          @click="removeMethod(element)"
+        >
+          <svg
+            class="tw-w-4 tw-h-full"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <svg
-              class="tw-w-4 tw-h-full"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              ></path>
-            </svg>
-          </span>
-          <method
-            :methodId="element.id"
-            :method="element.method"
-            :contents="element.contents"
-          />
-        </div>
-      </template>
-    </draggable>
-    <card-button @click="onAddMethod" class="tw-m-2" />
-    <q-dialog full-width full-height v-model="showMethodsDialog"
-      ><q-card>
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h6">Add Method</div>
-          <q-space />
-          <q-btn icon="close" flat round dense v-close-popup />
-        </q-card-section>
-        <q-card-section>
-          <q-table
-            :rows="allMethods.data.value"
-            :rows-per-page-options="[0]"
-            :columns="methodColumns"
-            hide-pagination
-            grid
-          >
-            <template v-slot:item="props">
-              <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-                <method
-                  @click="onMethodSelect(props.row)"
-                  :method="props.row"
-                />
-              </div>
-            </template>
-          </q-table>
-        </q-card-section>
-      </q-card>
-    </q-dialog>
-  </div>
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            ></path>
+          </svg>
+        </span>
+        <method
+          :methodId="element.id"
+          :method="element.method"
+          :contents="element.contents"
+        />
+      </div>
+    </template>
+    <template #footer>
+      <card-button @click="onAddMethod" class="tw-m-2" />
+    </template>
+  </draggable>
+  <q-dialog full-width full-height v-model="showMethodsDialog"
+    ><q-card>
+      <q-card-section class="row items-center q-pb-none">
+        <div class="text-h6">Add Method</div>
+        <q-space />
+        <q-btn icon="close" flat round dense v-close-popup />
+      </q-card-section>
+      <q-card-section>
+        <q-table
+          :rows="allMethods.data.value"
+          :rows-per-page-options="[0]"
+          :columns="methodColumns"
+          hide-pagination
+          grid
+        >
+          <template v-slot:item="props">
+            <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+              <method @click="onMethodSelect(props.row)" :method="props.row" />
+            </div>
+          </template>
+        </q-table>
+      </q-card-section>
+    </q-card>
+  </q-dialog>
 </template>
 
 <script lang="ts">
@@ -170,10 +167,10 @@ export default defineComponent({
     const queryClient = useQueryClient();
     const allMethods = getMethods();
     const updateMethod = putMethodOrder(props.phaseId);
-    const phaseMethodsQuery = getPhaseMethods(props.phaseId);
+    const retrievePhaseMethods = getPhaseMethods(props.phaseId);
     const phaseMethods = computed({
       get: () => {
-        return phaseMethodsQuery.data.value;
+        return retrievePhaseMethods.data.value;
       },
       set: (methods) => {
         queryClient.setQueryData(["phase_methods", props.phaseId], methods);
@@ -181,15 +178,12 @@ export default defineComponent({
     });
 
     const onUpdateMethod = (evt: any) => {
-      console.log(evt);
       if (
         evt.newDraggableIndex == evt.oldDraggableIndex &&
         evt.to.id == evt.from.id
       ) {
         return;
       }
-
-      //  queryClient.getQueryData(["board_contents"]);
 
       let afterId = undefined;
       if (evt.newDraggableIndex > 0) {
@@ -201,6 +195,8 @@ export default defineComponent({
           afterId = methods[evt.newDraggableIndex - 1].id;
         }
       }
+      console.log(evt.item.id);
+      console.log(afterId);
 
       updateMethod.mutate(
         {
@@ -255,7 +251,7 @@ export default defineComponent({
         },
       });
 
-      const newList = [...phaseMethodsQuery.data.value];
+      const newList = [...retrievePhaseMethods.data.value];
       newList.splice(newList.indexOf(element), 1);
       queryClient.setQueryData(["phase_methods", props.phaseId], newList);
     };
@@ -292,3 +288,4 @@ export default defineComponent({
   },
 });
 </script>
+update
