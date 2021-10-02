@@ -156,7 +156,6 @@ export default defineComponent({
         return retrieveBoardPhases.data.value;
       },
       set: (phases) => {
-        console.log(phases);
         queryClient.setQueryData(["board_phases", props.boardId], phases);
       },
     });

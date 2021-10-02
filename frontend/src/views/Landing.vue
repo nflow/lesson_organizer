@@ -7,7 +7,7 @@ import { BoardDto, CreateBoardDto } from "@/types/board";
 import { defineComponent, ref } from "vue";
 import { useQueryClient } from "vue-query";
 import { useRoute, useRouter } from "vue-router";
-import Board from "../components/Board.vue";
+import Board from "./Board.vue";
 
 export default defineComponent({
   name: "Landing",

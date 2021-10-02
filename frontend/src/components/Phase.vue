@@ -8,7 +8,6 @@
     swapThreshold="0.65"
     animation="150"
     item-key="id"
-    style="min-width: 20rem"
     class="tw-w-96 tw-flex tw-flex-col hover:tw-bg-gray-300"
     delay="100"
     delayOnTouchOnly="true"
@@ -97,32 +96,35 @@
     </template>
     <template #footer>
       <card-button @click="onAddMethod" class="tw-m-2" />
+      <q-dialog full-width full-height v-model="showMethodsDialog"
+        ><q-card>
+          <q-card-section class="row items-center q-pb-none">
+            <div class="text-h6">Add Method</div>
+            <q-space />
+            <q-btn icon="close" flat round dense v-close-popup />
+          </q-card-section>
+          <q-card-section>
+            <q-table
+              :rows="allMethods.data.value"
+              :rows-per-page-options="[0]"
+              :columns="methodColumns"
+              hide-pagination
+              grid
+            >
+              <template v-slot:item="props">
+                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
+                  <method
+                    @click="onMethodSelect(props.row)"
+                    :method="props.row"
+                  />
+                </div>
+              </template>
+            </q-table>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
     </template>
   </draggable>
-  <q-dialog full-width full-height v-model="showMethodsDialog"
-    ><q-card>
-      <q-card-section class="row items-center q-pb-none">
-        <div class="text-h6">Add Method</div>
-        <q-space />
-        <q-btn icon="close" flat round dense v-close-popup />
-      </q-card-section>
-      <q-card-section>
-        <q-table
-          :rows="allMethods.data.value"
-          :rows-per-page-options="[0]"
-          :columns="methodColumns"
-          hide-pagination
-          grid
-        >
-          <template v-slot:item="props">
-            <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4">
-              <method @click="onMethodSelect(props.row)" :method="props.row" />
-            </div>
-          </template>
-        </q-table>
-      </q-card-section>
-    </q-card>
-  </q-dialog>
 </template>
 
 <script lang="ts">
@@ -288,4 +290,3 @@ export default defineComponent({
   },
 });
 </script>
-update
