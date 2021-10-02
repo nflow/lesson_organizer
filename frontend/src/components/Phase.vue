@@ -26,7 +26,7 @@
           tw-text-center
         "
       >
-        {{ phaseId }}
+        {{ phase.title }}
         <span
           class="
             tw-absolute
@@ -87,11 +87,7 @@
             ></path>
           </svg>
         </span>
-        <method
-          :methodId="element.id"
-          :method="element.method"
-          :contents="element.contents"
-        />
+        <method :methodId="element.id" :method="element.method" />
       </div>
     </template>
     <template #footer>
@@ -197,8 +193,6 @@ export default defineComponent({
           afterId = methods[evt.newDraggableIndex - 1].id;
         }
       }
-      console.log(evt.item.id);
-      console.log(afterId);
 
       updateMethod.mutate(
         {
@@ -233,16 +227,6 @@ export default defineComponent({
           },
         }
       );
-    };
-
-    const removePhaseMutation = deletePhase();
-    const removePhase = (): void => {
-      removePhaseMutation.mutate([props.boardId, props.phaseId], {
-        onSuccess: () => {
-          // TODO: Replace board
-          queryClient.invalidateQueries(["board"]);
-        },
-      });
     };
 
     const removeMethodMutation = deleteMethod();
@@ -284,7 +268,6 @@ export default defineComponent({
       onMethodSelect,
       resolveLabelName,
       methodColumns,
-      removePhase,
       removeMethod,
     };
   },

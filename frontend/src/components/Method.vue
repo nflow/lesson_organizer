@@ -1,6 +1,5 @@
 <template>
   <div
-    :id="method.id"
     class="
       tw-max-w-md
       tw-p-0
@@ -25,7 +24,7 @@
           tw-w-full
         "
       >
-        {{ methodId }}
+        {{ method.title }}
       </div>
       <div
         v-if="method.category && method.category.length > 0"
@@ -83,14 +82,13 @@
         {{ method.description }}
       </div>
     </div>
-    <div v-if="methodId && contents" class="tw-p-0 tw-m-0 tw-w-full">
+    <div v-if="methodId" class="tw-p-0 tw-m-0 tw-w-full">
       <content-list class="tw-p-4" :methodId="methodId" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { ContentDto } from "@/types/content";
 import ContentList from "./ContentList.vue";
 import { defineComponent, PropType } from "@vue/runtime-core";
 import { MethodDto, resolveLabelName } from "@/types/method";
@@ -114,11 +112,6 @@ export default defineComponent({
     method: {
       type: Object as PropType<MethodDto>,
       required: true,
-    },
-    contents: {
-      type: Object as PropType<Array<ContentDto>>,
-      required: false,
-      default: undefined,
     },
   },
   setup() {

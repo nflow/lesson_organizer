@@ -36,7 +36,7 @@
         <draggable
           class="tw-grid tw-grid-flow-row sm:tw-grid-flow-col tw-gap-2"
           v-model="board.goals"
-          item-key="goal-id"
+          item-key="id"
           animation="150"
           group="goals"
           delay="100"
@@ -90,7 +90,7 @@
         class="tw-grid tw-grid-flow-col"
         v-model="boardPhases"
         @end="onUpdatePhase"
-        item-key="phase-id"
+        item-key="id"
         animation="150"
         group="phases"
         delay="100"
@@ -121,6 +121,7 @@ import { BoardPhaseDto, PhaseDto } from "@/types/phase";
 import { computed, defineComponent, ref } from "@vue/runtime-core";
 import { getPhases } from "@/api";
 import {
+  deletePhase,
   getBoard,
   getBoardPhases,
   postPhaseAssociation,
@@ -189,9 +190,7 @@ export default defineComponent({
           props.boardId,
         ]);
         if (phases) {
-          console.log(evt.item.id);
           afterId = phases[evt.newDraggableIndex - 1].id;
-          console.log(afterId);
         }
       }
 
@@ -208,7 +207,21 @@ export default defineComponent({
       );
     };
 
+    const removePhaseMutation = deletePhase();
+    const removePhase = (element: BoardPhaseDto): void => {
+      removePhaseMutation.mutate([props.boardId, element.id], {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["board_phases", props.boardId]);
+        },
+      });
+
+      const newList = [...retrieveBoardPhases.data.value];
+      newList.splice(newList.indexOf(element), 1);
+      queryClient.setQueryData(["board_phases", props.boardId], newList);
+    };
+
     return {
+      removePhase,
       board,
       boardPhases,
       onAddPhase,
