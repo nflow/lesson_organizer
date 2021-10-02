@@ -112,10 +112,10 @@
 </template>
 
 <script lang="ts">
-import ContentList from "./ContentList.vue";
-import Phase from "./Phase.vue";
-import CardButton from "./CardButton.vue";
-import Goal from "./Goal.vue";
+import ContentList from "../components/ContentList.vue";
+import Phase from "../components/Phase.vue";
+import CardButton from "../components/CardButton.vue";
+import Goal from "../components/Goal.vue";
 import Draggable from "vuedraggable";
 import { BoardPhaseDto, PhaseDto } from "@/types/phase";
 import { computed, defineComponent, ref } from "@vue/runtime-core";
