@@ -37,7 +37,7 @@
             tw-cursor-pointer
             hover:tw-text-red-400
           "
-          @click="removePhase()"
+          @click="(event) => $emit('onRemove', phaseId)"
         >
           <svg
             class="tw-w-4 tw-h-full"
@@ -132,7 +132,6 @@ import { BoardMethodDto, MethodDto, resolveLabelName } from "@/types/method";
 import { getMethods } from "@/api";
 import {
   deleteMethod,
-  deletePhase,
   getPhaseMethods,
   postMethodAssociation,
   putMethodOrder,
@@ -161,7 +160,7 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const queryClient = useQueryClient();
     const allMethods = getMethods();
     const updateMethod = putMethodOrder(props.phaseId);

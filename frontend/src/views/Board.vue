@@ -101,6 +101,7 @@
             :phaseId="element.id"
             :boardId="board.data.value.id"
             :phase="element.phase"
+            @onRemove="removePhase"
           />
         </template>
       </draggable>
@@ -208,15 +209,18 @@ export default defineComponent({
     };
 
     const removePhaseMutation = deletePhase();
-    const removePhase = (element: BoardPhaseDto): void => {
-      removePhaseMutation.mutate([props.boardId, element.id], {
+    const removePhase = (phaseId: string): void => {
+      removePhaseMutation.mutate([props.boardId, phaseId], {
         onSuccess: () => {
           queryClient.invalidateQueries(["board_phases", props.boardId]);
         },
       });
 
       const newList = [...retrieveBoardPhases.data.value];
-      newList.splice(newList.indexOf(element), 1);
+      newList.splice(
+        newList.find((element) => element.id == phaseId),
+        1
+      );
       queryClient.setQueryData(["board_phases", props.boardId], newList);
     };
 
