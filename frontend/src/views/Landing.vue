@@ -4,7 +4,7 @@
 <script lang="ts">
 import { postBoard } from "@/api/board";
 import { BoardDto, CreateBoardDto } from "@/types/board";
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
 import { useQueryClient } from "vue-query";
 import { useRoute, useRouter } from "vue-router";
 import Board from "../components/Board.vue";
@@ -21,10 +21,9 @@ export default defineComponent({
     const createBoard = postBoard();
     const queryClient = useQueryClient();
 
-    const boardId = route.params.boardId;
+    let boardId = ref(route.params.boardId);
 
     if (!route.params.boardId) {
-      console.log("foo");
       createBoard.mutate(
         {
           name: "New Board",
@@ -35,6 +34,7 @@ export default defineComponent({
         {
           onSuccess: (data: BoardDto) => {
             queryClient.setQueryData(["board"], data);
+            boardId.value = data.id;
             router.replace({
               name: "Landing",
               params: {
