@@ -187,6 +187,11 @@ func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
 		RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
+	
+	if err := h.DB.Take(&model.Board{ID: boardId}).Association("Phases").Append(&model.BoardPhase{ID: uuid.New(), PhaseID: phaseId.ID, Rank: lastPhase.Rank + 100}); errors.Is(err, gorm.ErrRecordNotFound) {
+		RespondWithError(w, http.StatusInternalServerError, err)
+		return
+	}
 
 	RespondWithCode(w, http.StatusCreated, phaseId)
 }

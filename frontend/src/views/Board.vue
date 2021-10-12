@@ -129,6 +129,7 @@ import {
   putPhaseOrder,
 } from "@/api/board";
 import { useQueryClient } from "vue-query";
+import { useRoute, useRouter } from "vue-router";
 
 export default defineComponent({
   name: "Board",
@@ -139,26 +140,32 @@ export default defineComponent({
     CardButton,
     Goal,
   },
-  props: {
-    boardId: {
-      type: String,
-      required: true,
-    },
-  },
   setup(props) {
+    const router = useRouter();
+    const route = useRoute();
+
+    // const uuidRegex =
+    //   "/^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i";
+
+    const boardId: string = route.params.boardId.toString();
+    // if (!boardId.match(uuidRegex)) {
+    //   router.push("/");
+    //   return;
+    // }
+
     const queryClient = useQueryClient();
-    const board = getBoard(props.boardId);
+    const board = getBoard(boardId);
 
     const allPhases = getPhases();
-    const addPhase = postPhaseAssociation(props.boardId);
-    const updatePhase = putPhaseOrder(props.boardId);
-    const retrieveBoardPhases = getBoardPhases(props.boardId);
+    const addPhase = postPhaseAssociation(boardId);
+    const updatePhase = putPhaseOrder(boardId);
+    const retrieveBoardPhases = getBoardPhases(boardId);
     const boardPhases = computed({
       get: () => {
         return retrieveBoardPhases.data.value;
       },
       set: (phases) => {
-        queryClient.setQueryData(["board_phases", props.boardId], phases);
+        queryClient.setQueryData(["board_phases", boardId], phases);
       },
     });
 
@@ -166,12 +173,18 @@ export default defineComponent({
     const onAddPhase = (): void => {
       showPhasesDialog.value = true;
     };
-    const onPhaseSelect = async (row: PhaseDto): Promise<void> => {
-      await addPhase.mutate(
+    const onPhaseSelect = (row: PhaseDto) => {
+      addPhase.mutate(
         { id: row.id },
         {
-          onSuccess: () => {
-            queryClient.invalidateQueries(["board_phases", props.boardId]);
+          onSuccess: (data) => {
+            const phases: BoardPhaseDto[] | undefined =
+              queryClient.getQueryData(["board_phases", boardId]);
+            if (phases) {
+              phases.push(data);
+              queryClient.setQueryData(["board_phases", boardId], phases);
+            }
+            queryClient.invalidateQueries(["board_phases", boardId]);
           },
         }
       );
@@ -188,7 +201,7 @@ export default defineComponent({
       if (evt.newDraggableIndex > 0) {
         const phases = queryClient.getQueryData<BoardPhaseDto[]>([
           "board_phases",
-          props.boardId,
+          boardId,
         ]);
         if (phases) {
           afterId = phases[evt.newDraggableIndex - 1].id;
@@ -202,7 +215,7 @@ export default defineComponent({
         },
         {
           onSuccess: () => {
-            queryClient.invalidateQueries(["board_phases", props.boardId]);
+            queryClient.invalidateQueries(["board_phases", boardId]);
           },
         }
       );
@@ -210,9 +223,9 @@ export default defineComponent({
 
     const removePhaseMutation = deletePhase();
     const removePhase = (phaseId: string): void => {
-      removePhaseMutation.mutate([props.boardId, phaseId], {
+      removePhaseMutation.mutate([boardId, phaseId], {
         onSuccess: () => {
-          queryClient.invalidateQueries(["board_phases", props.boardId]);
+          queryClient.invalidateQueries(["board_phases", boardId]);
         },
       });
 
@@ -221,7 +234,7 @@ export default defineComponent({
         newList.find((element) => element.id == phaseId),
         1
       );
-      queryClient.setQueryData(["board_phases", props.boardId], newList);
+      queryClient.setQueryData(["board_phases", boardId], newList);
     };
 
     return {
