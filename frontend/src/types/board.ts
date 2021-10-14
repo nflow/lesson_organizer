@@ -4,9 +4,6 @@ import { BoardPhaseDto } from "./phase";
 
 export interface CreateBoardDto {
   name: string;
-  goals: GoalDto[];
-  contents: ContentDto[];
-  phases: BoardPhaseDto[];
 }
 export interface BoardDto {
   id: string;
