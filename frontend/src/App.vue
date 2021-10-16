@@ -1,6 +1,6 @@
 <template>
   <router-view />
-  <VueQueryDevTools v-if="isDevelopment" :initialIsOpen="true" />
+  <VueQueryDevTools v-if="isDevelopment" :initialIsOpen="false" />
 </template>
 <script lang="ts">
 import { computed, defineComponent } from "vue";
