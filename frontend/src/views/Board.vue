@@ -79,10 +79,32 @@
             <q-table
               :rows="allPhases.data.value"
               :rows-per-page-options="[0]"
-              @row-click="(a, row, e) => onPhaseSelect(row)"
               hide-pagination
               grid
-            />
+            >
+              <template v-slot:item="props">
+                <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 tw-flex">
+                  <div
+                    @click="onPhaseSelect(props.row)"
+                    class="
+                      tw-flex
+                      tw-flex-col
+                      tw-cursor-pointer
+                      tw-bg-white
+                      tw-shadow-lg
+                      tw-rounded-lg
+                      hover:tw-shadow-2xl
+                      tw-m-2 tw-p-4 tw-w-full tw-text-gray-800
+                    "
+                  >
+                    <span>Name</span>
+                    <span class="tw-text-3xl tw-font-semibold">
+                      {{ props.row.title }}
+                    </span>
+                  </div>
+                </div>
+              </template>
+            </q-table>
           </q-card-section>
         </q-card>
       </q-dialog>
