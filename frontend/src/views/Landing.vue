@@ -35,22 +35,32 @@
       </div>
     </div>
     <div class="tw-m-auto tw-w-1/4">
-      <q-card class="sm:tw-w-full md:tw-w-10/12">
-        <q-card-section>
-          <span class="tw-font-bold tw-text-xl">Create Board</span>
-        </q-card-section>
-        <q-card-section>
-          <q-input
-            v-model="boardModel.name"
-            square
-            outlined
-            label="Board Name"
-          />
-        </q-card-section>
-        <q-card-section class="tw-space-x-2">
-          <q-btn color="primary" @click="onCreateBoard" label="Create Board" />
-        </q-card-section>
-      </q-card>
+      <form @submit.prevent.stop="onCreateBoard">
+        <q-card class="sm:tw-w-full md:tw-w-10/12">
+          <q-card-section>
+            <span class="tw-font-bold tw-text-xl">Create Board</span>
+          </q-card-section>
+          <q-card-section>
+            <q-input
+              ref="boardNameRef"
+              v-model="boardModel.name"
+              square
+              outlined
+              lazy-rules
+              :rules="boardNameRules"
+              label="Board Name"
+            />
+          </q-card-section>
+          <q-card-section class="tw-space-x-2">
+            <q-btn
+              color="primary"
+              :loading="createBoard.isLoading.value"
+              type="submit"
+              label="Create Board"
+            />
+          </q-card-section>
+        </q-card>
+      </form>
     </div>
   </div>
 </template>
@@ -58,34 +68,43 @@
 import { postBoard } from "@/api/board";
 import { BoardDto, CreateBoardDto } from "@/types/board";
 import { defineComponent, Ref, ref } from "vue";
-import { useQueryClient } from "vue-query";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 export default defineComponent({
   name: "Landing",
   setup() {
     const router = useRouter();
-    const route = useRoute();
 
     const createBoard = postBoard();
-    const queryClient = useQueryClient();
 
     const boardModel: Ref<CreateBoardDto> = ref({ name: "" });
 
+    const boardNameRef = ref<any>({});
+
     const onCreateBoard = () => {
-      createBoard.mutate(boardModel.value, {
-        onSuccess: (data: BoardDto) => {
-          router.replace({
-            name: "Board",
-            params: {
-              boardId: data ? data.id : "",
-            },
-          });
-        },
-      });
+      boardNameRef.value.validate();
+
+      if (!boardNameRef.value.hasError) {
+        createBoard.mutate(boardModel.value, {
+          onSuccess: (data: BoardDto) => {
+            router.replace({
+              name: "Board",
+              params: {
+                boardId: data ? data.id : "",
+              },
+            });
+          },
+        });
+      }
     };
 
     return {
       boardModel,
+      createBoard,
+      boardNameRef,
+      boardNameRules: [
+        (val: string | undefined) =>
+          (val && val.length > 0) || "Please type something",
+      ],
       onCreateBoard,
     };
   },
