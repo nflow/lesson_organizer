@@ -183,17 +183,18 @@ func (h *Handler) AddPhaseToBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Phases").Append(&model.BoardPhase{ID: uuid.New(), PhaseID: phaseId.ID, Rank: lastPhase.Rank + 100}); errors.Is(err, gorm.ErrRecordNotFound) {
+	phase := &model.Phase{}
+	if err := h.DB.First(phase, phaseId).Error; err != nil {
 		RespondWithError(w, http.StatusInternalServerError, err)
-		return
 	}
-	
-	if err := h.DB.Take(&model.Board{ID: boardId}).Association("Phases").Append(&model.BoardPhase{ID: uuid.New(), PhaseID: phaseId.ID, Rank: lastPhase.Rank + 100}); errors.Is(err, gorm.ErrRecordNotFound) {
+
+	newBoardPhase := &model.BoardPhase{ID: uuid.New(), PhaseID: phaseId.ID, Phase: *phase, Methods: make([]model.BoardMethod, 0), Rank: lastPhase.Rank + 100}
+	if err := h.DB.Model(&model.Board{ID: boardId}).Association("Phases").Append(newBoardPhase); errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondWithError(w, http.StatusInternalServerError, err)
 		return
 	}
 
-	RespondWithCode(w, http.StatusCreated, phaseId)
+	RespondWithCode(w, http.StatusCreated, newBoardPhase)
 }
 
 func (h *Handler) MovePhaseInBoard(w http.ResponseWriter, r *http.Request) {

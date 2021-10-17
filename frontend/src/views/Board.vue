@@ -203,8 +203,10 @@ export default defineComponent({
             const phases: BoardPhaseDto[] | undefined =
               queryClient.getQueryData(["board_phases", boardId]);
             if (phases) {
-              phases.push(data);
-              queryClient.setQueryData(["board_phases", boardId], phases);
+              queryClient.setQueryData(
+                ["board_phases", boardId],
+                [...phases, data]
+              );
             }
             queryClient.invalidateQueries(["board_phases", boardId]);
           },
