@@ -69,7 +69,7 @@
                   class="
                     tw-absolute
                     tw-inset-y-0
-                    tw-left-0
+                    tw-right-0
                     tw-pl-2
                     tw-flex
                     tw-items-center
@@ -107,7 +107,7 @@
                     tw-border-gray-200
                     tw-hover:bg-gray-100
                   "
-                  placeholder="Eine tolle Idee ..."
+                  placeholder="New amazing content ..."
                   @keydown.enter="addNew"
                 />
               </div>
