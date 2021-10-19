@@ -4,3 +4,12 @@ export interface GoalDto {
   text: string;
   color: string;
 }
+
+export interface MoveGoalDto {
+  goalId: string;
+  afterGoalId: string | undefined;
+}
+
+export interface CreateGoalDto {
+  text: string;
+}

@@ -17,6 +17,15 @@ type BoardGoal struct {
 	Rank    uint      `json:"rank"`
 }
 
+type CreateGoal struct {
+	Text string `json:"text"`
+}
+
+type MoveGoalDto struct {
+	GoalID      uuid.UUID `json:"goalId"`
+	AfterGoalID uuid.UUID `json:"afterPhaseId"`
+}
+
 type BoardPhase struct {
 	ID      uuid.UUID     `json:"id" validate:"required,uuid" gorm:"type:uuid;primary_key;"`
 	BoardID uuid.UUID     `json:"-" gorm:"type:uuid"`

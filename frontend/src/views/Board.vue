@@ -35,7 +35,7 @@
         </div>
         <draggable
           class="tw-grid tw-grid-flow-row sm:tw-grid-flow-col tw-gap-2"
-          v-model="board.goals"
+          v-model="boardGoals"
           item-key="id"
           animation="150"
           group="goals"
@@ -50,7 +50,32 @@
             />
           </template>
         </draggable>
-        <card-button @click="console.log('foo')" class="flex-initial" />
+        <card-button @click="createGoalDialog.onOpen" class="flex-initial" />
+        <q-dialog v-model="createGoalDialog.visible.value" persistent>
+          <q-card class="sm:tw-w-full md:tw-w-10/12">
+            <form @submit.prevent.stop="createGoalDialog.onSubmit">
+              <q-card-section>
+                <span class="tw-font-bold tw-text-xl">Create Goal</span>
+              </q-card-section>
+
+              <q-card-section>
+                <q-input
+                  :ref="createGoalDialog.components.text"
+                  v-model="createGoalDialog.model.value.text"
+                  square
+                  outlined
+                  lazy-rules
+                  :rules="createGoalDialog.rules.text"
+                  label="Text"
+                />
+              </q-card-section>
+              <q-card-section class="tw-space-x-2">
+                <q-btn color="primary" type="submit" label="Create" />
+                <q-btn @click="createGoalDialog.onCancle" label="Cancel" />
+              </q-card-section>
+            </form>
+          </q-card>
+        </q-dialog>
       </div>
     </div>
     <div
@@ -147,11 +172,16 @@ import {
   deletePhase,
   getBoard,
   getBoardPhases,
+  getGoals,
+  postGoal,
   postPhaseAssociation,
+  putGoal,
   putPhaseOrder,
 } from "@/api/board";
 import { useQueryClient } from "vue-query";
 import { useRoute, useRouter } from "vue-router";
+import { CreateGoalDto, GoalDto } from "@/types/goal";
+import { GenericDialog } from "@/types/dialog";
 
 export default defineComponent({
   name: "Board",
@@ -261,7 +291,64 @@ export default defineComponent({
       queryClient.setQueryData(["board_phases", boardId], newList);
     };
 
+    const retrieveGoals = getGoals(boardId);
+    const boardGoals = computed({
+      get: () => {
+        return retrieveGoals.data.value;
+      },
+      set: (goals) => {
+        queryClient.setQueryData(["board_goals", boardId], goals);
+      },
+    });
+    const createGoal = postGoal(boardId);
+    const moveGoal = putGoal(boardId);
+    const createGoalDialog: GenericDialog<CreateGoalDto> = {
+      visible: ref(false),
+      model: ref({ text: "" }),
+      components: {
+        text: ref<any>({}),
+      },
+      rules: {
+        text: [
+          (val: string | undefined) =>
+            (val && val.length > 0) || "Please type something",
+        ],
+      },
+      onOpen: () => {
+        createGoalDialog.model.value = { text: "" };
+        createGoalDialog.visible.value = true;
+      },
+      onSubmit: () => {
+        if (!createGoalDialog.components) {
+          return;
+        }
+
+        createGoalDialog.components.text.value.validate();
+
+        if (!createGoalDialog.components.text.value.hasError) {
+          createGoal.mutate(createGoalDialog.model.value, {
+            onSuccess: () => {
+              queryClient.invalidateQueries(["board_goals", boardId]);
+            },
+          });
+
+          queryClient.setQueryData(
+            ["board_goals", boardId],
+            [...boardGoals.value, createGoalDialog.model.value]
+          );
+          createGoalDialog.visible.value = false;
+        }
+      },
+      onCancle: () => {
+        createGoalDialog.model.value = { text: "" };
+        createGoalDialog.visible.value = false;
+      },
+    };
+
     return {
+      boardGoals,
+      createGoalDialog,
+
       removePhase,
       board,
       boardPhases,

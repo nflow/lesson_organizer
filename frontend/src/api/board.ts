@@ -6,6 +6,7 @@ import {
   MovePhaseDto,
 } from "@/types/board";
 import { CreateContentDto } from "@/types/content";
+import { CreateGoalDto, MoveGoalDto } from "@/types/goal";
 import { MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
@@ -56,6 +57,54 @@ export function getBoardPhases(boardId: string) {
       staleTime: 10000,
     }
   );
+}
+
+export function getGoals(boardId: string) {
+  return useQuery(
+    ["board_goals", boardId],
+    async () => {
+      const { data } = await axios.get(
+        `${config.CONFIG_API_URL}/v1/boards/${boardId}/goals`
+      );
+
+      return data;
+    },
+    {
+      staleTime: 10000,
+    }
+  );
+}
+
+export function postGoal(boardId: string) {
+  return useMutation(async (payload: CreateGoalDto) => {
+    const { data } = await axios.post(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/goals`,
+      payload
+    );
+
+    return data;
+  });
+}
+
+export function putGoal(boardId: string) {
+  return useMutation(async (payload: MoveGoalDto) => {
+    const { data } = await axios.put(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/goals`,
+      payload
+    );
+
+    return data;
+  });
+}
+
+export function deleteGoal(boardId: string) {
+  return useMutation(async (goalId: string) => {
+    const { data } = await axios.delete(
+      `${config.CONFIG_API_URL}/v1/boards/${boardId}/goals/${goalId}`
+    );
+
+    return data;
+  });
 }
 
 export function postPhaseAssociation(boardId: string) {
