@@ -51,7 +51,7 @@ func main() {
 
 	router.HandleFunc("/v1/boards/{boardId}/goals", h.RetrieveBoardGoals).Methods("GET")
 	router.HandleFunc("/v1/boards/{boardId}/goals", h.CreateGoalInBoard).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", h.UpdateGoalInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/goals", h.UpdateGoalInBoard).Methods("PUT")
 	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", h.RemoveGoalFromBoard).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards/{boardId}/contents", h.RetrieveBoardContents).Methods("GET")

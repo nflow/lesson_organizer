@@ -23,7 +23,7 @@ type CreateGoal struct {
 
 type MoveGoalDto struct {
 	GoalID      uuid.UUID `json:"goalId"`
-	AfterGoalID uuid.UUID `json:"afterPhaseId"`
+	AfterGoalID uuid.UUID `json:"afterGoalId"`
 }
 
 type BoardPhase struct {

@@ -43,6 +43,7 @@
           <q-card-section>
             <q-input
               ref="boardNameRef"
+              autofocus
               v-model="boardModel.name"
               square
               outlined

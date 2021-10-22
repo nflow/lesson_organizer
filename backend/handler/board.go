@@ -135,7 +135,7 @@ func (h *Handler) UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	predecessor := model.BoardPhase{}
+	predecessor := model.BoardGoal{}
 	if moveEntity.AfterGoalID != uuid.Nil {
 		if err := h.DB.First(&predecessor, "id = ? AND board_id = ?", moveEntity.AfterGoalID, boardId).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 			RespondEmptyWithCode(w, http.StatusNotFound)
@@ -148,7 +148,7 @@ func (h *Handler) UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 		predecessor.Rank = 0
 	}
 
-	successor := model.BoardPhase{}
+	successor := model.BoardGoal{}
 	if err := h.DB.Order("rank").First(&successor, "board_id = ? AND rank > ?", boardId, predecessor.Rank).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		successor.Rank = predecessor.Rank + 100
 	} else if err != nil {
@@ -158,8 +158,8 @@ func (h *Handler) UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 
 	rankDelta := (successor.Rank - predecessor.Rank) / 2
 	if rankDelta <= 0 {
-		var results []model.BoardPhase
-		result := h.DB.Model(&model.BoardPhase{}).Order("rank").Where("board_id = ?", boardId).FindInBatches(&results, 100, func(tx *gorm.DB, batch int) error {
+		var results []model.BoardGoal
+		result := h.DB.Model(&model.BoardGoal{}).Order("rank").Where("board_id = ?", boardId).FindInBatches(&results, 100, func(tx *gorm.DB, batch int) error {
 			var currentRank uint = 0
 			for index := range results {
 				currentRank += 100
@@ -182,7 +182,8 @@ func (h *Handler) UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	if err := h.DB.Model(&model.BoardPhase{ID: moveEntity.AfterGoalID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
+
+	if err := h.DB.Model(&model.BoardGoal{ID: moveEntity.GoalID}).Update("rank", predecessor.Rank+rankDelta).Error; errors.Is(err, gorm.ErrRecordNotFound) {
 		RespondEmptyWithCode(w, http.StatusNotFound)
 		return
 	} else if err != nil {

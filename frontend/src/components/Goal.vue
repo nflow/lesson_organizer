@@ -1,15 +1,39 @@
 <template>
   <div
+    :id="id"
     class="
       tw-relative
       tw-block
       tw-rounded
       tw-shadow-xl
       tw-border
+      tw-pr-4
       tw-bg-turquoise
       tw-text-white
     "
   >
+    <span
+      class="
+        tw-absolute tw-top-1 tw-right-1 tw-cursor-pointer
+        hover:tw-text-red-400
+      "
+      @click="$emit('onDelete')"
+    >
+      <svg
+        class="tw-w-4 tw-h-full"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        ></path>
+      </svg>
+    </span>
     <svg
       class="tw-w-6 tw-absolute tw-opacity-70 tw-text-white tw-m-2"
       version="1.1"
@@ -17,6 +41,7 @@
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
       x="0px"
+      tw-right-1
       y="0px"
       fill="#FFFFFF"
       viewBox="0 0 122.88 113.54"
@@ -45,6 +70,10 @@ import { defineComponent, ref, toRef } from "@vue/runtime-core";
 export default defineComponent({
   name: "Goal",
   props: {
+    id: {
+      type: String,
+      required: true,
+    },
     order_id: {
       type: Number,
       require: true,

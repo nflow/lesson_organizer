@@ -36,6 +36,7 @@
         <draggable
           class="tw-grid tw-grid-flow-row sm:tw-grid-flow-col tw-gap-2"
           v-model="boardGoals"
+          @end="onMoveGoal"
           item-key="id"
           animation="150"
           group="goals"
@@ -44,9 +45,11 @@
         >
           <template #item="{ element }">
             <goal
+              :id="element.id"
               :order_id="element.order_id"
               :text="element.text"
               :bgColor="element.color"
+              @onDelete="onRemoveGoal(element)"
             />
           </template>
         </draggable>
@@ -65,6 +68,7 @@
                   square
                   outlined
                   lazy-rules
+                  autofocus
                   :rules="createGoalDialog.rules.text"
                   label="Text"
                 />
@@ -136,7 +140,7 @@
       <draggable
         class="tw-grid tw-grid-flow-col"
         v-model="boardPhases"
-        @end="onUpdatePhase"
+        @end="onMovePhase"
         item-key="id"
         animation="150"
         group="phases"
@@ -148,7 +152,7 @@
             :phaseId="element.id"
             :boardId="board.data.value.id"
             :phase="element.phase"
-            @onRemove="removePhase"
+            @onRemove="onRemovePhase"
           />
         </template>
       </draggable>
@@ -169,6 +173,7 @@ import { BoardPhaseDto, PhaseDto } from "@/types/phase";
 import { computed, defineComponent, ref } from "@vue/runtime-core";
 import { getPhases } from "@/api";
 import {
+  deleteGoal,
   deletePhase,
   getBoard,
   getBoardPhases,
@@ -246,7 +251,7 @@ export default defineComponent({
       showPhasesDialog.value = false;
     };
 
-    const onUpdatePhase = (evt: any) => {
+    const onMovePhase = (evt: any) => {
       if (evt.newDraggableIndex == evt.oldDraggableIndex) {
         return;
       }
@@ -275,9 +280,9 @@ export default defineComponent({
       );
     };
 
-    const removePhaseMutation = deletePhase();
-    const removePhase = (phaseId: string): void => {
-      removePhaseMutation.mutate([boardId, phaseId], {
+    const removePhase = deletePhase();
+    const onRemovePhase = (phaseId: string): void => {
+      removePhase.mutate([boardId, phaseId], {
         onSuccess: () => {
           queryClient.invalidateQueries(["board_phases", boardId]);
         },
@@ -300,8 +305,53 @@ export default defineComponent({
         queryClient.setQueryData(["board_goals", boardId], goals);
       },
     });
-    const createGoal = postGoal(boardId);
+
+    const removeGoal = deleteGoal(boardId);
+    const onRemoveGoal = (element: GoalDto) => {
+      removeGoal.mutate(element.id, {
+        onSuccess: () => {
+          queryClient.invalidateQueries(["board_goals", boardId]);
+        },
+      });
+
+      const newList = [...retrieveBoardPhases.data.value];
+      newList.splice(
+        newList.find((element) => element.id == element.id),
+        1
+      );
+      queryClient.setQueryData(["board_goals", boardId], newList);
+    };
     const moveGoal = putGoal(boardId);
+    const onMoveGoal = (evt: any) => {
+      if (evt.newDraggableIndex == evt.oldDraggableIndex) {
+        return;
+      }
+
+      let afterId = undefined;
+      if (evt.newDraggableIndex > 0) {
+        const goals = queryClient.getQueryData<BoardPhaseDto[]>([
+          "board_goals",
+          boardId,
+        ]);
+        if (goals) {
+          afterId = goals[evt.newDraggableIndex - 1].id;
+        }
+      }
+
+      moveGoal.mutate(
+        {
+          goalId: evt.item.id,
+          afterGoalId: afterId,
+        },
+        {
+          onSuccess: () => {
+            queryClient.invalidateQueries(["board_goals", boardId]);
+          },
+        }
+      );
+    };
+
+    const createGoal = postGoal(boardId);
     const createGoalDialog: GenericDialog<CreateGoalDto> = {
       visible: ref(false),
       model: ref({ text: "" }),
@@ -346,15 +396,17 @@ export default defineComponent({
     };
 
     return {
+      onMoveGoal,
+      onRemoveGoal,
       boardGoals,
       createGoalDialog,
 
-      removePhase,
+      onRemovePhase,
       board,
       boardPhases,
       onAddPhase,
       onPhaseSelect,
-      onUpdatePhase,
+      onMovePhase,
       allPhases,
       showPhasesDialog,
     };
