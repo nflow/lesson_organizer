@@ -34,7 +34,7 @@
         </div>
       </div>
     </div>
-    <div class="tw-m-auto tw-w-1/4">
+    <div class="tw-m-auto lg:tw-w-2/4 md:tw-w-3/4 tw-w-11/12">
       <form @submit.prevent.stop="onCreateBoard">
         <q-card class="sm:tw-w-full md:tw-w-10/12">
           <q-card-section>
