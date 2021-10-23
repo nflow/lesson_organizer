@@ -17,7 +17,7 @@ export interface GenericDialog<ModelType> {
   model: Ref<ModelType>;
   components?: Components;
   rules?: Rules;
-  onOpen: VoidFunction;
+  onOpen: (model: ModelType) => void;
   onSubmit: VoidFunction;
   onCancle: VoidFunction;
 }

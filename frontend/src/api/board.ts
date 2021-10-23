@@ -6,7 +6,7 @@ import {
   MovePhaseDto,
 } from "@/types/board";
 import { CreateContentDto } from "@/types/content";
-import { CreateGoalDto, MoveGoalDto } from "@/types/goal";
+import { CreateGoalDto, ModifyGoalDto, MoveGoalDto } from "@/types/goal";
 import { MethodIdentifierDto } from "@/types/method";
 import { PhaseIdentifierDto } from "@/types/phase";
 import axios from "axios";
@@ -86,7 +86,20 @@ export function postGoal(boardId: string) {
   });
 }
 
-export function putGoal(boardId: string) {
+export function putModifyGoal(boardId: string) {
+  return useMutation(
+    async ({ goalId, payload }: { goalId: string; payload: ModifyGoalDto }) => {
+      const { data } = await axios.put(
+        `${config.CONFIG_API_URL}/v1/boards/${boardId}/goals/${goalId}`,
+        { text: payload.text }
+      );
+
+      return data;
+    }
+  );
+}
+
+export function putMoveGoal(boardId: string) {
   return useMutation(async (payload: MoveGoalDto) => {
     const { data } = await axios.put(
       `${config.CONFIG_API_URL}/v1/boards/${boardId}/goals`,

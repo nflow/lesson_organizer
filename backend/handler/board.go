@@ -122,7 +122,7 @@ func (h *Handler) CreateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 	RespondWithCode(w, http.StatusCreated, newBoardGoal)
 }
 
-func (h *Handler) UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) MoveGoalInBoard(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	moveEntity := &model.MoveGoalDto{}
 
@@ -192,6 +192,27 @@ func (h *Handler) UpdateGoalInBoard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RespondWithSuccess(w, moveEntity)
+}
+
+func (h *Handler) ModifyGoalInBoard(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	modifyGoal := &model.ModifyGoal{}
+
+	if !HandleBodyDecode(w, r, modifyGoal) {
+		return
+	}
+
+	var boardId, goalId uuid.UUID
+	if !parseUUID(w, vars["boardId"], &boardId) || !parseUUID(w, vars["goalId"], &goalId) {
+		return
+	}
+
+	if err := h.DB.Model(&model.BoardGoal{ID: goalId}).Update("text", modifyGoal.Text).Error; err != nil {
+		RespondWithError(w, http.StatusNotFound, err)
+		return
+	}
+
+	RespondWithSuccess(w, modifyGoal)
 }
 
 func (h *Handler) RemoveGoalFromBoard(w http.ResponseWriter, r *http.Request) {

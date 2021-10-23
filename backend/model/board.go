@@ -17,6 +17,10 @@ type BoardGoal struct {
 	Rank    uint      `json:"rank"`
 }
 
+type ModifyGoal struct {
+	Text string `json:"text"`
+}
+
 type CreateGoal struct {
 	Text string `json:"text"`
 }

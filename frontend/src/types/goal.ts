@@ -1,8 +1,7 @@
 export interface GoalDto {
   id: string;
-  order_id: number;
   text: string;
-  color: string;
+  rank: number;
 }
 
 export interface MoveGoalDto {
@@ -11,5 +10,9 @@ export interface MoveGoalDto {
 }
 
 export interface CreateGoalDto {
+  text: string;
+}
+
+export interface ModifyGoalDto {
   text: string;
 }

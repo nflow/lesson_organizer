@@ -4,6 +4,7 @@
     <div class="tw-flex-initial tw-flex tw-flex-col tw-bg-gray-200 tw-m-0">
       <div
         class="
+          isLoading
           tw-flex-initial
           tw-bg-gradient-to-br
           tw-from-blue
@@ -49,6 +50,7 @@
               :order_id="element.order_id"
               :text="element.text"
               :bgColor="element.color"
+              @onModify="modifyGoalDialog.onOpen(element)"
               @onDelete="onRemoveGoal(element)"
             />
           </template>
@@ -74,8 +76,44 @@
                 />
               </q-card-section>
               <q-card-section class="tw-space-x-2">
-                <q-btn color="primary" type="submit" label="Create" />
+                <q-btn
+                  color="primary"
+                  type="submit"
+                  label="Create"
+                  :loading="createGoal.isLoading.value"
+                />
                 <q-btn @click="createGoalDialog.onCancle" label="Cancel" />
+              </q-card-section>
+            </form>
+          </q-card>
+        </q-dialog>
+        <q-dialog v-model="modifyGoalDialog.visible.value" persistent>
+          <q-card class="sm:tw-w-full md:tw-w-10/12">
+            <form @submit.prevent.stop="modifyGoalDialog.onSubmit">
+              <q-card-section>
+                <span class="tw-font-bold tw-text-xl">Modify Goal</span>
+              </q-card-section>
+
+              <q-card-section>
+                <q-input
+                  :ref="modifyGoalDialog.components.text"
+                  v-model="modifyGoalDialog.model.value.text"
+                  square
+                  outlined
+                  lazy-rules
+                  autofocus
+                  :rules="modifyGoalDialog.rules.text"
+                  label="Text"
+                />
+              </q-card-section>
+              <q-card-section class="tw-space-x-2">
+                <q-btn
+                  color="primary"
+                  type="submit"
+                  label="Create"
+                  :loading="modifyGoal.isLoading.value"
+                />
+                <q-btn @click="modifyGoalDialog.onCancle" label="Cancel" />
               </q-card-section>
             </form>
           </q-card>
@@ -180,7 +218,8 @@ import {
   getGoals,
   postGoal,
   postPhaseAssociation,
-  putGoal,
+  putModifyGoal,
+  putMoveGoal,
   putPhaseOrder,
 } from "@/api/board";
 import { useQueryClient } from "vue-query";
@@ -307,21 +346,66 @@ export default defineComponent({
     });
 
     const removeGoal = deleteGoal(boardId);
-    const onRemoveGoal = (element: GoalDto) => {
-      removeGoal.mutate(element.id, {
+    const onRemoveGoal = (goal: GoalDto) => {
+      removeGoal.mutate(goal.id, {
         onSuccess: () => {
           queryClient.invalidateQueries(["board_goals", boardId]);
         },
       });
 
-      const newList = [...retrieveBoardPhases.data.value];
+      const newList = [...boardGoals.value];
       newList.splice(
-        newList.find((element) => element.id == element.id),
+        newList.findIndex((element) => element.id == goal.id),
         1
       );
       queryClient.setQueryData(["board_goals", boardId], newList);
     };
-    const moveGoal = putGoal(boardId);
+
+    const modifyGoal = putModifyGoal(boardId);
+    const modifyGoalDialog: GenericDialog<GoalDto> = {
+      visible: ref(false),
+      model: ref({ id: "", text: "", rank: 0 }),
+      components: {
+        text: ref<any>({}),
+      },
+      rules: {
+        text: [
+          (val: string | undefined) =>
+            (val && val.length > 0) || "Please type something",
+        ],
+      },
+      onOpen: (element: GoalDto) => {
+        modifyGoalDialog.model.value = element;
+        modifyGoalDialog.visible.value = true;
+      },
+      onSubmit: () => {
+        if (!modifyGoalDialog.components) {
+          return;
+        }
+
+        modifyGoalDialog.components.text.value.validate();
+
+        if (!modifyGoalDialog.components.text.value.hasError) {
+          modifyGoal.mutate(
+            {
+              goalId: modifyGoalDialog.model.value.id,
+              payload: { text: modifyGoalDialog.model.value.text },
+            },
+            {
+              onSuccess: () => {
+                queryClient.invalidateQueries(["board_goals", boardId]);
+                modifyGoalDialog.visible.value = false;
+              },
+            }
+          );
+        }
+      },
+      onCancle: () => {
+        modifyGoalDialog.visible.value = false;
+      },
+    };
+
+    const moveGoal = putMoveGoal(boardId);
     const onMoveGoal = (evt: any) => {
       if (evt.newDraggableIndex == evt.oldDraggableIndex) {
         return;
@@ -377,16 +461,14 @@ export default defineComponent({
 
         if (!createGoalDialog.components.text.value.hasError) {
           createGoal.mutate(createGoalDialog.model.value, {
-            onSuccess: () => {
-              queryClient.invalidateQueries(["board_goals", boardId]);
+            onSuccess: (data: GoalDto) => {
+              queryClient.setQueryData(
+                ["board_goals", boardId],
+                [...boardGoals.value, data]
+              );
+              createGoalDialog.visible.value = false;
             },
           });
-
-          queryClient.setQueryData(
-            ["board_goals", boardId],
-            [...boardGoals.value, createGoalDialog.model.value]
-          );
-          createGoalDialog.visible.value = false;
         }
       },
       onCancle: () => {
@@ -399,7 +481,10 @@ export default defineComponent({
       onMoveGoal,
       onRemoveGoal,
       boardGoals,
+      createGoal,
       createGoalDialog,
+      modifyGoal,
+      modifyGoalDialog,
 
       onRemovePhase,
       board,

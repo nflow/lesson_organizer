@@ -15,7 +15,7 @@ import (
 func commonMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
-		//time.Sleep(time.Second)
+		time.Sleep(time.Second)
 		next.ServeHTTP(w, r)
 	})
 }
@@ -51,7 +51,8 @@ func main() {
 
 	router.HandleFunc("/v1/boards/{boardId}/goals", h.RetrieveBoardGoals).Methods("GET")
 	router.HandleFunc("/v1/boards/{boardId}/goals", h.CreateGoalInBoard).Methods("POST")
-	router.HandleFunc("/v1/boards/{boardId}/goals", h.UpdateGoalInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/goals", h.MoveGoalInBoard).Methods("PUT")
+	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", h.ModifyGoalInBoard).Methods("PUT")
 	router.HandleFunc("/v1/boards/{boardId}/goals/{goalId}", h.RemoveGoalFromBoard).Methods("DELETE")
 
 	router.HandleFunc("/v1/boards/{boardId}/contents", h.RetrieveBoardContents).Methods("GET")
