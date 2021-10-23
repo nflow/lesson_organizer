@@ -104,6 +104,7 @@
               :rows="allMethods.data.value"
               :rows-per-page-options="[0]"
               :columns="methodColumns"
+              :loading="associateMethod.isLoading.value"
               hide-pagination
               grid
             >
@@ -217,6 +218,10 @@ export default defineComponent({
       showMethodsDialog.value = true;
     };
     const onMethodSelect = (row: MethodDto): void => {
+      if (associateMethod.isLoading.value) {
+        return;
+      }
+
       associateMethod.mutate(
         { id: row.id },
         {
@@ -259,6 +264,7 @@ export default defineComponent({
     ];
 
     return {
+      associateMethod,
       phaseMethods,
       onAddMethod,
       onUpdateMethod,
