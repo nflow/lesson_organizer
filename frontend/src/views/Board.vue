@@ -146,6 +146,7 @@
             <q-table
               :rows="allPhases.data.value"
               :rows-per-page-options="[0]"
+              :loading="addPhase.isLoading.value"
               hide-pagination
               grid
             >
@@ -270,6 +271,10 @@ export default defineComponent({
       showPhasesDialog.value = true;
     };
     const onPhaseSelect = (row: PhaseDto) => {
+      if (addPhase.isLoading.value) {
+        return;
+      }
+
       addPhase.mutate(
         { id: row.id },
         {
@@ -283,11 +288,10 @@ export default defineComponent({
               );
             }
             queryClient.invalidateQueries(["board_phases", boardId]);
+            showPhasesDialog.value = false;
           },
         }
       );
-
-      showPhasesDialog.value = false;
     };
 
     const onMovePhase = (evt: any) => {
@@ -329,7 +333,7 @@ export default defineComponent({
 
       const newList = [...retrieveBoardPhases.data.value];
       newList.splice(
-        newList.find((element) => element.id == phaseId),
+        newList.findIndex((element) => element.id == phaseId),
         1
       );
       queryClient.setQueryData(["board_phases", boardId], newList);
@@ -489,6 +493,7 @@ export default defineComponent({
       onRemovePhase,
       board,
       boardPhases,
+      addPhase,
       onAddPhase,
       onPhaseSelect,
       onMovePhase,
