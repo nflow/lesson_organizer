@@ -5,7 +5,7 @@
         :id="boardId ? boardId : methodId"
         :data-parent-type="boardId ? 'board' : 'method'"
         v-model="contents"
-        @end="onUpdateContent"
+        @end="onMoveContent"
         tag="table"
         animation="150"
         group="ideas"
@@ -33,8 +33,27 @@
                   "
                 >
                   <span
+                    class="tw-cursor-pointer hover:tw-text-gray-200"
+                    @click="onModify(element)"
+                  >
+                    <svg
+                      class="tw-w-4 tw-h-full"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      ></path>
+                    </svg>
+                  </span>
+                  <span
                     class="tw-cursor-pointer hover:tw-text-red-400"
-                    @click="remove(element)"
+                    @click="onRemove(element)"
                   >
                     <svg
                       class="tw-w-4 tw-h-full"
@@ -211,7 +230,7 @@ export default defineComponent({
       return;
     }
 
-    const onUpdateContent = (evt: any) => {
+    const onMoveContent = (evt: any) => {
       console.log(evt);
       if (
         evt.newDraggableIndex == evt.oldDraggableIndex &&
@@ -269,7 +288,7 @@ export default defineComponent({
       return;
     }
 
-    const remove = (content: ContentDto) => {
+    const onRemove = (content: ContentDto) => {
       removeContent.mutate(content.id, {
         onSuccess: () => {
           queryClient.invalidateQueries(
@@ -294,10 +313,10 @@ export default defineComponent({
 
     return {
       newEntryInput,
-      onUpdateContent,
+      onMoveContent,
       contents,
       addNew,
-      remove,
+      onRemove,
     };
   },
 });
